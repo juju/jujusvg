@@ -1,7 +1,7 @@
 package jujusvg
 
 import (
-	"bytes"
+	"io"
 
 	"github.com/ajstarks/svgo"
 )
@@ -77,10 +77,9 @@ func (c *Canvas) getRect() (int, int) {
 	return maxWidth - minWidth + IconSize, maxHeight - minHeight + IconSize
 }
 
-func (c *Canvas) Marshal() ([]byte) {
+func (c *Canvas) Marshal(w io.Writer) {
 	width, height := c.getRect()
-	var buf bytes.Buffer
-	canvas := svg.New(&buf)
+	canvas := svg.New(w)
 	canvas.Start(width, height)
 	canvas.Def()
 	for _, relation := range c.relations {
@@ -101,5 +100,4 @@ func (c *Canvas) Marshal() ([]byte) {
 	}
 	canvas.Gend()
 	canvas.End()
-	return buf.Bytes()
 }
