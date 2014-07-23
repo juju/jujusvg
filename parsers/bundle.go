@@ -1,7 +1,8 @@
-package readers
+package parsers
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/makyo/jujusvg"
@@ -11,39 +12,37 @@ import (
 type Bundle struct {
 	Relations [][]string
 	Services  map[string]struct {
-		Annotations map[string]int
+		Annotations map[string]string
 		Charm       string
 	}
 }
 
-type Basket struct {
-	Bundles map[string]Bundle
+type BundleParser struct {
+	Parser
 }
 
-type BundleReader struct {
-	Reader
-}
-
-func (r *BundleReader) Read(b []byte) (map[string]jujusvg.Canvas, error) {
-	basket := Basket{}
+func (r *BundleParser) Parse(bundleData []byte) (map[string]jujusvg.Canvas, error) {
+	basket := make(map[string]Bundle)
 	canvases := make(map[string]jujusvg.Canvas)
-	err := yaml.Unmarshal(b, &basket)
+	err := yaml.Unmarshal(bundleData, &basket)
 	if err != nil {
 		return nil, err
 	}
-	for bundleName, bundle := range basket.Bundles {
+	for bundleName, bundle := range basket {
 		canvases[bundleName] = r.parseBundle(bundle)
 	}
 	return canvases, nil
 }
 
-func (r *BundleReader) parseBundle(bundle Bundle) jujusvg.Canvas {
+func (r *BundleParser) parseBundle(bundle Bundle) jujusvg.Canvas {
 	canvas := jujusvg.Canvas{}
 	services := make(map[string]*jujusvg.Service)
 	for serviceName, serviceData := range bundle.Services {
+		x, _ := strconv.ParseFloat(serviceData.Annotations["gui-x"], 64)
+		y, _ := strconv.ParseFloat(serviceData.Annotations["gui-y"], 64)
 		services[serviceName] = &jujusvg.Service{
-			X:        serviceData.Annotations["gui-x"],
-			Y:        serviceData.Annotations["gui-y"],
+			X:        int(x),
+			Y:        int(y),
 			CharmUrl: serviceData.Charm,
 			IconUrl: fmt.Sprintf(
 				"https://manage.jujucharms.com/api/3/charm/%s/file/icon.svg",

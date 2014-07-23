@@ -2,6 +2,7 @@ package jujusvg
 
 import (
 	"io"
+	"math"
 
 	"github.com/ajstarks/svgo"
 )
@@ -44,16 +45,17 @@ func (s *Service) usage(canvas *svg.SVG) {
 }
 
 // definition creates any necessary defs that can be used later in the SVG.
-func (r *Relation ) definition(canvas *svg.SVG) {
+func (r *Relation) definition(canvas *svg.SVG) {
 }
 
 // usage creates any necessary tags for actually using the relation in the SVG.
 func (r *Relation) usage(canvas *svg.SVG) {
 	canvas.Line(
-		r.ServiceA.X + (IconSize / 2),
-		r.ServiceA.Y + (IconSize / 2),
-		r.ServiceB.X + (IconSize / 2),
-		r.ServiceB.Y + (IconSize / 2))
+		r.ServiceA.X+(IconSize/2),
+		r.ServiceA.Y+(IconSize/2),
+		r.ServiceB.X+(IconSize/2),
+		r.ServiceB.Y+(IconSize/2),
+		"stroke:black")
 }
 
 // AddService adds a new service to the canvas.
@@ -93,7 +95,8 @@ func (c *Canvas) getRect() (int, int) {
 		service.Y = service.Y - minWidth
 		service.X = service.X - minHeight
 	}
-	return maxWidth - minWidth + IconSize, maxHeight - minHeight + IconSize
+	return int(math.Abs(float64(maxWidth))) + int(math.Abs(float64(minWidth))) + IconSize,
+		int(math.Abs(float64(maxHeight))) + int(math.Abs(float64(minHeight))) + IconSize
 }
 
 // Marshal renders the SVG to the given io.Writer
