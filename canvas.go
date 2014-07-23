@@ -1,42 +1,46 @@
 package jujusvg
 
 import (
-	"github.com/ajstarks/svgo"
-
 	"io"
+
+	"github.com/ajstarks/svgo"
+)
+
+const (
+	IconSize = 96
 )
 
 type Canvas struct {
-	out io.Writer
+	Out io.Writer
 	services []*Service
 	relations []*Relation
 }
 
 type Service struct {
-	name string
-	url string
-	iconUrl string
-	x int
-	y int
+	Name string
+	Url string
+	IconUrl string
+	X int
+	Y int
 }
 
 type Relation struct {
-	serviceA *Service
-	serviceB *Service
+	ServiceA *Service
+	ServiceB *Service
 }
 
 func (r *Relation ) definition(canvas *svg.SVG) {
 }
 
 func (r *Relation) usage(canvas *svg.SVG) {
-	canvas.Line(r.serviceA.x, r.serviceA.y, r.serviceB.x, r.serviceB.y)
+	canvas.Line(r.ServiceA.X, r.ServiceA.Y, r.ServiceB.X, r.ServiceB.Y)
 }
 
 func (s *Service) definition(canvas *svg.SVG) {
 }
 
 func (s *Service) usage(canvas *svg.SVG) {
-	canvas.Image(s.x, s.y, 96, 96, s.iconUrl)
+	canvas.Image(s.X, s.Y, IconSize, IconSize, s.IconUrl)
 }
 
 func (c *Canvas) AddService(s *Service) {
@@ -54,29 +58,29 @@ func (c *Canvas) getRect() (int, int) {
 	maxHeight := -(minHeight - 1)
 
 	for _, service := range c.services {
-		if service.y < minWidth {
-			minWidth = service.y
+		if service.Y < minWidth {
+			minWidth = service.Y
 		}
-		if service.x < minHeight {
-			minHeight = service.x
+		if service.X < minHeight {
+			minHeight = service.X
 		}
-		if service.y > maxWidth {
-			maxWidth = service.y
+		if service.Y > maxWidth {
+			maxWidth = service.Y
 		}
-		if service.x > maxHeight {
-			maxHeight = service.y
+		if service.X > maxHeight {
+			maxHeight = service.Y
 		}
 	}
 	for _, service := range c.services {
-		service.y = service.y - minWidth
-		service.x = service.x - minHeight
+		service.Y = service.Y - minWidth
+		service.X = service.X - minHeight
 	}
-	return maxWidth - minWidth, maxHeight - minHeight
+	return maxWidth - minWidth + IconSize, maxHeight - minHeight + IconSize
 }
 
 func (c *Canvas) Marshal() (string) {
 	width, height := c.getRect()
-	canvas := svg.New(c.out)
+	canvas := svg.New(c.Out)
 	canvas.Start(width, height)
 	canvas.Def()
 	for _, relation := range c.relations {
