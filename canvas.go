@@ -11,16 +11,16 @@ const (
 )
 
 type Canvas struct {
-	services []*Service
+	services  []*Service
 	relations []*Relation
 }
 
 type Service struct {
-	Name string
-	Url string
-	IconUrl string
-	X int
-	Y int
+	Name     string
+	CharmUrl string
+	IconUrl  string
+	X        int
+	Y        int
 }
 
 type Relation struct {
@@ -28,7 +28,7 @@ type Relation struct {
 	ServiceB *Service
 }
 
-func (r *Relation ) definition(canvas *svg.SVG) {
+func (r *Relation) definition(canvas *svg.SVG) {
 }
 
 func (r *Relation) usage(canvas *svg.SVG) {
@@ -77,7 +77,7 @@ func (c *Canvas) getRect() (int, int) {
 	return maxWidth - minWidth + IconSize, maxHeight - minHeight + IconSize
 }
 
-func (c *Canvas) Marshal() ([]byte) {
+func (c *Canvas) Marshal() []byte {
 	width, height := c.getRect()
 	var buf bytes.Buffer
 	canvas := svg.New(&buf)
