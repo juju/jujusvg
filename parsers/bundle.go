@@ -21,6 +21,8 @@ type BundleParser struct {
 	Parser
 }
 
+// Parse takes a byte array of the bundles.yaml file and converts it to a
+// Canvas object.
 func (r *BundleParser) Parse(bundleData []byte) (map[string]jujusvg.Canvas, error) {
 	basket := make(map[string]Bundle)
 	canvases := make(map[string]jujusvg.Canvas)
@@ -34,6 +36,7 @@ func (r *BundleParser) Parse(bundleData []byte) (map[string]jujusvg.Canvas, erro
 	return canvases, nil
 }
 
+// parseBundle creates the actual Canvas element from the parsed YAML.
 func (r *BundleParser) parseBundle(bundle Bundle) jujusvg.Canvas {
 	canvas := jujusvg.Canvas{}
 	services := make(map[string]*jujusvg.Service)
