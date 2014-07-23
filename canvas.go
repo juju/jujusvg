@@ -1,20 +1,25 @@
 package jujusvg
 
 import (
-	"bytes"
+	"io"
 
 	"github.com/ajstarks/svgo"
 )
 
 const (
+	// IconSize is always 96px per Juju charm conventions.
 	IconSize = 96
 )
 
+// Canvas contains a list of services and a list of relations which can be
+// rendered to SVG.
 type Canvas struct {
 	services  []*Service
 	relations []*Relation
 }
 
+// Service represents a service deployed to an environment and contains its
+// position information, icon URL, and additional metadata.
 type Service struct {
 	Name     string
 	CharmUrl string
@@ -23,33 +28,47 @@ type Service struct {
 	Y        int
 }
 
+// Relation represents a relation created between two services.
 type Relation struct {
 	ServiceA *Service
 	ServiceB *Service
 }
 
-func (r *Relation) definition(canvas *svg.SVG) {
-}
-
-func (r *Relation) usage(canvas *svg.SVG) {
-	canvas.Line(r.ServiceA.X, r.ServiceA.Y, r.ServiceB.X, r.ServiceB.Y)
-}
-
+// definition creates any necessary defs that can be used later in the SVG.
 func (s *Service) definition(canvas *svg.SVG) {
 }
 
+// usage creates any necessary tags for actually using the service in the SVG.
 func (s *Service) usage(canvas *svg.SVG) {
 	canvas.Image(s.X, s.Y, IconSize, IconSize, s.IconUrl)
 }
 
+// definition creates any necessary defs that can be used later in the SVG.
+func (r *Relation ) definition(canvas *svg.SVG) {
+}
+
+// usage creates any necessary tags for actually using the relation in the SVG.
+func (r *Relation) usage(canvas *svg.SVG) {
+	canvas.Line(
+		r.ServiceA.X + (IconSize / 2),
+		r.ServiceA.Y + (IconSize / 2),
+		r.ServiceB.X + (IconSize / 2),
+		r.ServiceB.Y + (IconSize / 2))
+}
+
+// AddService adds a new service to the canvas.
 func (c *Canvas) AddService(s *Service) {
 	c.services = append(c.services, s)
 }
 
+// AddRelation adds a new relation to the canvas.
 func (c *Canvas) AddRelation(r *Relation) {
 	c.relations = append(c.relations, r)
 }
 
+// getRect retrieves the width and height of the canvas, as well as modifying
+// the coordinates of the services to ensure that everything is positioned with
+// (0, 0) as the minimum coordinates.
 func (c *Canvas) getRect() (int, int) {
 	minWidth := int(^uint(0) >> 1)
 	minHeight := int(^uint(0) >> 1)
@@ -77,10 +96,10 @@ func (c *Canvas) getRect() (int, int) {
 	return maxWidth - minWidth + IconSize, maxHeight - minHeight + IconSize
 }
 
-func (c *Canvas) Marshal() []byte {
+// Marshal renders the SVG to the given io.Writer
+func (c *Canvas) Marshal(w io.Writer) {
 	width, height := c.getRect()
-	var buf bytes.Buffer
-	canvas := svg.New(&buf)
+	canvas := svg.New(w)
 	canvas.Start(width, height)
 	canvas.Def()
 	for _, relation := range c.relations {
@@ -101,5 +120,4 @@ func (c *Canvas) Marshal() []byte {
 	}
 	canvas.Gend()
 	canvas.End()
-	return buf.Bytes()
 }
