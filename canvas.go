@@ -88,15 +88,15 @@ func (c *Canvas) getRect() (int, int) {
 			maxWidth = service.Y
 		}
 		if service.X > maxHeight {
-			maxHeight = service.Y
+			maxHeight = service.X
 		}
 	}
 	for _, service := range c.services {
 		service.Y = service.Y - minWidth
 		service.X = service.X - minHeight
 	}
-	return int(math.Abs(float64(maxWidth))) + int(math.Abs(float64(minWidth))) + IconSize,
-		int(math.Abs(float64(maxHeight))) + int(math.Abs(float64(minHeight))) + IconSize
+	return int(math.Abs(float64(maxWidth-minWidth))) + IconSize,
+		int(math.Abs(float64(maxHeight-minHeight))) + IconSize
 }
 
 // Marshal renders the SVG to the given io.Writer
