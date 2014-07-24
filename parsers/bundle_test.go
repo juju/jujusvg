@@ -51,6 +51,8 @@ charmworld-local:
 `
 
 func (s *BundleParserSuite) TestParse(c *C) {
+	// Ensure that the Parse method reads YAML and outputs an internal
+	// representation of a canvas (which can then output SVG).
 	parser := BundleParser{}
 	canvases, err := parser.Parse([]byte(basket))
 	c.Assert(err, IsNil)

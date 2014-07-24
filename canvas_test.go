@@ -16,6 +16,8 @@ type CanvasSuite struct{}
 var _ = Suite(&CanvasSuite{})
 
 func (s *CanvasSuite) TestServiceRender(c *C) {
+	// Ensure that the Service's definition and usage methods output the
+	// proper SVG elements.
 	var buf bytes.Buffer
 	svg := svg.New(&buf)
 	service := Service{
@@ -30,6 +32,8 @@ func (s *CanvasSuite) TestServiceRender(c *C) {
 }
 
 func (s *CanvasSuite) TestRelationRender(c *C) {
+	// Ensure that the Relation's definition and usage methods output the
+	// proper SVG elements.
 	var buf bytes.Buffer
 	svg := svg.New(&buf)
 	relation := Relation{
@@ -49,6 +53,7 @@ func (s *CanvasSuite) TestRelationRender(c *C) {
 }
 
 func (s *CanvasSuite) TestGetRect(c *C) {
+	// Ensure that the SVG is sized exactly around the positioned services.
 	canvas := Canvas{}
 	canvas.AddService(&Service{
 		X: 0,
@@ -79,6 +84,8 @@ func (s *CanvasSuite) TestGetRect(c *C) {
 }
 
 func (s *CanvasSuite) TestMarshal(c *C) {
+	// Ensure that the internal representation of the canvas can be marshalled
+	// to SVG.
 	var buf bytes.Buffer
 	canvas := Canvas{}
 	serviceA := &Service{
