@@ -17,7 +17,7 @@ import (
 		"io/ioutil"
         "os"
 
-		"github.com/makyo/jujusvg/parsers"
+		"github.com/juju/jujusvg/parsers"
 )
 
 func main() {
