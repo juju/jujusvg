@@ -13,29 +13,29 @@ can convert this to an SVG like so:
 package main
 
 import (
-		"fmt"
-		"io/ioutil"
+        "fmt"
+        "io/ioutil"
+        "log"
         "os"
 
-		"github.com/juju/jujusvg/parsers"
+        "github.com/makyo/jujusvg"
 )
 
 func main() {
-	basket, err := ioutil.ReadFile("bundles.yaml")
-	if err != nil {
-		fmt.Printf("Error reading file: %s\n", err)
-		return
-	}
-	bundleParser := parsers.BundleParser{}
-	canvases, err := bundleParser.Parse(basket)
-	if err != nil {
-		fmt.Printf("Error reading basket: %s\n", err)
-		return
-	}
-	for canvasName, canvas := range canvases {
-		fmt.Printf("Found bundle: %s\n", canvasName)
-		canvas.Marshal(os.Stdout)
-	}
+        basket, err := ioutil.ReadFile("bundles.yaml")
+        if err != nil {
+                log.Fatalf("Error reading file: %s\n", err)
+                return
+        }
+        canvases, err := jujusvg.NewFromBasket(basket)
+        if err != nil {
+                log.Fatalf("Error reading basket: %s\n", err)
+                return
+        }
+        for canvasName, canvas := range canvases {
+                fmt.Printf("Found bundle: %s\n", canvasName)
+                canvas.Marshal(os.Stdout)
+        }
 }
 ```
 

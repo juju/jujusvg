@@ -1,5 +1,5 @@
 // Copyright 2014 Canonical, Ltd.
-// Licensed under the AGPLv3, see LICENCE file for details.
+// Licensed under the LGPLv3, see LICENCE file for details.
 
 // jujusvg generates SVG representations of various Juju artifacts, such as
 // charm bundles or live environments.

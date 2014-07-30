@@ -1,15 +1,15 @@
-package parsers
+package jujusvg
 
 import (
 	"fmt"
+	"image"
 	"strconv"
 	"strings"
 
-	"github.com/makyo/jujusvg"
 	"gopkg.in/yaml.v1"
 )
 
-type Bundle struct {
+type basketBundle struct {
 	Relations [][]string
 	Services  map[string]struct {
 		Annotations map[string]string
@@ -17,35 +17,35 @@ type Bundle struct {
 	}
 }
 
-type BundleParser struct {
-	Parser
-}
+type basketParser struct{}
 
 // Parse takes a byte array of the bundles.yaml file and converts it to a
 // Canvas object.
-func (r *BundleParser) Parse(bundleData []byte) (map[string]jujusvg.Canvas, error) {
-	basket := make(map[string]Bundle)
-	canvases := make(map[string]jujusvg.Canvas)
-	err := yaml.Unmarshal(bundleData, &basket)
+func (r *basketParser) Parse(basketData []byte) (map[string]*Canvas, error) {
+	basket := make(map[string]basketBundle)
+	canvases := make(map[string]*Canvas)
+	err := yaml.Unmarshal(basketData, &basket)
 	if err != nil {
 		return nil, err
 	}
 	for bundleName, bundle := range basket {
-		canvases[bundleName] = r.parseBundle(bundle)
+		canvases[bundleName] = r.parseBasketBundle(bundle)
 	}
 	return canvases, nil
 }
 
-// parseBundle creates the actual Canvas element from the parsed YAML.
-func (r *BundleParser) parseBundle(bundle Bundle) jujusvg.Canvas {
-	canvas := jujusvg.Canvas{}
-	services := make(map[string]*jujusvg.Service)
+// parseBasketBundle creates the actual Canvas element from the parsed YAML.
+func (r *basketParser) parseBasketBundle(bundle basketBundle) *Canvas {
+	canvas := &Canvas{}
+	services := make(map[string]*service)
 	for serviceName, serviceData := range bundle.Services {
 		x, _ := strconv.ParseFloat(serviceData.Annotations["gui-x"], 64)
 		y, _ := strconv.ParseFloat(serviceData.Annotations["gui-y"], 64)
-		services[serviceName] = &jujusvg.Service{
-			X:        int(x),
-			Y:        int(y),
+		services[serviceName] = &service{
+			Point: image.Point{
+				X: int(x),
+				Y: int(y),
+			},
 			CharmUrl: serviceData.Charm,
 			IconUrl: fmt.Sprintf(
 				"https://manage.jujucharms.com/api/3/charm/%s/file/icon.svg",
@@ -54,7 +54,7 @@ func (r *BundleParser) parseBundle(bundle Bundle) jujusvg.Canvas {
 		canvas.AddService(services[serviceName])
 	}
 	for _, relation := range bundle.Relations {
-		canvas.AddRelation(&jujusvg.Relation{
+		canvas.AddRelation(&serviceRelation{
 			ServiceA: services[strings.Split(relation[0], ":")[0]],
 			ServiceB: services[strings.Split(relation[1], ":")[0]],
 		})
