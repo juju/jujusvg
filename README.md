@@ -25,12 +25,10 @@ func main() {
         basket, err := ioutil.ReadFile("bundles.yaml")
         if err != nil {
                 log.Fatalf("Error reading file: %s\n", err)
-                return
         }
         canvases, err := jujusvg.NewFromBasket(basket)
         if err != nil {
                 log.Fatalf("Error reading basket: %s\n", err)
-                return
         }
         for canvasName, canvas := range canvases {
                 fmt.Printf("Found bundle: %s\n", canvasName)

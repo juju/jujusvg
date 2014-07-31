@@ -14,14 +14,6 @@ const (
 	minInt   = -(maxInt - 1)
 )
 
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	} else {
-		return x
-	}
-}
-
 // Canvas holds the parsed form of a bundle or environment.
 type Canvas struct {
 	services  []*service
@@ -31,10 +23,9 @@ type Canvas struct {
 // service represents a service deployed to an environment and contains the
 // point of the top-left corner of the icon, icon URL, and additional metadata.
 type service struct {
-	Name     string
-	CharmUrl string
-	IconUrl  string
-	Point    image.Point
+	Name    string
+	IconUrl string
+	Point   image.Point
 }
 
 // serviceRelation represents a relation created between two services.
@@ -141,4 +132,12 @@ func (c *Canvas) Marshal(w io.Writer) {
 	c.definition(canvas)
 	c.relationsGroup(canvas)
 	c.servicesGroup(canvas)
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	} else {
+		return x
+	}
 }
