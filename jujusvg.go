@@ -3,7 +3,7 @@ package jujusvg
 import (
 	"errors"
 
-	"gopkg.in/juju/charm.v2"
+	"gopkg.in/juju/charm.v4"
 )
 
 // NewFromBasket generates canvases for each bundle in a basket, mapped to
