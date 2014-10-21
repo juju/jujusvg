@@ -4,7 +4,7 @@ import (
 	"image"
 	"io"
 
-	"github.com/ajstarks/svgo"
+	svg "github.com/ajstarks/svgo"
 )
 
 const (
@@ -126,6 +126,13 @@ func (c *Canvas) servicesGroup(canvas *svg.SVG) {
 // Marshal renders the SVG to the given io.Writer
 func (c *Canvas) Marshal(w io.Writer) {
 	width, height := c.layout()
+
+	// TODO check write errors and return an error from
+	// Marshal if the write fails. The svg package does not
+	// itself check or return write errors; a possible workaround
+	// is to wrap the writer in a custom writer that panics
+	// on error, and catch the panic here.
+
 	canvas := svg.New(w)
 	canvas.Start(width, height)
 	defer canvas.End()
