@@ -23,15 +23,15 @@ type Canvas struct {
 // service represents a service deployed to an environment and contains the
 // point of the top-left corner of the icon, icon URL, and additional metadata.
 type service struct {
-	Name    string
-	IconUrl string
-	Point   image.Point
+	name    string
+	iconUrl string
+	point   image.Point
 }
 
 // serviceRelation represents a relation created between two services.
 type serviceRelation struct {
-	ServiceA *service
-	ServiceB *service
+	serviceA *service
+	serviceB *service
 }
 
 // definition creates any necessary defs that can be used later in the SVG.
@@ -40,7 +40,7 @@ func (s *service) definition(canvas *svg.SVG) {
 
 // usage creates any necessary tags for actually using the service in the SVG.
 func (s *service) usage(canvas *svg.SVG) {
-	canvas.Image(s.Point.X, s.Point.Y, iconSize, iconSize, s.IconUrl)
+	canvas.Image(s.point.X, s.point.Y, iconSize, iconSize, s.iconUrl)
 }
 
 // definition creates any necessary defs that can be used later in the SVG.
@@ -50,20 +50,20 @@ func (r *serviceRelation) definition(canvas *svg.SVG) {
 // usage creates any necessary tags for actually using the relation in the SVG.
 func (r *serviceRelation) usage(canvas *svg.SVG) {
 	canvas.Line(
-		r.ServiceA.Point.X+(iconSize/2),
-		r.ServiceA.Point.Y+(iconSize/2),
-		r.ServiceB.Point.X+(iconSize/2),
-		r.ServiceB.Point.Y+(iconSize/2),
+		r.serviceA.point.X+(iconSize/2),
+		r.serviceA.point.Y+(iconSize/2),
+		r.serviceB.point.X+(iconSize/2),
+		r.serviceB.point.Y+(iconSize/2),
 		"stroke:black")
 }
 
-// AddService adds a new service to the canvas.
-func (c *Canvas) AddService(s *service) {
+// addService adds a new service to the canvas.
+func (c *Canvas) addService(s *service) {
 	c.services = append(c.services, s)
 }
 
-// AddRelation adds a new relation to the canvas.
-func (c *Canvas) AddRelation(r *serviceRelation) {
+// addRelation adds a new relation to the canvas.
+func (c *Canvas) addRelation(r *serviceRelation) {
 	c.relations = append(c.relations, r)
 }
 
@@ -76,21 +76,21 @@ func (c *Canvas) layout() (int, int) {
 	maxHeight := minInt
 
 	for _, service := range c.services {
-		if service.Point.X < minWidth {
-			minWidth = service.Point.X
+		if service.point.X < minWidth {
+			minWidth = service.point.X
 		}
-		if service.Point.Y < minHeight {
-			minHeight = service.Point.Y
+		if service.point.Y < minHeight {
+			minHeight = service.point.Y
 		}
-		if service.Point.X > maxWidth {
-			maxWidth = service.Point.X
+		if service.point.X > maxWidth {
+			maxWidth = service.point.X
 		}
-		if service.Point.Y > maxHeight {
-			maxHeight = service.Point.Y
+		if service.point.Y > maxHeight {
+			maxHeight = service.point.Y
 		}
 	}
 	for _, service := range c.services {
-		service.Point = service.Point.Sub(image.Point{X: minWidth, Y: minHeight})
+		service.point = service.point.Sub(image.Point{X: minWidth, Y: minHeight})
 	}
 	return abs(maxWidth-minWidth) + iconSize,
 		abs(maxHeight-minHeight) + iconSize
