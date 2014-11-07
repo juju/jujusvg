@@ -1,8 +1,10 @@
 package jujusvg
 
 import (
+	"fmt"
 	"image"
 	"io"
+	"math"
 
 	svg "github.com/ajstarks/svgo"
 )
@@ -54,7 +56,20 @@ func (r *serviceRelation) usage(canvas *svg.SVG) {
 		r.serviceA.point.Y+(iconSize/2),
 		r.serviceB.point.X+(iconSize/2),
 		r.serviceB.point.Y+(iconSize/2),
-		"stroke:black")
+		`stroke="#38B44A"`,
+		`stroke-width="2px"`,
+		fmt.Sprintf(`stroke-dasharray="%s"`, r.generateDashArray()))
+	canvas.Use(
+		(r.serviceA.point.X+r.serviceB.point.X)/2+(iconSize/2)-10,
+		(r.serviceA.point.Y+r.serviceB.point.Y)/2+(iconSize/2)-10,
+		"#healthCircle")
+}
+
+func (r *serviceRelation) generateDashArray() string {
+	lineLength := math.Sqrt(
+		math.Pow(math.Abs(float64(r.serviceA.point.X-r.serviceB.point.X)), 2) +
+			math.Pow(math.Abs(float64(r.serviceA.point.Y-r.serviceB.point.Y)), 2))
+	return fmt.Sprintf("%f, 20", lineLength/2-10)
 }
 
 // addService adds a new service to the canvas.
@@ -99,6 +114,22 @@ func (c *Canvas) layout() (int, int) {
 func (c *Canvas) definition(canvas *svg.SVG) {
 	canvas.Def()
 	defer canvas.DefEnd()
+
+	// Relation health circle.
+	canvas.Gid("healthCircle")
+	canvas.Circle(
+		10,
+		10,
+		10,
+		"stroke:#38B44A;fill:none;stroke-width:2px")
+	canvas.Circle(
+		10,
+		10,
+		5,
+		"fill:#38B44A")
+	canvas.Gend()
+
+	// Service and relation specific defs.
 	for _, relation := range c.relations {
 		relation.definition(canvas)
 	}
