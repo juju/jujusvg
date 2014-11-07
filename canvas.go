@@ -65,6 +65,8 @@ func (r *serviceRelation) usage(canvas *svg.SVG) {
 		"#healthCircle")
 }
 
+// generateDashArray generates the stroke-dasharray attribute content so that
+// the relation health indicator is placed in an empty space.
 func (r *serviceRelation) generateDashArray() string {
 	lineLength := math.Sqrt(
 		math.Pow(math.Abs(float64(r.serviceA.point.X-r.serviceB.point.X)), 2) +
