@@ -73,10 +73,16 @@ func (s *newSuite) TestNewFromBundle(c *gc.C) {
      xmlns="http://www.w3.org/2000/svg" 
      xmlns:xlink="http://www.w3.org/1999/xlink">
 <defs>
+<g id="healthCircle">
+<circle cx="10" cy="10" r="10" style="stroke:#38B44A;fill:none;stroke-width:2px"/>
+<circle cx="10" cy="10" r="5" style="fill:#38B44A"/>
+</g>
 </defs>
 <g id="relations">
-<line x1="371" y1="48" x2="48" y2="305" style="stroke:black"/>
-<line x1="371" y1="48" x2="498" y2="324" style="stroke:black"/>
+<line x1="371" y1="48" x2="48" y2="305" stroke="#38B44A" stroke-width="2px" stroke-dasharray="196.38, 20" />
+<use x="199" y="166" xlink:href="#healthCircle" />
+<line x1="371" y1="48" x2="498" y2="324" stroke="#38B44A" stroke-width="2px" stroke-dasharray="141.91, 20" />
+<use x="424" y="176" xlink:href="#healthCircle" />
 </g>
 <g id="services">
 <image x="323" y="0" width="96" height="96" xlink:href="http://0.1.2.3/~juju-jitsu/precise/charmworld-58.svg" />
