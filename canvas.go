@@ -11,9 +11,10 @@ import (
 
 const (
 	// iconSize is always 96px per Juju charm conventions.
-	iconSize = 96
-	maxInt   = int(^uint(0) >> 1)
-	minInt   = -(maxInt - 1)
+	iconSize           = 96
+	healthCircleRadius = 10
+	maxInt             = int(^uint(0) >> 1)
+	minInt             = -(maxInt - 1)
 )
 
 // Canvas holds the parsed form of a bundle or environment.
@@ -58,20 +59,37 @@ func (r *serviceRelation) usage(canvas *svg.SVG) {
 		r.serviceB.point.Y+(iconSize/2),
 		`stroke="#38B44A"`,
 		`stroke-width="2px"`,
-		fmt.Sprintf(`stroke-dasharray="%s"`, r.generateDashArray()))
-	canvas.Use(
-		(r.serviceA.point.X+r.serviceB.point.X)/2+(iconSize/2)-10,
-		(r.serviceA.point.Y+r.serviceB.point.Y)/2+(iconSize/2)-10,
-		"#healthCircle")
+		fmt.Sprintf(`stroke-dasharray="%s"`, r.strokeDashArray()))
+	mid := r.serviceA.point.Add(r.serviceB.point).Div(2)
+	offset := point(iconSize, iconSize).Div(2).Sub(
+		point(healthCircleRadius, healthCircleRadius))
+	mid = mid.Add(offset)
+	canvas.Use(mid.X, mid.Y, "#healthCircle")
 }
 
-// generateDashArray generates the stroke-dasharray attribute content so that
+// strokeDashArray generates the stroke-dasharray attribute content so that
 // the relation health indicator is placed in an empty space.
-func (r *serviceRelation) generateDashArray() string {
-	lineLength := math.Sqrt(
-		math.Pow(math.Abs(float64(r.serviceA.point.X-r.serviceB.point.X)), 2) +
-			math.Pow(math.Abs(float64(r.serviceA.point.Y-r.serviceB.point.Y)), 2))
-	return fmt.Sprintf("%f, 20", lineLength/2-10)
+func (r *serviceRelation) strokeDashArray() string {
+	return fmt.Sprintf("%.2f, 20",
+		pointDistance(r.serviceA.point, r.serviceB.point)/2-healthCircleRadius)
+}
+
+// pointDistance calculates the distance between two points.
+func pointDistance(p1, p2 image.Point) float64 {
+	dp := p1.Sub(p2)
+	return math.Sqrt(square(float64(dp.X)) + square(float64(dp.Y)))
+}
+
+// Square multiplies a number by itself.
+// Utility function for readability
+func square(x float64) float64 {
+	return x * x
+}
+
+// Point generates an image.Point given its coordinates.
+// Utility function for readability.
+func point(x, y int) image.Point {
+	return image.Point{x, y}
 }
 
 // addService adds a new service to the canvas.
@@ -107,7 +125,7 @@ func (c *Canvas) layout() (int, int) {
 		}
 	}
 	for _, service := range c.services {
-		service.point = service.point.Sub(image.Point{X: minWidth, Y: minHeight})
+		service.point = service.point.Sub(point(minWidth, minHeight))
 	}
 	return abs(maxWidth-minWidth) + iconSize,
 		abs(maxHeight-minHeight) + iconSize
@@ -120,14 +138,14 @@ func (c *Canvas) definition(canvas *svg.SVG) {
 	// Relation health circle.
 	canvas.Gid("healthCircle")
 	canvas.Circle(
-		10,
-		10,
-		10,
+		healthCircleRadius,
+		healthCircleRadius,
+		healthCircleRadius,
 		"stroke:#38B44A;fill:none;stroke-width:2px")
 	canvas.Circle(
-		10,
-		10,
-		5,
+		healthCircleRadius,
+		healthCircleRadius,
+		healthCircleRadius/2,
 		"fill:#38B44A")
 	canvas.Gend()
 

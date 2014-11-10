@@ -79,9 +79,9 @@ func (s *newSuite) TestNewFromBundle(c *gc.C) {
 </g>
 </defs>
 <g id="relations">
-<line x1="371" y1="48" x2="48" y2="305" stroke="#38B44A" stroke-width="2px" stroke-dasharray="196.384350, 20" />
+<line x1="371" y1="48" x2="48" y2="305" stroke="#38B44A" stroke-width="2px" stroke-dasharray="196.38, 20" />
 <use x="199" y="166" xlink:href="#healthCircle" />
-<line x1="371" y1="48" x2="498" y2="324" stroke="#38B44A" stroke-width="2px" stroke-dasharray="141.908690, 20" />
+<line x1="371" y1="48" x2="498" y2="324" stroke="#38B44A" stroke-width="2px" stroke-dasharray="141.91, 20" />
 <use x="424" y="176" xlink:href="#healthCircle" />
 </g>
 <g id="services">
