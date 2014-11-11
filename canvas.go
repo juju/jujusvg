@@ -37,6 +37,11 @@ type serviceRelation struct {
 	serviceB *service
 }
 
+// line represents a line segment with two endpoints.
+type line struct {
+	p0, p1 image.Point
+}
+
 // definition creates any necessary defs that can be used later in the SVG.
 func (s *service) definition(canvas *svg.SVG) {
 }
@@ -52,46 +57,44 @@ func (r *serviceRelation) definition(canvas *svg.SVG) {
 
 // usage creates any necessary tags for actually using the relation in the SVG.
 func (r *serviceRelation) usage(canvas *svg.SVG) {
-	points := r.getShortestRelation()
+	l := r.shortestRelation()
 	canvas.Line(
-		points[0].X,
-		points[0].Y,
-		points[1].X,
-		points[1].Y,
+		l.p0.X,
+		l.p0.Y,
+		l.p1.X,
+		l.p1.Y,
 		`stroke="#38B44A"`,
 		`stroke-width="2px"`,
-		fmt.Sprintf(`stroke-dasharray="%s"`, strokeDashArray(points[0], points[1])))
-	mid := points[0].Add(points[1]).Div(2).Add(point(-healthCircleRadius, -healthCircleRadius))
+		fmt.Sprintf(`stroke-dasharray="%s"`, strokeDashArray(l)))
+	mid := l.p0.Add(l.p1).Div(2).Sub(point(healthCircleRadius, healthCircleRadius))
 	canvas.Use(mid.X, mid.Y, "#healthCircle")
 }
 
-// getShortestRelation finds the shortest line between two services, assuming
+// shortestRelation finds the shortest line between two services, assuming
 // that each service can be connected on one of four cardinal points only.
-func (r *serviceRelation) getShortestRelation() []image.Point {
-	aConnectors, bConnectors := r.serviceA.generateConnectors(), r.serviceB.generateConnectors()
+func (r *serviceRelation) shortestRelation() line {
+	aConnectors, bConnectors := r.serviceA.cardinalPoints(), r.serviceB.cardinalPoints()
 	shortestDistance := float64(maxInt)
-	shortestPair := []image.Point{
-		r.serviceA.point,
-		r.serviceB.point,
+	shortestPair := line{
+		p0: r.serviceA.point,
+		p1: r.serviceB.point,
 	}
 	for _, pointA := range aConnectors {
 		for _, pointB := range bConnectors {
-			distance := pointDistance(pointA, pointB)
+			ab := line{p0: pointA, p1: pointB}
+			distance := ab.length()
 			if distance < shortestDistance {
 				shortestDistance = distance
-				shortestPair = []image.Point{
-					pointA,
-					pointB,
-				}
+				shortestPair = ab
 			}
 		}
 	}
 	return shortestPair
 }
 
-// generateConnectors generates the points for each of the four cardinal points
+// cardinalPoints generates the points for each of the four cardinal points
 // of each service.
-func (s *service) generateConnectors() []image.Point {
+func (s *service) cardinalPoints() []image.Point {
 	return []image.Point{
 		point(s.point.X+iconSize/2, s.point.Y),
 		point(s.point.X, s.point.Y+iconSize/2),
@@ -102,9 +105,14 @@ func (s *service) generateConnectors() []image.Point {
 
 // strokeDashArray generates the stroke-dasharray attribute content so that
 // the relation health indicator is placed in an empty space.
-func strokeDashArray(pointA, pointB image.Point) string {
-	return fmt.Sprintf("%.2f, 20",
-		pointDistance(pointA, pointB)/2-healthCircleRadius)
+func strokeDashArray(l line) string {
+	return fmt.Sprintf("%.2f, 20", l.length()/2-healthCircleRadius)
+}
+
+// length calculates the length of a line.
+func (l *line) length() float64 {
+	dp := l.p0.Sub(l.p1)
+	return math.Sqrt(square(float64(dp.X)) + square(float64(dp.Y)))
 }
 
 // addService adds a new service to the canvas.
@@ -208,7 +216,6 @@ func (c *Canvas) Marshal(w io.Writer) {
 }
 
 // abs returns the absolute value of a number.
-// Utility function for readability.
 func abs(x int) int {
 	if x < 0 {
 		return -x
@@ -217,20 +224,12 @@ func abs(x int) int {
 	}
 }
 
-// pointDistance calculates the distance between two points.
-func pointDistance(p1, p2 image.Point) float64 {
-	dp := p1.Sub(p2)
-	return math.Sqrt(square(float64(dp.X)) + square(float64(dp.Y)))
-}
-
 // square multiplies a number by itself.
-// Utility function for readability
 func square(x float64) float64 {
 	return x * x
 }
 
 // point generates an image.Point given its coordinates.
-// Utility function for readability.
 func point(x, y int) image.Point {
 	return image.Point{x, y}
 }
