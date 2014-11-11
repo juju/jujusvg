@@ -55,8 +55,8 @@ func (s *CanvasSuite) TestRelationRender(c *gc.C) {
 	relation.definition(svg)
 	relation.usage(svg)
 	c.Assert(buf.String(), gc.Equals,
-		`<line x1="48" y1="48" x2="148" y2="148" stroke="#38B44A" stroke-width="2px" stroke-dasharray="60.71, 20" />
-<use x="88" y="88" xlink:href="#healthCircle" />
+		`<line x1="48" y1="96" x2="100" y2="148" stroke="#38B44A" stroke-width="2px" stroke-dasharray="26.77, 20" />
+<use x="64" y="112" xlink:href="#healthCircle" />
 `)
 }
 
@@ -139,8 +139,8 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 </g>
 </defs>
 <g id="relations">
-<line x1="48" y1="48" x2="148" y2="148" stroke="#38B44A" stroke-width="2px" stroke-dasharray="60.71, 20" />
-<use x="88" y="88" xlink:href="#healthCircle" />
+<line x1="48" y1="96" x2="100" y2="148" stroke="#38B44A" stroke-width="2px" stroke-dasharray="26.77, 20" />
+<use x="64" y="112" xlink:href="#healthCircle" />
 </g>
 <g id="services">
 <image x="0" y="0" width="96" height="96" xlink:href="" />
