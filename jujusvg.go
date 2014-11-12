@@ -43,6 +43,7 @@ func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string) (
 			return nil, errgo.Notef(err, "cannot parse charm %q", serviceData.Charm)
 		}
 		svc := &service{
+			name:    name,
 			point:   image.Point{int(x), int(y)},
 			iconUrl: iconURL(charmId),
 		}
