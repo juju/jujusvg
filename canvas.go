@@ -116,7 +116,6 @@ func (r *serviceRelation) shortestRelation() line {
 // cardinalPoints generates the points for each of the four cardinal points
 // of each service.
 func (s *service) cardinalPoints() []image.Point {
-
 	return []image.Point{
 		point(s.point.X+serviceBlockSize/2, s.point.Y),
 		point(s.point.X, s.point.Y+serviceBlockSize/2),
