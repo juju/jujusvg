@@ -72,7 +72,7 @@ assets are specified in the defs section of the generated SVG, and can thus
 be found in the Canvas.definition() method. Should these assets be updated,
 the SVGo code will need to be updated to reflect these changes. Unfortunately,
 this can only be done by hand, so care must be made to match the SVGs provided
-by design exactly.
+by design exactly.  These original SVG assets live in the `assets` directory.
 
 Current assets in use:
 
