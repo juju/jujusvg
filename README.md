@@ -6,8 +6,8 @@ A library for generating SVGs from Juju bundles and environments.
 Installation
 ------------
 
-To start using the charm store, first ensure you have a valid Go environment,
-then run the following:
+To start using jujusvg, first ensure you have a valid Go environment, then run
+the following:
 
     go get github.com/juju/jujusvg
 
