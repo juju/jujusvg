@@ -16,6 +16,8 @@ const (
 	relationLineWidth  = 2
 	maxInt             = int(^uint(0) >> 1)
 	minInt             = -(maxInt - 1)
+	maxHeight          = 450
+	maxWidth           = 1000
 
 	fontColor     = "#505050"
 	relationColor = "#38B44A"
@@ -270,6 +272,13 @@ func (c *Canvas) servicesGroup(canvas *svg.SVG) {
 // Marshal renders the SVG to the given io.Writer
 func (c *Canvas) Marshal(w io.Writer) {
 	width, height := c.layout()
+	scale := float32(1)
+	if height > maxHeight {
+		scale = maxHeight / float32(height)
+	}
+	if float32(width)*scale > maxWidth {
+		scale = maxHeight / float32(height)
+	}
 
 	// TODO check write errors and return an error from
 	// Marshal if the write fails. The svg package does not
@@ -281,7 +290,8 @@ func (c *Canvas) Marshal(w io.Writer) {
 	canvas.Start(
 		width,
 		height,
-		`style="font-family:Ubuntu, sans-serif;"`)
+		`style="font-family:Ubuntu, sans-serif;"`,
+		fmt.Sprintf(`transform="scale(%f)"`, scale))
 	defer canvas.End()
 	c.definition(canvas)
 	c.relationsGroup(canvas)
