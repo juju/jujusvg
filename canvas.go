@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	iconSize           = 120
-	serviceBlockSize   = 236
+	iconSize           = 96
+	serviceBlockSize   = 189
 	healthCircleRadius = 10
 	relationLineWidth  = 2
 	maxInt             = int(^uint(0) >> 1)
@@ -186,7 +186,7 @@ func (c *Canvas) definition(canvas *svg.SVG) {
 	// design; any changes to that will likely incur an entire rewrite of this
 	// bit of SVGo.  See the README for more information.
 	canvas.Group(`id="serviceBlock"`,
-		`transform="translate(143.979,6)"`)
+		`transform="translate(115.183,4.8),scale(0.8)"`)
 	canvas.Gtransform("translate(-399.571,-251.207)")
 	canvas.Path(`M410.565,479.165h-73.988c-38.324,0-57.56,0-68.272-10.713c-10.712-10.713-10.712-29.949-10.712-68.273
 v-73.986c-0.001-38.324-0.001-57.561,10.711-68.273c10.713-10.713,29.949-10.713,68.274-10.713h73.988
