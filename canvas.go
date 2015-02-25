@@ -18,6 +18,7 @@ const (
 	minInt             = -(maxInt - 1)
 	maxHeight          = 450
 	maxWidth           = 1000
+	viewBoxHeight      = 600
 
 	fontColor     = "#505050"
 	relationColor = "#38B44A"
@@ -269,28 +270,37 @@ func (c *Canvas) servicesGroup(canvas *svg.SVG) {
 	}
 }
 
-// Marshal renders the SVG to the given io.Writer
-func (c *Canvas) Marshal(w io.Writer) {
-	width, height := c.layout()
+// Compute the scale.
+func (c *Canvas) computeScale(width, height int) float32 {
 	scale := float32(1)
 	if height > maxHeight {
 		scale = maxHeight / float32(height)
 	}
 	if float32(width)*scale > maxWidth {
-		scale = maxHeight / float32(height)
+		scale = maxWidth / float32(width)
 	}
+
+	return scale
+}
+
+// Marshal renders the SVG to the given io.Writer.
+func (c *Canvas) Marshal(w io.Writer) {
 
 	// TODO check write errors and return an error from
 	// Marshal if the write fails. The svg package does not
-	// itself check or return write errors; a possible workaround
+	// itself check or return write errors; a possible work-around
 	// is to wrap the writer in a custom writer that panics
 	// on error, and catch the panic here.
+	width, height := c.layout()
+	scale := c.computeScale(width, height)
 
 	canvas := svg.New(w)
+	newWidth := int((float32(viewBoxHeight) / float32(height)) * float32(width))
 	canvas.Start(
 		width,
 		height,
-		`style="font-family:Ubuntu, sans-serif;"`,
+		fmt.Sprintf(`style="font-family:Ubuntu, sans-serif;" viewBox="0 0 %d %d"`,
+			newWidth, viewBoxHeight),
 		fmt.Sprintf(`transform="scale(%f)"`, scale))
 	defer canvas.End()
 	c.definition(canvas)
