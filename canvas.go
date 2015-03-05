@@ -2,6 +2,7 @@ package jujusvg
 
 import (
 	"fmt"
+	"github.com/juju/loggo"
 	"image"
 	"io"
 	"math"
@@ -18,7 +19,6 @@ const (
 	minInt             = -(maxInt - 1)
 	maxHeight          = 450
 	maxWidth           = 1000
-	viewBoxHeight      = 600
 
 	fontColor     = "#505050"
 	relationColor = "#38B44A"
@@ -48,6 +48,10 @@ type serviceRelation struct {
 type line struct {
 	p0, p1 image.Point
 }
+
+var (
+	logger = loggo.GetLogger("charmd")
+)
 
 // definition creates any necessary defs that can be used later in the SVG.
 func (s *service) definition(canvas *svg.SVG) {
@@ -291,16 +295,16 @@ func (c *Canvas) Marshal(w io.Writer) {
 	// itself check or return write errors; a possible work-around
 	// is to wrap the writer in a custom writer that panics
 	// on error, and catch the panic here.
+	logger.Infof("Marshal called")
 	width, height := c.layout()
 	scale := c.computeScale(width, height)
 
 	canvas := svg.New(w)
-	newWidth := int((float32(viewBoxHeight) / float32(height)) * float32(width))
 	canvas.Start(
 		width,
 		height,
 		fmt.Sprintf(`style="font-family:Ubuntu, sans-serif;" viewBox="0 0 %d %d"`,
-			newWidth, viewBoxHeight),
+			width, height),
 		fmt.Sprintf(`transform="scale(%f)"`, scale))
 	defer canvas.End()
 	c.definition(canvas)
