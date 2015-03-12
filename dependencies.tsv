@@ -1,15 +1,16 @@
-code.google.com/p/go.crypto	hg	aa2644fe4aa50e3b38d75187b4799b1f0c9ddcef	212
-github.com/ajstarks/svgo	git	89e3ac64b5b3e403a5e7c35ea4f98d45db7b4518	
-github.com/juju/errgo	git	2cf7b553faddc588f903020c33e71c527d5e0838	
-github.com/juju/errors	git	11f260fcce20d158a2c68d6d2a7fb6b98e83b658	
-github.com/juju/gojsonpointer	git	0154bf5a168b672d8c97d8dd83a54cb60cd088e8	
-github.com/juju/gojsonreference	git	0673d58f64bacac2db34c7d1e87a599d58923981	
-github.com/juju/gojsonschema	git	33fa79718fa9b24e2a04122f91a75496c0f77098	
-github.com/juju/loggo	git	158009fb40c4a52b3d2c23eb56e72859cfc5321a	
-github.com/juju/names	git	cfcf5a79106d26fce039a35ffca277def4496f4b	
-github.com/juju/schema	git	27a52be50766490a6fd3531865095fda6c0eeb6d	
-github.com/juju/utils	git	e4e59c6fe058bce0da468ba70943afba85b11cd5	
-gopkg.in/check.v1	git	91ae5f88a67b14891cfd43895b01164f6c120420	
-gopkg.in/juju/charm.v4	git	945e6bbaf19b3bdfc5caa14893f79e7f6c2778a0	
-gopkg.in/mgo.v2	git	dc255bb679efa273b6544a03261c4053505498a4	
-gopkg.in/yaml.v1	git	1b9791953ba4027efaeb728c7355e542a203be5e	
+github.com/ajstarks/svgo	git	89e3ac64b5b3e403a5e7c35ea4f98d45db7b4518	2014-10-04T21:11:59Z
+github.com/juju/errors	git	036046bfdccf6f576e2e5dec7f7878597bcaebe7	2015-02-11T20:59:49Z
+github.com/juju/gojsonpointer	git	0154bf5a168b672d8c97d8dd83a54cb60cd088e8	2014-07-18T03:59:30Z
+github.com/juju/gojsonreference	git	f0d24ac5ee330baa21721cdff56d45e4ee42628e	2015-02-04T19:46:33Z
+github.com/juju/gojsonschema	git	995b906ce18b2726e9d284efbfa79bd7070ec8c8	2015-02-19T20:49:45Z
+github.com/juju/loggo	git	dc8e19f7c70a62a59c69c40f85b8df09ff20742c	2014-11-17T04:05:26Z
+github.com/juju/names	git	ce4ecb2967822062fc606e733919c677c584ab7e	2015-02-20T07:57:36Z
+github.com/juju/schema	git	27a52be50766490a6fd3531865095fda6c0eeb6d	2014-07-23T04:23:18Z
+github.com/juju/testing	git	59acbfa640360b9df5d5f9806e0be976f2e44951	2015-03-04T15:30:15Z
+github.com/juju/utils	git	a90aa2e02b9e7fe354ab816e05b1e0a77f27242d	2015-02-23T16:02:32Z
+golang.org/x/crypto	git	4ed45ec682102c643324fae5dff8dab085b6c300	2015-01-12T22:01:33Z
+gopkg.in/check.v1	git	64131543e7896d5bcc6bd5a76287eb75ea96c673	2014-10-24T13:38:53Z
+gopkg.in/errgo.v1	git	81357a83344ddd9f7772884874e5622c2a3da21c	2014-10-13T17:33:38Z
+gopkg.in/juju/charm.v5-unstable	git	4b7b3e4404d287d75797b5b21e22d7297f792646	2015-03-11T09:47:15Z
+gopkg.in/mgo.v2	git	c6a7dce14133ccac2dcac3793f1d6e2ef048503a	2015-01-24T11:37:54Z
+gopkg.in/yaml.v1	git	9f9df34309c04878acc86042b16630b0f696e1de	2014-09-24T16:16:07Z
