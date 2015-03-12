@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	gc "gopkg.in/check.v1"
-	"gopkg.in/juju/charm.v4"
+	"gopkg.in/juju/charm.v5-unstable"
 )
 
 func Test(t *testing.T) { gc.TestingT(t) }
