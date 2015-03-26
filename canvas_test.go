@@ -107,24 +107,6 @@ func (s *CanvasSuite) TestLayout(c *gc.C) {
 	c.Assert(height, gc.Equals, 389)
 }
 
-func (s *CanvasSuite) TestComputeScaleWithinLimits(c *gc.C) {
-	canvas := Canvas{}
-	scale := canvas.computeScale(300, 100)
-	c.Assert(scale, gc.Equals, float32(1))
-}
-
-func (s *CanvasSuite) TestComputeScaleExcessHeight(c *gc.C) {
-	canvas := Canvas{}
-	scale := canvas.computeScale(1000*1.5, 450*2)
-	c.Assert(scale, gc.Equals, float32(0.5))
-}
-
-func (s *CanvasSuite) TestComputeScaleExcessWidth(c *gc.C) {
-	canvas := Canvas{}
-	scale := canvas.computeScale(1000*4, 450*2)
-	c.Assert(scale, gc.Equals, float32(0.25))
-}
-
 func (s *CanvasSuite) TestMarshal(c *gc.C) {
 	// Ensure that the internal representation of the canvas can be marshalled
 	// to SVG.

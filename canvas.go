@@ -269,19 +269,6 @@ func (c *Canvas) servicesGroup(canvas *svg.SVG) {
 	}
 }
 
-// Compute the scale.
-func (c *Canvas) computeScale(width, height int) float32 {
-	scale := float32(1)
-	if height > maxHeight {
-		scale = maxHeight / float32(height)
-	}
-	if float32(width)*scale > maxWidth {
-		scale = maxWidth / float32(width)
-	}
-
-	return scale
-}
-
 // Marshal renders the SVG to the given io.Writer.
 func (c *Canvas) Marshal(w io.Writer) {
 
