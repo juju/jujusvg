@@ -291,15 +291,13 @@ func (c *Canvas) Marshal(w io.Writer) {
 	// is to wrap the writer in a custom writer that panics
 	// on error, and catch the panic here.
 	width, height := c.layout()
-	scale := c.computeScale(width, height)
 
 	canvas := svg.New(w)
 	canvas.Start(
 		width,
 		height,
 		fmt.Sprintf(`style="font-family:Ubuntu, sans-serif;" viewBox="0 0 %d %d"`,
-			width, height),
-		fmt.Sprintf(`transform="scale(%f)"`, scale))
+			width, height))
 	defer canvas.End()
 	c.definition(canvas)
 	c.relationsGroup(canvas)
