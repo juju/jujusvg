@@ -114,17 +114,17 @@ c73.985,0,73.985,0,73.985-73.986V72.986C84.979-1,84.979-1,10.994-1z" fill="#FFFF
 <use x="470" y="222" xlink:href="#healthCircle" />
 </g>
 <g id="services">
-<use x="323" y="0" xlink:href="#serviceBlock" />
+<use x="323" y="0" xlink:href="#serviceBlock" id="charmworld" />
 <image x="369" y="46" width="96" height="96" xlink:href="http://0.1.2.3/~juju-jitsu/precise/charmworld-58.svg" />
 <g style="font-size:18px;fill:#505050;text-anchor:middle">
 <text x="417" y="31" >charmworld</text>
 </g>
-<use x="0" y="257" xlink:href="#serviceBlock" />
+<use x="0" y="257" xlink:href="#serviceBlock" id="elasticsearch" />
 <image x="46" y="303" width="96" height="96" xlink:href="http://0.1.2.3/~charming-devs/precise/elasticsearch-2.svg" />
 <g style="font-size:18px;fill:#505050;text-anchor:middle">
 <text x="94" y="288" >elasticsearch</text>
 </g>
-<use x="450" y="276" xlink:href="#serviceBlock" />
+<use x="450" y="276" xlink:href="#serviceBlock" id="mongodb" />
 <image x="496" y="322" width="96" height="96" xlink:href="http://0.1.2.3/precise/mongodb-21.svg" />
 <g style="font-size:18px;fill:#505050;text-anchor:middle">
 <text x="544" y="307" >mongodb</text>

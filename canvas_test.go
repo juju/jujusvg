@@ -31,7 +31,7 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 	service.definition(svg)
 	service.usage(svg)
 	c.Assert(buf.String(), gc.Equals,
-		`<use x="0" y="0" xlink:href="#serviceBlock" />
+		`<use x="0" y="0" xlink:href="#serviceBlock" id="foo" />
 <image x="46" y="46" width="96" height="96" xlink:href="foo" />
 <g style="font-size:18px;fill:#505050;text-anchor:middle">
 <text x="94" y="31" >foo</text>
@@ -113,12 +113,14 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 	var buf bytes.Buffer
 	canvas := Canvas{}
 	serviceA := &service{
+		name: "service-a",
 		point: image.Point{
 			X: 0,
 			Y: 0,
 		},
 	}
 	serviceB := &service{
+		name: "service-b",
 		point: image.Point{
 			X: 100,
 			Y: 100,
@@ -178,15 +180,15 @@ c73.985,0,73.985,0,73.985-73.986V72.986C84.979-1,84.979-1,10.994-1z" fill="#FFFF
 <use x="87" y="181" xlink:href="#healthCircle" />
 </g>
 <g id="services">
-<use x="0" y="0" xlink:href="#serviceBlock" />
+<use x="0" y="0" xlink:href="#serviceBlock" id="service-a" />
 <image x="46" y="46" width="96" height="96" xlink:href="" />
 <g style="font-size:18px;fill:#505050;text-anchor:middle">
-<text x="94" y="31" ></text>
+<text x="94" y="31" >service-a</text>
 </g>
-<use x="100" y="100" xlink:href="#serviceBlock" />
+<use x="100" y="100" xlink:href="#serviceBlock" id="service-b" />
 <image x="146" y="146" width="96" height="96" xlink:href="" />
 <g style="font-size:18px;fill:#505050;text-anchor:middle">
-<text x="194" y="131" ></text>
+<text x="194" y="131" >service-b</text>
 </g>
 </g>
 </svg>

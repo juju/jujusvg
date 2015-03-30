@@ -57,7 +57,8 @@ func (s *service) usage(canvas *svg.SVG) {
 	canvas.Use(
 		s.point.X,
 		s.point.Y,
-		"#serviceBlock")
+		"#serviceBlock",
+		fmt.Sprintf(`id="%s"`, s.name))
 	canvas.Image(
 		s.point.X+serviceBlockSize/2-iconSize/2,
 		s.point.Y+serviceBlockSize/2-iconSize/2,
