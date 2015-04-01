@@ -26,8 +26,9 @@ const (
 
 // Canvas holds the parsed form of a bundle or environment.
 type Canvas struct {
-	services  []*service
-	relations []*serviceRelation
+	services      []*service
+	relations     []*serviceRelation
+	iconsRendered map[string]bool
 }
 
 // service represents a service deployed to an environment and contains the
@@ -52,9 +53,8 @@ type line struct {
 }
 
 var (
-	pathSanitizer  = regexp.MustCompile(`\W+`)
-	piSanitizer    = regexp.MustCompile(`<\?xml[^>]*>`)
-	charmsRendered = make(map[string]bool)
+	pathSanitizer = regexp.MustCompile(`\W+`)
+	piSanitizer   = regexp.MustCompile(`<\?xml[^>]*>`)
 )
 
 // sanitizeCharmPath ensures that a given string will be safe to use as a
@@ -69,9 +69,9 @@ func dePI(svg string) string {
 }
 
 // definition creates any necessary defs that can be used later in the SVG.
-func (s *service) definition(canvas *svg.SVG) {
-	if _, ok := charmsRendered[s.charmPath]; s.iconSrc != "" && ok == false {
-		charmsRendered[s.charmPath] = true
+func (s *service) definition(canvas *svg.SVG, iconsRendered map[string]bool) {
+	if _, ok := iconsRendered[s.charmPath]; s.iconSrc != "" && ok == false {
+		iconsRendered[s.charmPath] = true
 
 		canvas.Group(fmt.Sprintf(`id="icon-%s"`, sanitizeSelector(s.charmPath)))
 		defer canvas.Gend()
@@ -285,8 +285,9 @@ c73.985,0,73.985,0,73.985-73.986V72.986C84.979-1,84.979-1,10.994-1z`,
 	for _, relation := range c.relations {
 		relation.definition(canvas)
 	}
+	c.iconsRendered = make(map[string]bool)
 	for _, service := range c.services {
-		service.definition(canvas)
+		service.definition(canvas, c.iconsRendered)
 	}
 }
 

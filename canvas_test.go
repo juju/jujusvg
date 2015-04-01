@@ -91,10 +91,12 @@ bar</g>
 `,
 		},
 	}
+	// Maintain our list of rendered icons outside the loop.
+	iconsRendered := make(map[string]bool)
 	for _, test := range tests {
 		var buf bytes.Buffer
 		svg := svg.New(&buf)
-		test.service.definition(svg)
+		test.service.definition(svg, iconsRendered)
 		test.service.usage(svg)
 		c.Assert(buf.String(), gc.Equals, test.expected)
 	}
