@@ -2,6 +2,8 @@ package jujusvg
 
 import (
 	"image"
+	"io/ioutil"
+	"net/http"
 	"sort"
 	"strconv"
 	"strings"
@@ -10,11 +12,51 @@ import (
 	"gopkg.in/juju/charm.v5"
 )
 
-// NewFromBundle returns a new Canvas that can be used
+func NewFromBundleEmbedIcons(b *charm.BundleData, iconURL func(*charm.Reference) string) (*Canvas, error) {
+	alreadyFetched := make(map[string]bool)
+	icons := make(map[string]string)
+	for _, serviceData := range b.Services {
+		charmId, err := charm.ParseReference(serviceData.Charm)
+		if err != nil {
+			return nil, errgo.Notef(err, "cannot parse charm %q", serviceData.Charm)
+		}
+		if _, ok := alreadyFetched[charmId.Path()]; ok == false {
+			alreadyFetched[charmId.Path()] = true
+			icon, err := fetchIcon(iconURL(charmId))
+			if err != nil {
+				return nil, err
+			}
+			icons[charmId.Path()] = icon
+		}
+	}
+	return NewFromBundleWithMap(b, iconURL, icons)
+}
+
+func fetchIcon(url string) (string, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", errgo.Newf("URL %s was not valid", url)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", errgo.Newf("could not read icon data from url %s", url)
+	}
+	return string(body), nil
+}
+
+func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string) (*Canvas, error) {
+	return NewFromBundleWithMap(b, iconURL, map[string]string{})
+}
+
+// NewFromBundleWithMap returns a new Canvas that can be used
 // to generate a graphical representation of the given bundle
 // data. The iconURL function is used to generate a URL
-// that refers to an SVG for the supplied charm URL.
-func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string) (*Canvas, error) {
+// that refers to an SVG for the supplied charm URL. If a map
+// of charms to icon SVGs is provided, then those SVGs will be
+// embedded in the bundle diagram and used instead of an image
+// tag.
+func NewFromBundleWithMap(b *charm.BundleData, iconURL func(*charm.Reference) string, iconMap map[string]string) (*Canvas, error) {
 	var canvas Canvas
 
 	// Verify the bundle to make sure that all the invariants
@@ -42,10 +84,13 @@ func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string) (
 			// cannot actually happen, as we've verified it.
 			return nil, errgo.Notef(err, "cannot parse charm %q", serviceData.Charm)
 		}
+		icon, _ := iconMap[charmId.Path()]
 		svc := &service{
-			name:    name,
-			point:   image.Point{int(x), int(y)},
-			iconUrl: iconURL(charmId),
+			name:      name,
+			charmPath: charmId.Path(),
+			point:     image.Point{int(x), int(y)},
+			iconUrl:   iconURL(charmId),
+			iconSrc:   icon,
 		}
 		services[name] = svc
 		canvas.addService(svc)
