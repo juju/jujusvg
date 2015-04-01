@@ -5,6 +5,7 @@ import (
 	"image"
 	"io"
 	"math"
+	"regexp"
 
 	svg "github.com/ajstarks/svgo"
 )
@@ -32,9 +33,11 @@ type Canvas struct {
 // service represents a service deployed to an environment and contains the
 // point of the top-left corner of the icon, icon URL, and additional metadata.
 type service struct {
-	name    string
-	iconUrl string
-	point   image.Point
+	name      string
+	charmPath string
+	iconUrl   string
+	iconSrc   string
+	point     image.Point
 }
 
 // serviceRelation represents a relation created between two services.
@@ -48,8 +51,33 @@ type line struct {
 	p0, p1 image.Point
 }
 
+var (
+	pathSanitizer  = regexp.MustCompile(`\W+`)
+	piSanitizer    = regexp.MustCompile(`<\?xml[^>]*>`)
+	charmsRendered = make(map[string]bool)
+)
+
+// sanitizeCharmPath ensures that a given string will be safe to use as a
+// CSS selector attribute (id or class).
+func sanitizeSelector(selector string) string {
+	return pathSanitizer.ReplaceAllString(selector, "-")
+}
+
+// dePI removes any processing instructions to ensure a valid SVG.
+func dePI(svg string) string {
+	return piSanitizer.ReplaceAllString(svg, "")
+}
+
 // definition creates any necessary defs that can be used later in the SVG.
 func (s *service) definition(canvas *svg.SVG) {
+	if _, ok := charmsRendered[s.charmPath]; s.iconSrc != "" && ok == false {
+		charmsRendered[s.charmPath] = true
+
+		canvas.Group(fmt.Sprintf(`id="icon-%s"`, sanitizeSelector(s.charmPath)))
+		defer canvas.Gend()
+
+		io.WriteString(canvas.Writer, dePI(s.iconSrc))
+	}
 }
 
 // usage creates any necessary tags for actually using the service in the SVG.
@@ -59,12 +87,20 @@ func (s *service) usage(canvas *svg.SVG) {
 		s.point.Y,
 		"#serviceBlock",
 		fmt.Sprintf(`id="%s"`, s.name))
-	canvas.Image(
-		s.point.X+serviceBlockSize/2-iconSize/2,
-		s.point.Y+serviceBlockSize/2-iconSize/2,
-		iconSize,
-		iconSize,
-		s.iconUrl)
+	if s.iconSrc != "" {
+		canvas.Use(
+			s.point.X+serviceBlockSize/2-iconSize/2,
+			s.point.Y+serviceBlockSize/2-iconSize/2,
+			fmt.Sprintf("#icon-%s", sanitizeSelector(s.charmPath)),
+			fmt.Sprintf(`width="%d" height="%d"`, iconSize, iconSize))
+	} else {
+		canvas.Image(
+			s.point.X+serviceBlockSize/2-iconSize/2,
+			s.point.Y+serviceBlockSize/2-iconSize/2,
+			iconSize,
+			iconSize,
+			s.iconUrl)
+	}
 	canvas.Textlines(
 		s.point.X+serviceBlockSize/2,
 		s.point.Y+serviceBlockSize/6,

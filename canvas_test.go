@@ -3,6 +3,7 @@ package jujusvg
 import (
 	"bytes"
 	"encoding/xml"
+	"fmt"
 	"image"
 	"io"
 
@@ -15,28 +16,88 @@ type CanvasSuite struct{}
 
 var _ = gc.Suite(&CanvasSuite{})
 
+func (s *CanvasSuite) TestSanitizeSelector(c *gc.C) {
+	c.Assert(sanitizeSelector("asdf/asdf"), gc.Equals, "asdf-asdf")
+	c.Assert(sanitizeSelector("asdf-asdf"), gc.Equals, "asdf-asdf")
+}
+
+func (s *CanvasSuite) TestDePI(c *gc.C) {
+	expected := `<foo bar="baz">CDATA</foo>`
+	c.Assert(dePI(expected), gc.Equals, expected)
+	c.Assert(dePI(fmt.Sprintf(`<?xml version="1.0"?>%s`, expected)), gc.Equals, expected)
+}
+
 func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 	// Ensure that the Service's definition and usage methods output the
 	// proper SVG elements.
-	var buf bytes.Buffer
-	svg := svg.New(&buf)
-	service := service{
-		name: "foo",
-		point: image.Point{
-			X: 0,
-			Y: 0,
-		},
-		iconUrl: "foo",
-	}
-	service.definition(svg)
-	service.usage(svg)
-	c.Assert(buf.String(), gc.Equals,
-		`<use x="0" y="0" xlink:href="#serviceBlock" id="foo" />
+	var tests = []struct {
+		about    string
+		service  service
+		expected string
+	}{
+		{
+			about: "Service without iconSrc, no def created",
+			service: service{
+				name: "foo",
+				point: image.Point{
+					X: 0,
+					Y: 0,
+				},
+				iconUrl: "foo",
+			},
+			expected: `<use x="0" y="0" xlink:href="#serviceBlock" id="foo" />
 <image x="46" y="46" width="96" height="96" xlink:href="foo" />
 <g style="font-size:18px;fill:#505050;text-anchor:middle">
 <text x="94" y="31" >foo</text>
 </g>
-`)
+`,
+		},
+		{
+			about: "Service with iconSrc",
+			service: service{
+				name:      "bar",
+				charmPath: "bar",
+				point: image.Point{
+					X: 0,
+					Y: 0,
+				},
+				iconSrc: "bar",
+			},
+			expected: `<g id="icon-bar" >
+bar</g>
+<use x="0" y="0" xlink:href="#serviceBlock" id="bar" />
+<use x="46" y="46" xlink:href="#icon-bar" width="96" height="96" />
+<g style="font-size:18px;fill:#505050;text-anchor:middle">
+<text x="94" y="31" >bar</text>
+</g>
+`,
+		},
+		{
+			about: "Service with already def'd icon",
+			service: service{
+				name:      "baz",
+				charmPath: "bar",
+				point: image.Point{
+					X: 0,
+					Y: 0,
+				},
+				iconSrc: "bar",
+			},
+			expected: `<use x="0" y="0" xlink:href="#serviceBlock" id="baz" />
+<use x="46" y="46" xlink:href="#icon-bar" width="96" height="96" />
+<g style="font-size:18px;fill:#505050;text-anchor:middle">
+<text x="94" y="31" >baz</text>
+</g>
+`,
+		},
+	}
+	for _, test := range tests {
+		var buf bytes.Buffer
+		svg := svg.New(&buf)
+		test.service.definition(svg)
+		test.service.usage(svg)
+		c.Assert(buf.String(), gc.Equals, test.expected)
+	}
 }
 
 func (s *CanvasSuite) TestRelationRender(c *gc.C) {
@@ -113,11 +174,13 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 	var buf bytes.Buffer
 	canvas := Canvas{}
 	serviceA := &service{
-		name: "service-a",
+		name:      "service-a",
+		charmPath: "trusty/svc-a",
 		point: image.Point{
 			X: 0,
 			Y: 0,
 		},
+		iconSrc: `<svg class="blah"><circle cx="20" cy="20" r="20" style="fill:#000" /></svg>`,
 	}
 	serviceB := &service{
 		name: "service-b",
@@ -174,6 +237,9 @@ c73.985,0,73.985,0,73.985-73.986V72.986C84.979-1,84.979-1,10.994-1z" fill="#FFFF
 <circle cx="10" cy="10" r="10" style="stroke:#38B44A;fill:none;stroke-width:2px"/>
 <circle cx="10" cy="10" r="5" style="fill:#38B44A"/>
 </g>
+<g id="icon-trusty-svc-a" >
+<svg class="blah"><circle cx="20" cy="20" r="20" style="fill:#000" /></svg>
+</g>
 </defs>
 <g id="relations">
 <line x1="94" y1="189" x2="100" y2="194" stroke="#38B44A" stroke-width="2px" stroke-dasharray="-6.09, 20" />
@@ -181,7 +247,7 @@ c73.985,0,73.985,0,73.985-73.986V72.986C84.979-1,84.979-1,10.994-1z" fill="#FFFF
 </g>
 <g id="services">
 <use x="0" y="0" xlink:href="#serviceBlock" id="service-a" />
-<image x="46" y="46" width="96" height="96" xlink:href="" />
+<use x="46" y="46" xlink:href="#icon-trusty-svc-a" width="96" height="96" />
 <g style="font-size:18px;fill:#505050;text-anchor:middle">
 <text x="94" y="31" >service-a</text>
 </g>
