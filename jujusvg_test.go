@@ -63,7 +63,7 @@ func (s *newSuite) TestNewFromBundle(c *gc.C) {
 	err = b.Verify(nil)
 	c.Assert(err, gc.IsNil)
 
-	cvs, err := NewFromBundle(b, iconURL)
+	cvs, err := NewFromBundle(b, iconURL, false, nil)
 	c.Assert(err, gc.IsNil)
 
 	var buf bytes.Buffer
@@ -116,7 +116,7 @@ func (s *newSuite) TestWithBadBundle(c *gc.C) {
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, gc.IsNil)
 	b.Relations[0][0] = "evil-unknown-service"
-	cvs, err := NewFromBundle(b, iconURL)
+	cvs, err := NewFromBundle(b, iconURL, false, nil)
 	c.Assert(err, gc.ErrorMatches, "cannot verify bundle: .*")
 	c.Assert(cvs, gc.IsNil)
 }
@@ -126,7 +126,7 @@ func (s *newSuite) TestWithBadPosition(c *gc.C) {
 	c.Assert(err, gc.IsNil)
 
 	b.Services["charmworld"].Annotations["gui-x"] = "bad"
-	cvs, err := NewFromBundle(b, iconURL)
+	cvs, err := NewFromBundle(b, iconURL, false, nil)
 	c.Assert(err, gc.ErrorMatches, `service "charmworld" does not have a valid position`)
 	c.Assert(cvs, gc.IsNil)
 
@@ -134,7 +134,7 @@ func (s *newSuite) TestWithBadPosition(c *gc.C) {
 	c.Assert(err, gc.IsNil)
 
 	b.Services["charmworld"].Annotations["gui-y"] = "bad"
-	cvs, err = NewFromBundle(b, iconURL)
+	cvs, err = NewFromBundle(b, iconURL, false, nil)
 	c.Assert(err, gc.ErrorMatches, `service "charmworld" does not have a valid position`)
 	c.Assert(cvs, gc.IsNil)
 }
