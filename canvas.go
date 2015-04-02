@@ -57,7 +57,7 @@ type line struct {
 
 // definition creates any necessary defs that can be used later in the SVG.
 func (s *service) definition(canvas *svg.SVG, iconsRendered map[string]bool, iconIds map[string]string) error {
-	if _, ok := iconsRendered[s.charmPath]; s.iconSrc != "" && ok == false {
+	if s.iconSrc != "" && !iconsRendered[s.charmPath] {
 		iconsRendered[s.charmPath] = true
 		iconIds[s.charmPath] = fmt.Sprintf("icon-%d", len(iconsRendered))
 
