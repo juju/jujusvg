@@ -18,11 +18,6 @@ type CanvasSuite struct{}
 
 var _ = gc.Suite(&CanvasSuite{})
 
-func (s *CanvasSuite) TestSanitizeSelector(c *gc.C) {
-	c.Assert(sanitizeSelector("asdf/asdf"), gc.Equals, "asdf-asdf")
-	c.Assert(sanitizeSelector("asdf-asdf"), gc.Equals, "asdf-asdf")
-}
-
 func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 	// Ensure that the Service's definition and usage methods output the
 	// proper SVG elements.
@@ -59,10 +54,10 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 				},
 				iconSrc: "<svg>bar</svg>",
 			},
-			expected: `<g id="icon-bar" >
+			expected: `<g id="icon-1" >
 <svg:svg xmlns:svg="http://www.w3.org/2000/svg">bar</svg:svg></g>
 <use x="0" y="0" xlink:href="#serviceBlock" id="bar" />
-<use x="46" y="46" xlink:href="#icon-bar" width="96" height="96" />
+<use x="46" y="46" xlink:href="#icon-1" width="96" height="96" />
 <g style="font-size:18px;fill:#505050;text-anchor:middle">
 <text x="94" y="31" >bar</text>
 </g>
@@ -80,7 +75,7 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 				iconSrc: "<svg>bar</svg>",
 			},
 			expected: `<use x="0" y="0" xlink:href="#serviceBlock" id="baz" />
-<use x="46" y="46" xlink:href="#icon-bar" width="96" height="96" />
+<use x="46" y="46" xlink:href="#icon-1" width="96" height="96" />
 <g style="font-size:18px;fill:#505050;text-anchor:middle">
 <text x="94" y="31" >baz</text>
 </g>
@@ -89,11 +84,12 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 	}
 	// Maintain our list of rendered icons outside the loop.
 	iconsRendered := make(map[string]bool)
+	iconIds := make(map[string]string)
 	for _, test := range tests {
 		var buf bytes.Buffer
 		svg := svg.New(&buf)
-		test.service.definition(svg, iconsRendered)
-		test.service.usage(svg)
+		test.service.definition(svg, iconsRendered, iconIds)
+		test.service.usage(svg, iconIds)
 		c.Assert(buf.String(), gc.Equals, test.expected)
 	}
 }
@@ -213,7 +209,7 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 <circle cx="10" cy="10" r="10" style="stroke:#38B44A;fill:none;stroke-width:2px"/>
 <circle cx="10" cy="10" r="5" style="fill:#38B44A"/>
 </g>
-<g id="icon-trusty-svc-a" >
+<g id="icon-1" >
 <svg xmlns="http://www.w3.org/2000/svg" class="blah">
 <circle cx="20" cy="20" r="20" style="fill:#000"></circle>
 </svg>
@@ -225,7 +221,7 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 </g>
 <g id="services">
 <use x="0" y="0" xlink:href="#serviceBlock" id="service-a" />
-<use x="46" y="46" xlink:href="#icon-trusty-svc-a" width="96" height="96" />
+<use x="46" y="46" xlink:href="#icon-1" width="96" height="96" />
 <g style="font-size:18px;fill:#505050;text-anchor:middle">
 <text x="94" y="31" >service-a</text>
 </g>
