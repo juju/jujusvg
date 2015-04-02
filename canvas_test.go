@@ -3,7 +3,6 @@ package jujusvg
 import (
 	"bytes"
 	"encoding/xml"
-	"fmt"
 	"image"
 	"io"
 
@@ -19,12 +18,6 @@ var _ = gc.Suite(&CanvasSuite{})
 func (s *CanvasSuite) TestSanitizeSelector(c *gc.C) {
 	c.Assert(sanitizeSelector("asdf/asdf"), gc.Equals, "asdf-asdf")
 	c.Assert(sanitizeSelector("asdf-asdf"), gc.Equals, "asdf-asdf")
-}
-
-func (s *CanvasSuite) TestDePI(c *gc.C) {
-	expected := `<foo bar="baz">CDATA</foo>`
-	c.Assert(dePI(expected), gc.Equals, expected)
-	c.Assert(dePI(fmt.Sprintf(`<?xml version="1.0"?>%s`, expected)), gc.Equals, expected)
 }
 
 func (s *CanvasSuite) TestServiceRender(c *gc.C) {
@@ -61,10 +54,10 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 					X: 0,
 					Y: 0,
 				},
-				iconSrc: "bar",
+				iconSrc: "<svg>bar</svg>",
 			},
 			expected: `<g id="icon-bar" >
-bar</g>
+<svg:svg xmlns:svg="http://www.w3.org/2000/svg">bar</svg:svg></g>
 <use x="0" y="0" xlink:href="#serviceBlock" id="bar" />
 <use x="46" y="46" xlink:href="#icon-bar" width="96" height="96" />
 <g style="font-size:18px;fill:#505050;text-anchor:middle">
@@ -81,7 +74,7 @@ bar</g>
 					X: 0,
 					Y: 0,
 				},
-				iconSrc: "bar",
+				iconSrc: "<svg>bar</svg>",
 			},
 			expected: `<use x="0" y="0" xlink:href="#serviceBlock" id="baz" />
 <use x="46" y="46" xlink:href="#icon-bar" width="96" height="96" />
@@ -182,7 +175,10 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 			X: 0,
 			Y: 0,
 		},
-		iconSrc: `<svg class="blah"><circle cx="20" cy="20" r="20" style="fill:#000" /></svg>`,
+		iconSrc: `
+			<svg xmlns="http://www.w3.org/2000/svg" class="blah">
+				<circle cx="20" cy="20" r="20" style="fill:#000" />
+			</svg>`,
 	}
 	serviceB := &service{
 		name: "service-b",
@@ -240,7 +236,9 @@ c73.985,0,73.985,0,73.985-73.986V72.986C84.979-1,84.979-1,10.994-1z" fill="#FFFF
 <circle cx="10" cy="10" r="5" style="fill:#38B44A"/>
 </g>
 <g id="icon-trusty-svc-a" >
-<svg class="blah"><circle cx="20" cy="20" r="20" style="fill:#000" /></svg>
+<svg xmlns="http://www.w3.org/2000/svg" class="blah">
+<circle cx="20" cy="20" r="20" style="fill:#000"></circle>
+</svg>
 </g>
 </defs>
 <g id="relations">
