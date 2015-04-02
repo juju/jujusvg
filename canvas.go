@@ -6,7 +6,6 @@ import (
 	"image"
 	"io"
 	"math"
-	"regexp"
 
 	svg "github.com/ajstarks/svgo"
 
@@ -32,6 +31,7 @@ type Canvas struct {
 	services      []*service
 	relations     []*serviceRelation
 	iconsRendered map[string]bool
+	iconIds       map[string]string
 }
 
 // service represents a service deployed to an environment and contains the
@@ -55,28 +55,13 @@ type line struct {
 	p0, p1 image.Point
 }
 
-var (
-	pathSanitizer = regexp.MustCompile(`\W+`)
-	piSanitizer   = regexp.MustCompile(`<\?xml[^>]*>`)
-)
-
-// sanitizeCharmPath ensures that a given string will be safe to use as a
-// CSS selector attribute (id or class).
-func sanitizeSelector(selector string) string {
-	return pathSanitizer.ReplaceAllString(selector, "-")
-}
-
-// dePI removes any processing instructions to ensure a valid SVG.
-func dePI(svg string) string {
-	return piSanitizer.ReplaceAllString(svg, "")
-}
-
 // definition creates any necessary defs that can be used later in the SVG.
-func (s *service) definition(canvas *svg.SVG, iconsRendered map[string]bool) error {
+func (s *service) definition(canvas *svg.SVG, iconsRendered map[string]bool, iconIds map[string]string) error {
 	if _, ok := iconsRendered[s.charmPath]; s.iconSrc != "" && ok == false {
 		iconsRendered[s.charmPath] = true
+		iconIds[s.charmPath] = fmt.Sprintf("icon-%d", len(iconsRendered))
 
-		canvas.Group(fmt.Sprintf(`id="icon-%s"`, sanitizeSelector(s.charmPath)))
+		canvas.Group(fmt.Sprintf(`id="%s"`, iconIds[s.charmPath]))
 		defer canvas.Gend()
 
 		// Temporary solution:
@@ -87,7 +72,7 @@ func (s *service) definition(canvas *svg.SVG, iconsRendered map[string]bool) err
 }
 
 // usage creates any necessary tags for actually using the service in the SVG.
-func (s *service) usage(canvas *svg.SVG) {
+func (s *service) usage(canvas *svg.SVG, iconIds map[string]string) {
 	canvas.Use(
 		s.point.X,
 		s.point.Y,
@@ -97,7 +82,7 @@ func (s *service) usage(canvas *svg.SVG) {
 		canvas.Use(
 			s.point.X+serviceBlockSize/2-iconSize/2,
 			s.point.Y+serviceBlockSize/2-iconSize/2,
-			fmt.Sprintf("#icon-%s", sanitizeSelector(s.charmPath)),
+			fmt.Sprintf("#%s", iconIds[s.charmPath]),
 			fmt.Sprintf(`width="%d" height="%d"`, iconSize, iconSize))
 	} else {
 		canvas.Image(
@@ -249,8 +234,9 @@ func (c *Canvas) definition(canvas *svg.SVG) {
 		relation.definition(canvas)
 	}
 	c.iconsRendered = make(map[string]bool)
+	c.iconIds = make(map[string]string)
 	for _, service := range c.services {
-		service.definition(canvas, c.iconsRendered)
+		service.definition(canvas, c.iconsRendered, c.iconIds)
 	}
 }
 
@@ -266,7 +252,7 @@ func (c *Canvas) servicesGroup(canvas *svg.SVG) {
 	canvas.Gid("services")
 	defer canvas.Gend()
 	for _, service := range c.services {
-		service.usage(canvas)
+		service.usage(canvas, c.iconIds)
 	}
 }
 
