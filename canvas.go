@@ -1,6 +1,7 @@
 package jujusvg
 
 import (
+	"bytes"
 	"fmt"
 	"image"
 	"io"
@@ -69,15 +70,18 @@ func dePI(svg string) string {
 }
 
 // definition creates any necessary defs that can be used later in the SVG.
-func (s *service) definition(canvas *svg.SVG, iconsRendered map[string]bool) {
+func (s *service) definition(canvas *svg.SVG, iconsRendered map[string]bool) error {
 	if _, ok := iconsRendered[s.charmPath]; s.iconSrc != "" && ok == false {
 		iconsRendered[s.charmPath] = true
 
 		canvas.Group(fmt.Sprintf(`id="icon-%s"`, sanitizeSelector(s.charmPath)))
 		defer canvas.Gend()
 
-		io.WriteString(canvas.Writer, dePI(s.iconSrc))
+		// Temporary solution:
+		iconBuf := bytes.NewBufferString(s.iconSrc)
+		return processIcon(iconBuf, canvas.Writer)
 	}
+	return nil
 }
 
 // usage creates any necessary tags for actually using the service in the SVG.
