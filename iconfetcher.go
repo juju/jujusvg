@@ -95,11 +95,23 @@ func (h *HttpFetcher) FetchIcons(b *charm.BundleData) (map[string]string, error)
 func (h *HttpFetcher) fetchIcon(url string, done chan bool) (string, error) {
 	resp, err := h.Client.Get(url)
 	if err != nil {
+		if done != nil {
+			done <- true
+		}
 		return "", errgo.Newf("HTTP error fetching %s: %v", url, err)
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		if done != nil {
+			done <- true
+		}
+		return "", errgo.Newf("Error retrieving icon from %s: %s", url, resp.Status)
+	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		if done != nil {
+			done <- true
+		}
 		return "", errgo.Newf("could not read icon data from url %s", url)
 	}
 	if done != nil {
