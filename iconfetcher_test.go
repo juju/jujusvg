@@ -15,8 +15,8 @@ type IconFetcherSuite struct{}
 var _ = gc.Suite(&IconFetcherSuite{})
 
 var (
-	ts      *httptest.Server
-	iconUrl func(*charm.Reference) string
+	ts        *httptest.Server
+	tsIconUrl func(*charm.Reference) string
 )
 
 func (s *IconFetcherSuite) SetUpTest(c *gc.C) {
@@ -24,7 +24,7 @@ func (s *IconFetcherSuite) SetUpTest(c *gc.C) {
 		fmt.Fprintln(w, "<svg></svg>")
 	}))
 
-	iconUrl = func(ref *charm.Reference) string {
+	tsIconUrl = func(ref *charm.Reference) string {
 		return ts.URL + "/" + ref.Path() + ".svg"
 	}
 }
@@ -40,7 +40,7 @@ func (s *IconFetcherSuite) TestFetchIcons(c *gc.C) {
 	c.Assert(err, gc.IsNil)
 	fetcher := HttpFetcher{
 		FetchConcurrently: false,
-		IconURL:           iconUrl,
+		IconURL:           tsIconUrl,
 	}
 	iconMap, err := fetcher.FetchIcons(b)
 	c.Assert(err, gc.IsNil)
@@ -58,7 +58,7 @@ func (s *IconFetcherSuite) TestFetchIconsConcurrent(c *gc.C) {
 	c.Assert(err, gc.IsNil)
 	fetcher := HttpFetcher{
 		FetchConcurrently: true,
-		IconURL:           iconUrl,
+		IconURL:           tsIconUrl,
 	}
 	iconMap, err := fetcher.FetchIcons(b)
 	c.Assert(err, gc.IsNil)
@@ -67,4 +67,54 @@ func (s *IconFetcherSuite) TestFetchIconsConcurrent(c *gc.C) {
 		"~juju-jitsu/precise/charmworld-58":      "<svg></svg>\n",
 		"precise/mongodb-21":                     "<svg></svg>\n",
 	})
+}
+
+func (s *IconFetcherSuite) TestBadIconURL(c *gc.C) {
+	ts.Close()
+	ts = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "bad-wolf", http.StatusForbidden)
+		return
+	}))
+	defer ts.Close()
+
+	tsIconUrl = func(ref *charm.Reference) string {
+		return ts.URL + "/" + ref.Path() + ".svg"
+	}
+
+	b, err := charm.ReadBundleData(strings.NewReader(bundle))
+	c.Assert(err, gc.IsNil)
+	err = b.Verify(nil)
+	c.Assert(err, gc.IsNil)
+	fetcher := HttpFetcher{
+		FetchConcurrently: false,
+		IconURL:           tsIconUrl,
+	}
+	iconMap, err := fetcher.FetchIcons(b)
+	c.Assert(err, gc.ErrorMatches, "Error retrieving icon from "+ts.URL+"/precise/mongodb-21.svg: 403 Forbidden")
+	c.Assert(iconMap, gc.IsNil)
+}
+
+func (s *IconFetcherSuite) TestBadIconURLConcurrent(c *gc.C) {
+	ts.Close()
+	ts = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "bad-wolf", http.StatusForbidden)
+		return
+	}))
+	defer ts.Close()
+
+	tsIconUrl = func(ref *charm.Reference) string {
+		return ts.URL + "/" + ref.Path() + ".svg"
+	}
+
+	b, err := charm.ReadBundleData(strings.NewReader(bundle))
+	c.Assert(err, gc.IsNil)
+	err = b.Verify(nil)
+	c.Assert(err, gc.IsNil)
+	fetcher := HttpFetcher{
+		FetchConcurrently: true,
+		IconURL:           tsIconUrl,
+	}
+	iconMap, err := fetcher.FetchIcons(b)
+	c.Assert(err, gc.ErrorMatches, fmt.Sprintf("Error retrieving icon from %s.+\\.svg: 403 Forbidden", ts.URL))
+	c.Assert(iconMap, gc.IsNil)
 }
