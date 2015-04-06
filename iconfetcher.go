@@ -3,6 +3,7 @@ package jujusvg
 import (
 	"io/ioutil"
 	"net/http"
+	"sync"
 
 	"gopkg.in/errgo.v1"
 	"gopkg.in/juju/charm.v5-unstable"
@@ -36,8 +37,8 @@ func (h *HttpFetcher) FetchIcons(b *charm.BundleData) (map[string]string, error)
 	// Maintain a list of icons that have already been fetched.
 	alreadyFetched := make(map[string]bool)
 
-	// Channels for concurrent fetching.
-	channels := [](chan bool){}
+	// WaitGroup and channels for concurrent fetching.
+	var wg sync.WaitGroup
 	errors := make(chan error, len(b.Services))
 
 	// Build the map of icons.
@@ -55,10 +56,10 @@ func (h *HttpFetcher) FetchIcons(b *charm.BundleData) (map[string]string, error)
 
 			// Fetch concurrently or not, depending on option.
 			if h.FetchConcurrently {
-				done := make(chan bool, 1)
-				channels = append(channels, done)
+				wg.Add(1)
 				go func() {
-					icon, err := h.fetchIcon(h.IconURL(charmId), done)
+					defer wg.Done()
+					icon, err := h.fetchIcon(h.IconURL(charmId))
 					if err != nil {
 						errors <- err
 					} else {
@@ -66,7 +67,7 @@ func (h *HttpFetcher) FetchIcons(b *charm.BundleData) (map[string]string, error)
 					}
 				}()
 			} else {
-				icon, err := h.fetchIcon(h.IconURL(charmId), nil)
+				icon, err := h.fetchIcon(h.IconURL(charmId))
 				if err != nil {
 					return nil, err
 				}
@@ -78,9 +79,7 @@ func (h *HttpFetcher) FetchIcons(b *charm.BundleData) (map[string]string, error)
 	// If fetching concurrently, block on receiving icon data; if any errors
 	// occured, report them.
 	if h.FetchConcurrently {
-		for _, ch := range channels {
-			<-ch
-		}
+		wg.Wait()
 		close(errors)
 		for err := range errors {
 			if err != nil {
@@ -92,30 +91,18 @@ func (h *HttpFetcher) FetchIcons(b *charm.BundleData) (map[string]string, error)
 }
 
 // fetchIcon retrieves a single icon svg over HTTP.
-func (h *HttpFetcher) fetchIcon(url string, done chan bool) (string, error) {
+func (h *HttpFetcher) fetchIcon(url string) (string, error) {
 	resp, err := h.Client.Get(url)
 	if err != nil {
-		if done != nil {
-			done <- true
-		}
 		return "", errgo.Newf("HTTP error fetching %s: %v", url, err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		if done != nil {
-			done <- true
-		}
 		return "", errgo.Newf("Error retrieving icon from %s: %s", url, resp.Status)
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		if done != nil {
-			done <- true
-		}
 		return "", errgo.Newf("could not read icon data from url %s", url)
-	}
-	if done != nil {
-		done <- true
 	}
 	return string(body), nil
 }
