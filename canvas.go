@@ -61,7 +61,7 @@ func (s *service) definition(canvas *svg.SVG, iconsRendered map[string]bool, ico
 		iconsRendered[s.charmPath] = true
 		iconIds[s.charmPath] = fmt.Sprintf("icon-%d", len(iconsRendered))
 
-		canvas.Group(fmt.Sprintf(`id="%s"`, iconIds[s.charmPath]))
+		canvas.Group(fmt.Sprintf(`id=%q`, iconIds[s.charmPath]))
 		defer canvas.Gend()
 
 		// Temporary solution:
@@ -77,7 +77,7 @@ func (s *service) usage(canvas *svg.SVG, iconIds map[string]string) {
 		s.point.X,
 		s.point.Y,
 		"#serviceBlock",
-		fmt.Sprintf(`id="%s"`, s.name))
+		fmt.Sprintf(`id=%q`, s.name))
 	if s.iconSrc != "" {
 		canvas.Use(
 			s.point.X+serviceBlockSize/2-iconSize/2,
@@ -114,9 +114,9 @@ func (r *serviceRelation) usage(canvas *svg.SVG) {
 		l.p0.Y,
 		l.p1.X,
 		l.p1.Y,
-		fmt.Sprintf(`stroke="%s"`, relationColor),
+		fmt.Sprintf(`stroke=%q`, relationColor),
 		fmt.Sprintf(`stroke-width="%dpx"`, relationLineWidth),
-		fmt.Sprintf(`stroke-dasharray="%s"`, strokeDashArray(l)))
+		fmt.Sprintf(`stroke-dasharray=%q`, strokeDashArray(l)))
 	mid := l.p0.Add(l.p1).Div(2).Sub(point(healthCircleRadius, healthCircleRadius))
 	canvas.Use(mid.X, mid.Y, "#healthCircle")
 }

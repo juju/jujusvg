@@ -19,22 +19,17 @@ import (
 // contained as much as possible.  If that is to be the case,
 // utilize the provided IconFetcher (or default to HttpFetcher
 // if nil) to retrieve the icons.
-func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string, embedIcons bool, fetcher IconFetcher) (*Canvas, error) {
-	if embedIcons {
-		if fetcher == nil {
-			fetcher = &HttpFetcher{
-				FetchConcurrently: true,
-				IconURL:           iconURL,
-			}
+func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string, fetcher IconFetcher) (*Canvas, error) {
+	if fetcher == nil {
+		fetcher = &LinkFetcher{
+			IconURL: iconURL,
 		}
-		iconMap, err := fetcher.FetchIcons(b)
-		if err != nil {
-			return nil, err
-		}
-		return newFromBundleWithMap(b, iconURL, iconMap)
-	} else {
-		return newFromBundleWithMap(b, iconURL, map[string]string{})
 	}
+	iconMap, err := fetcher.FetchIcons(b)
+	if err != nil {
+		return nil, err
+	}
+	return newFromBundleWithMap(b, iconURL, iconMap)
 }
 
 // newFromBundleWithMap returns a new Canvas that can be used

@@ -42,7 +42,7 @@ func main() {
 	// Next, build a canvas of the bundle.  This is a simplified version of a charm.Bundle
 	// that contains just the position information and charm icon URLs necessary to build
 	// the SVG representation of the bundle
-	canvas, err := jujusvg.NewFromBundle(bundle, iconURL, true, nil)
+	canvas, err := jujusvg.NewFromBundle(bundle, iconURL, nil)
 	if err != nil {
 		log.Fatalf("Error generating canvas: %s\n", err)
 	}

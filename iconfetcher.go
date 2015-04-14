@@ -1,6 +1,7 @@
 package jujusvg
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"sync"
@@ -14,6 +15,36 @@ import (
 // returns a dict mapping charm paths to icon data.
 type IconFetcher interface {
 	FetchIcons(*charm.BundleData) (map[string]string, error)
+}
+
+//
+type LinkFetcher struct {
+	IconURL func(*charm.Reference) string
+}
+
+func (l *LinkFetcher) FetchIcons(b *charm.BundleData) (map[string]string, error) {
+	// Maintain a list of icons that have already been fetched.
+	alreadyFetched := make(map[string]bool)
+
+	// Build the map of icons.
+	icons := make(map[string]string)
+	for _, serviceData := range b.Services {
+		charmId, err := charm.ParseReference(serviceData.Charm)
+		if err != nil {
+			return nil, errgo.Notef(err, "cannot parse charm %q", serviceData.Charm)
+		}
+		path := charmId.Path()
+
+		// Don't duplicate icons in the map.
+		if !alreadyFetched[path] {
+			alreadyFetched[path] = true
+			icons[path] = fmt.Sprintf(`
+				<svg xlmns=%q xmlns:xlink="http://www.w3.org/1999/xlink">
+					<image width="96" height="96" xlink:href=%q />
+				</svg>`, svgNamespace, l.IconURL(charmId))
+		}
+	}
+	return icons, nil
 }
 
 // HttpFetcher is a default implementation of IconFetcher which retrieves charm
