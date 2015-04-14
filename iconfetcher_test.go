@@ -59,7 +59,7 @@ func (s *IconFetcherSuite) TestHttpFetchIcons(c *gc.C) {
 	c.Assert(err, gc.IsNil)
 	err = b.Verify(nil)
 	c.Assert(err, gc.IsNil)
-	fetcher := HttpFetcher{
+	fetcher := HTTPFetcher{
 		FetchConcurrently: false,
 		IconURL:           tsIconUrl,
 	}
@@ -96,7 +96,7 @@ func (s *IconFetcherSuite) TestHttpBadIconURL(c *gc.C) {
 	c.Assert(err, gc.IsNil)
 	err = b.Verify(nil)
 	c.Assert(err, gc.IsNil)
-	fetcher := HttpFetcher{
+	fetcher := HTTPFetcher{
 		FetchConcurrently: false,
 		IconURL:           tsIconUrl,
 	}

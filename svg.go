@@ -51,7 +51,7 @@ func processIcon(r io.Reader, w io.Writer) error {
 	}
 
 	if !svgStartFound || !svgEndFound {
-		return fmt.Errorf("Icon does not appear to be a valid svg.")
+		return fmt.Errorf("icon does not appear to be a valid SVG")
 	}
 
 	if err := enc.Flush(); err != nil {

@@ -17,7 +17,7 @@ import (
 // requested, icon SVGs that are available will be embedded
 // within the bundle SVG so that the bundle will be self-
 // contained as much as possible.  If that is to be the case,
-// utilize the provided IconFetcher (or default to HttpFetcher
+// utilize the provided IconFetcher (or default to HTTPFetcher
 // if nil) to retrieve the icons.
 func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string, fetcher IconFetcher) (*Canvas, error) {
 	if fetcher == nil {

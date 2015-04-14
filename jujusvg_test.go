@@ -62,7 +62,7 @@ func iconURL(ref *charm.Reference) string {
 type emptyFetcher struct{}
 
 func (f *emptyFetcher) FetchIcons(*charm.BundleData) (map[string]string, error) {
-	return map[string]string{}, nil
+	return nil, nil
 }
 
 type errFetcher struct{}
@@ -191,7 +191,7 @@ func (s *newSuite) TestWithFetcher(c *gc.C) {
 `))
 }
 
-func (s *newSuite) TestDefaultHttpFetcher(c *gc.C) {
+func (s *newSuite) TestDefaultHTTPFetcher(c *gc.C) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "<svg></svg>")
 	}))
@@ -206,7 +206,7 @@ func (s *newSuite) TestDefaultHttpFetcher(c *gc.C) {
 	err = b.Verify(nil)
 	c.Assert(err, gc.IsNil)
 
-	cvs, err := NewFromBundle(b, tsIconUrl, &HttpFetcher{IconURL: tsIconUrl})
+	cvs, err := NewFromBundle(b, tsIconUrl, &HTTPFetcher{IconURL: tsIconUrl})
 	c.Assert(err, gc.IsNil)
 
 	var buf bytes.Buffer
