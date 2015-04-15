@@ -51,7 +51,7 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 					X: 0,
 					Y: 0,
 				},
-				iconSrc: "<svg>bar</svg>",
+				iconSrc: []byte("<svg>bar</svg>"),
 			},
 			expected: `<g id="icon-1" >
 <svg:svg xmlns:svg="http://www.w3.org/2000/svg">bar</svg:svg></g>
@@ -71,7 +71,7 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 					X: 0,
 					Y: 0,
 				},
-				iconSrc: "<svg>bar</svg>",
+				iconSrc: []byte("<svg>bar</svg>"),
 			},
 			expected: `<use x="0" y="0" xlink:href="#serviceBlock" id="baz" />
 <use x="46" y="46" xlink:href="#icon-1" width="96" height="96" />
@@ -173,10 +173,10 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 			X: 0,
 			Y: 0,
 		},
-		iconSrc: `
+		iconSrc: []byte(`
 			<svg xmlns="http://www.w3.org/2000/svg" class="blah">
 				<circle cx="20" cy="20" r="20" style="fill:#000" />
-			</svg>`,
+			</svg>`),
 	}
 	serviceB := &service{
 		name: "service-b",
