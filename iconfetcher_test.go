@@ -15,21 +15,21 @@ type IconFetcherSuite struct{}
 var _ = gc.Suite(&IconFetcherSuite{})
 
 func (s *IconFetcherSuite) TestLinkFetchIcons(c *gc.C) {
-	tests := map[string]string{
-		"~charming-devs/precise/elasticsearch-2": `
-			<svg xlmns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	tests := map[string][]byte{
+		"~charming-devs/precise/elasticsearch-2": []byte(`
+			<svg xmlns:xlink="http://www.w3.org/1999/xlink">
 				<image width="96" height="96" xlink:href="/~charming-devs/precise/elasticsearch-2.svg" />
-			</svg>`,
-		"~juju-jitsu/precise/charmworld-58": `
-			<svg xlmns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+			</svg>`),
+		"~juju-jitsu/precise/charmworld-58": []byte(`
+			<svg xmlns:xlink="http://www.w3.org/1999/xlink">
 				<image width="96" height="96" xlink:href="/~juju-jitsu/precise/charmworld-58.svg" />
-			</svg>`,
-		"precise/mongodb-21": `
-			<svg xlmns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+			</svg>`),
+		"precise/mongodb-21": []byte(`
+			<svg xmlns:xlink="http://www.w3.org/1999/xlink">
 				<image width="96" height="96" xlink:href="/precise/mongodb-21.svg" />
-			</svg>`,
+			</svg>`),
 	}
-	iconUrl := func(ref *charm.Reference) string {
+	iconURL := func(ref *charm.Reference) string {
 		return "/" + ref.Path() + ".svg"
 	}
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
@@ -37,7 +37,7 @@ func (s *IconFetcherSuite) TestLinkFetchIcons(c *gc.C) {
 	err = b.Verify(nil)
 	c.Assert(err, gc.IsNil)
 	fetcher := LinkFetcher{
-		IconURL: iconUrl,
+		IconURL: iconURL,
 	}
 	iconMap, err := fetcher.FetchIcons(b)
 	c.Assert(err, gc.IsNil)
@@ -46,39 +46,47 @@ func (s *IconFetcherSuite) TestLinkFetchIcons(c *gc.C) {
 	}
 }
 
-func (s *IconFetcherSuite) TestHttpFetchIcons(c *gc.C) {
+func (s *IconFetcherSuite) TestHTTPFetchIcons(c *gc.C) {
+	fetchCount := 0
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "<svg></svg>")
+		fetchCount++
+		fmt.Fprintln(w, fmt.Sprintf("<svg>%s</svg>", r.URL.Path))
 	}))
 	defer ts.Close()
 
-	tsIconUrl := func(ref *charm.Reference) string {
+	tsIconURL := func(ref *charm.Reference) string {
 		return ts.URL + "/" + ref.Path() + ".svg"
 	}
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, gc.IsNil)
 	err = b.Verify(nil)
 	c.Assert(err, gc.IsNil)
+	// Only one copy of precise/mongodb-21
+	b.Services["duplicateService"] = &charm.ServiceSpec{
+		Charm:    "cs:precise/mongodb-21",
+		NumUnits: 1,
+	}
 	fetcher := HTTPFetcher{
-		FetchConcurrently: false,
-		IconURL:           tsIconUrl,
+		Concurrency: 1,
+		IconURL:     tsIconURL,
 	}
 	iconMap, err := fetcher.FetchIcons(b)
 	c.Assert(err, gc.IsNil)
-	c.Assert(iconMap, gc.DeepEquals, map[string]string{
-		"~charming-devs/precise/elasticsearch-2": "<svg></svg>\n",
-		"~juju-jitsu/precise/charmworld-58":      "<svg></svg>\n",
-		"precise/mongodb-21":                     "<svg></svg>\n",
+	c.Assert(iconMap, gc.DeepEquals, map[string][]byte{
+		"~charming-devs/precise/elasticsearch-2": []byte("<svg>/~charming-devs/precise/elasticsearch-2.svg</svg>\n"),
+		"~juju-jitsu/precise/charmworld-58":      []byte("<svg>/~juju-jitsu/precise/charmworld-58.svg</svg>\n"),
+		"precise/mongodb-21":                     []byte("<svg>/precise/mongodb-21.svg</svg>\n"),
 	})
 
-	fetcher.FetchConcurrently = true
+	fetcher.Concurrency = 10
 	iconMap, err = fetcher.FetchIcons(b)
 	c.Assert(err, gc.IsNil)
-	c.Assert(iconMap, gc.DeepEquals, map[string]string{
-		"~charming-devs/precise/elasticsearch-2": "<svg></svg>\n",
-		"~juju-jitsu/precise/charmworld-58":      "<svg></svg>\n",
-		"precise/mongodb-21":                     "<svg></svg>\n",
+	c.Assert(iconMap, gc.DeepEquals, map[string][]byte{
+		"~charming-devs/precise/elasticsearch-2": []byte("<svg>/~charming-devs/precise/elasticsearch-2.svg</svg>\n"),
+		"~juju-jitsu/precise/charmworld-58":      []byte("<svg>/~juju-jitsu/precise/charmworld-58.svg</svg>\n"),
+		"precise/mongodb-21":                     []byte("<svg>/precise/mongodb-21.svg</svg>\n"),
 	})
+	c.Assert(fetchCount, gc.Equals, 6)
 }
 
 func (s *IconFetcherSuite) TestHttpBadIconURL(c *gc.C) {
@@ -88,7 +96,7 @@ func (s *IconFetcherSuite) TestHttpBadIconURL(c *gc.C) {
 	}))
 	defer ts.Close()
 
-	tsIconUrl := func(ref *charm.Reference) string {
+	tsIconURL := func(ref *charm.Reference) string {
 		return ts.URL + "/" + ref.Path() + ".svg"
 	}
 
@@ -97,15 +105,15 @@ func (s *IconFetcherSuite) TestHttpBadIconURL(c *gc.C) {
 	err = b.Verify(nil)
 	c.Assert(err, gc.IsNil)
 	fetcher := HTTPFetcher{
-		FetchConcurrently: false,
-		IconURL:           tsIconUrl,
+		Concurrency: 1,
+		IconURL:     tsIconURL,
 	}
 	iconMap, err := fetcher.FetchIcons(b)
-	c.Assert(err, gc.ErrorMatches, fmt.Sprintf("Error retrieving icon from %s.+\\.svg: 403 Forbidden", ts.URL))
+	c.Assert(err, gc.ErrorMatches, fmt.Sprintf("cannot retrieve icon from %s.+\\.svg: 403 Forbidden.*", ts.URL))
 	c.Assert(iconMap, gc.IsNil)
 
-	fetcher.FetchConcurrently = true
+	fetcher.Concurrency = 10
 	iconMap, err = fetcher.FetchIcons(b)
-	c.Assert(err, gc.ErrorMatches, fmt.Sprintf("Error retrieving icon from %s.+\\.svg: 403 Forbidden", ts.URL))
+	c.Assert(err, gc.ErrorMatches, fmt.Sprintf("cannot retrieve icon from %s.+\\.svg: 403 Forbidden.*", ts.URL))
 	c.Assert(iconMap, gc.IsNil)
 }

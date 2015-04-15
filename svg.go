@@ -1,10 +1,10 @@
 package jujusvg
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/juju/xml"
+	"gopkg.in/errgo.v1"
 )
 
 const svgNamespace = "http://www.w3.org/2000/svg"
@@ -21,37 +21,52 @@ func processIcon(r io.Reader, w io.Writer) error {
 
 	svgStartFound := false
 	svgEndFound := false
-	for {
+	depth := 0
+	for depth < 1 {
 		tok, err := dec.Token()
 		if err != nil {
 			if err == io.EOF {
 				break
 			}
-			return fmt.Errorf("cannot get token: %v", err)
+			return errgo.Notef(err, "cannot get token")
 		}
-		if !svgStartFound {
-			tag, ok := tok.(xml.StartElement)
-			if ok && tag.Name.Space == svgNamespace && tag.Name.Local == "svg" {
-				svgStartFound = true
-			} else {
-				continue
-			}
-		}
-		if !svgEndFound {
-			tag, ok := tok.(xml.EndElement)
-			if ok && tag.Name.Space == svgNamespace && tag.Name.Local == "svg" {
-				svgEndFound = true
-			}
+		tag, ok := tok.(xml.StartElement)
+		if ok && tag.Name.Space == svgNamespace && tag.Name.Local == "svg" {
+			svgStartFound = true
+			depth++
 			if err := enc.EncodeToken(tok); err != nil {
-				return fmt.Errorf("cannot encode token %#v: %v", tok, err)
+				return errgo.Notef(err, "cannot encode token %#v", tok)
 			}
-		} else {
-			break
+		}
+	}
+	for depth > 0 {
+		tok, err := dec.Token()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return errgo.Notef(err, "cannot get token")
+		}
+		switch tag := tok.(type) {
+		case xml.StartElement:
+			if tag.Name.Space == svgNamespace && tag.Name.Local == "svg" {
+				depth++
+			}
+		case xml.EndElement:
+			if tag.Name.Space == svgNamespace && tag.Name.Local == "svg" {
+				depth--
+				if depth == 0 {
+					svgEndFound = true
+				}
+			}
+		}
+		if err := enc.EncodeToken(tok); err != nil {
+			return errgo.Notef(err, "cannot encode token %#v", tok)
 		}
 	}
 
 	if !svgStartFound || !svgEndFound {
-		return fmt.Errorf("icon does not appear to be a valid SVG")
+		return errgo.Newf("icon does not appear to be a valid SVG")
 	}
 
 	if err := enc.Flush(); err != nil {

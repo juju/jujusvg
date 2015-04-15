@@ -39,7 +39,7 @@ func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string, f
 // of charms to icon SVGs is provided, then those SVGs will be
 // embedded in the bundle diagram and used instead of an image
 // tag.
-func newFromBundleWithMap(b *charm.BundleData, iconURL func(*charm.Reference) string, iconMap map[string]string) (*Canvas, error) {
+func newFromBundleWithMap(b *charm.BundleData, iconURL func(*charm.Reference) string, iconMap map[string][]byte) (*Canvas, error) {
 	var canvas Canvas
 
 	// Verify the bundle to make sure that all the invariants

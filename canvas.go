@@ -40,7 +40,7 @@ type service struct {
 	name      string
 	charmPath string
 	iconUrl   string
-	iconSrc   string
+	iconSrc   []byte
 	point     image.Point
 }
 
@@ -57,18 +57,18 @@ type line struct {
 
 // definition creates any necessary defs that can be used later in the SVG.
 func (s *service) definition(canvas *svg.SVG, iconsRendered map[string]bool, iconIds map[string]string) error {
-	if s.iconSrc != "" && !iconsRendered[s.charmPath] {
-		iconsRendered[s.charmPath] = true
-		iconIds[s.charmPath] = fmt.Sprintf("icon-%d", len(iconsRendered))
-
-		canvas.Group(fmt.Sprintf(`id=%q`, iconIds[s.charmPath]))
-		defer canvas.Gend()
-
-		// Temporary solution:
-		iconBuf := bytes.NewBufferString(s.iconSrc)
-		return processIcon(iconBuf, canvas.Writer)
+	if len(s.iconSrc) == 0 || iconsRendered[s.charmPath] {
+		return nil
 	}
-	return nil
+	iconsRendered[s.charmPath] = true
+	iconIds[s.charmPath] = fmt.Sprintf("icon-%d", len(iconsRendered))
+
+	canvas.Group(fmt.Sprintf(`id=%q`, iconIds[s.charmPath]))
+	defer canvas.Gend()
+
+	// Temporary solution:
+	iconBuf := bytes.NewBuffer(s.iconSrc)
+	return processIcon(iconBuf, canvas.Writer)
 }
 
 // usage creates any necessary tags for actually using the service in the SVG.
@@ -78,19 +78,21 @@ func (s *service) usage(canvas *svg.SVG, iconIds map[string]string) {
 		s.point.Y,
 		"#serviceBlock",
 		fmt.Sprintf(`id=%q`, s.name))
-	if s.iconSrc != "" {
+	if len(s.iconSrc) > 0 {
 		canvas.Use(
 			s.point.X+serviceBlockSize/2-iconSize/2,
 			s.point.Y+serviceBlockSize/2-iconSize/2,
-			fmt.Sprintf("#%s", iconIds[s.charmPath]),
-			fmt.Sprintf(`width="%d" height="%d"`, iconSize, iconSize))
+			"#"+iconIds[s.charmPath],
+			fmt.Sprintf(`width="%d" height="%d"`, iconSize, iconSize),
+		)
 	} else {
 		canvas.Image(
 			s.point.X+serviceBlockSize/2-iconSize/2,
 			s.point.Y+serviceBlockSize/2-iconSize/2,
 			iconSize,
 			iconSize,
-			s.iconUrl)
+			s.iconUrl,
+		)
 	}
 	canvas.Textlines(
 		s.point.X+serviceBlockSize/2,
@@ -116,7 +118,8 @@ func (r *serviceRelation) usage(canvas *svg.SVG) {
 		l.p1.Y,
 		fmt.Sprintf(`stroke=%q`, relationColor),
 		fmt.Sprintf(`stroke-width="%dpx"`, relationLineWidth),
-		fmt.Sprintf(`stroke-dasharray=%q`, strokeDashArray(l)))
+		fmt.Sprintf(`stroke-dasharray=%q`, strokeDashArray(l)),
+	)
 	mid := l.p0.Add(l.p1).Div(2).Sub(point(healthCircleRadius, healthCircleRadius))
 	canvas.Use(mid.X, mid.Y, "#healthCircle")
 }
@@ -221,20 +224,20 @@ func (c *Canvas) definition(canvas *svg.SVG) {
 		healthCircleRadius,
 		healthCircleRadius,
 		healthCircleRadius,
-		fmt.Sprintf("stroke:%s;fill:none;stroke-width:%dpx", relationColor, relationLineWidth))
+		fmt.Sprintf("stroke:%s;fill:none;stroke-width:%dpx", relationColor, relationLineWidth),
+	)
 	canvas.Circle(
 		healthCircleRadius,
 		healthCircleRadius,
 		healthCircleRadius/2,
-		fmt.Sprintf("fill:%s", relationColor))
+		fmt.Sprintf("fill:%s", relationColor),
+	)
 	canvas.Gend()
 
 	// Service and relation specific defs.
 	for _, relation := range c.relations {
 		relation.definition(canvas)
 	}
-	c.iconsRendered = make(map[string]bool)
-	c.iconIds = make(map[string]string)
 	for _, service := range c.services {
 		service.definition(canvas, c.iconsRendered, c.iconIds)
 	}
@@ -258,6 +261,10 @@ func (c *Canvas) servicesGroup(canvas *svg.SVG) {
 
 // Marshal renders the SVG to the given io.Writer.
 func (c *Canvas) Marshal(w io.Writer) {
+	// Initialize maps for service icons, which are used both in definition
+	// and use methods for services.
+	c.iconsRendered = make(map[string]bool)
+	c.iconIds = make(map[string]string)
 
 	// TODO check write errors and return an error from
 	// Marshal if the write fails. The svg package does not
@@ -271,7 +278,8 @@ func (c *Canvas) Marshal(w io.Writer) {
 		width,
 		height,
 		fmt.Sprintf(`style="font-family:Ubuntu, sans-serif;" viewBox="0 0 %d %d"`,
-			width, height))
+			width, height),
+	)
 	defer canvas.End()
 	c.definition(canvas)
 	c.relationsGroup(canvas)
