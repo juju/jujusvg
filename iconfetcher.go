@@ -21,7 +21,7 @@ type IconFetcher interface {
 }
 
 // LinkFetcher fetches icons as links so that they are included within the SVG
-// as remote resources.
+// as remote resources using SVG <image> tags.
 type LinkFetcher struct {
 	// IconURL returns the URL of the entity for embedding
 	IconURL func(*charm.Reference) string
