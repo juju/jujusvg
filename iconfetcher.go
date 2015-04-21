@@ -1,12 +1,14 @@
 package jujusvg
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"sync"
 
 	"github.com/juju/utils/parallel"
+	"github.com/juju/xml"
 	"gopkg.in/errgo.v1"
 	"gopkg.in/juju/charm.v5"
 )
@@ -45,11 +47,18 @@ func (l *LinkFetcher) FetchIcons(b *charm.BundleData) (map[string][]byte, error)
 			alreadyFetched[path] = true
 			icons[path] = []byte(fmt.Sprintf(`
 				<svg xmlns:xlink="http://www.w3.org/1999/xlink">
-					<image width="96" height="96" xlink:href=%q />
-				</svg>`, l.IconURL(charmId)))
+					<image width="96" height="96" xlink:href="%s" />
+				</svg>`, escapeString(l.IconURL(charmId))))
 		}
 	}
 	return icons, nil
+}
+
+// Wrap around xml.EscapeText to make it more string-friendly.
+func escapeString(s string) string {
+	var buf bytes.Buffer
+	xml.EscapeText(&buf, []byte(s))
+	return buf.String()
 }
 
 // HTTPFetcher is an implementation of IconFetcher which retrieves charm
@@ -58,7 +67,7 @@ func (l *LinkFetcher) FetchIcons(b *charm.BundleData) (map[string][]byte, error)
 // may optionally be fetched concurrently.
 type HTTPFetcher struct {
 	// Concurrency specifies the number of GoRoutines to use when fetching
-	// icons.  If it is not specified, 10 will be used.  Setting this to 1
+	// icons.  If it is not positive, 10 will be used.  Setting this to 1
 	// makes this method nominally synchronous.
 	Concurrency int
 
