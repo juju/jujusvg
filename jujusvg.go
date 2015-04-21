@@ -13,12 +13,12 @@ import (
 // NewFromBundle returns a new Canvas that can be used
 // to generate a graphical representation of the given bundle
 // data. The iconURL function is used to generate a URL
-// that refers to an SVG for the supplied charm URL.  If
-// requested, icon SVGs that are available will be embedded
-// within the bundle SVG so that the bundle will be self-
-// contained as much as possible.  If that is to be the case,
-// utilize the provided IconFetcher (or default to HTTPFetcher
-// if nil) to retrieve the icons.
+// that refers to an SVG for the supplied charm URL.
+// If fetcher is non-nil, it will be used to fetch icon
+// contents for any icons embedded within the charm,
+// allowing the generated bundle to be self-contained. If fetcher
+// is nil, a default fetcher which refers to icons by their
+// URLs as svg <image> tags will be used.
 func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string, fetcher IconFetcher) (*Canvas, error) {
 	if fetcher == nil {
 		fetcher = &LinkFetcher{
@@ -29,17 +29,7 @@ func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string, f
 	if err != nil {
 		return nil, err
 	}
-	return newFromBundleWithMap(b, iconURL, iconMap)
-}
 
-// newFromBundleWithMap returns a new Canvas that can be used
-// to generate a graphical representation of the given bundle
-// data. The iconURL function is used to generate a URL
-// that refers to an SVG for the supplied charm URL. If a map
-// of charms to icon SVGs is provided, then those SVGs will be
-// embedded in the bundle diagram and used instead of an image
-// tag.
-func newFromBundleWithMap(b *charm.BundleData, iconURL func(*charm.Reference) string, iconMap map[string][]byte) (*Canvas, error) {
 	var canvas Canvas
 
 	// Verify the bundle to make sure that all the invariants
@@ -67,7 +57,7 @@ func newFromBundleWithMap(b *charm.BundleData, iconURL func(*charm.Reference) st
 			// cannot actually happen, as we've verified it.
 			return nil, errgo.Notef(err, "cannot parse charm %q", serviceData.Charm)
 		}
-		icon, _ := iconMap[charmId.Path()]
+		icon := iconMap[charmId.Path()]
 		svc := &service{
 			name:      name,
 			charmPath: charmId.Path(),
