@@ -39,10 +39,14 @@ func main() {
 		log.Fatalf("Error parsing bundle: %s\n", err)
 	}
 
+	fetcher := &jujusvg.HTTPFetcher{
+		IconURL:        iconURL,
+		DefaultIconURL: "https://jujucharms.com/static/img/icons/default-charm.svg",
+	}
 	// Next, build a canvas of the bundle.  This is a simplified version of a charm.Bundle
 	// that contains just the position information and charm icon URLs necessary to build
 	// the SVG representation of the bundle
-	canvas, err := jujusvg.NewFromBundle(bundle, iconURL, nil)
+	canvas, err := jujusvg.NewFromBundle(bundle, iconURL, fetcher)
 	if err != nil {
 		log.Fatalf("Error generating canvas: %s\n", err)
 	}

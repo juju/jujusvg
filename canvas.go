@@ -63,12 +63,9 @@ func (s *service) definition(canvas *svg.SVG, iconsRendered map[string]bool, ico
 	iconsRendered[s.charmPath] = true
 	iconIds[s.charmPath] = fmt.Sprintf("icon-%d", len(iconsRendered))
 
-	canvas.Group(fmt.Sprintf(`id=%q`, iconIds[s.charmPath]))
-	defer canvas.Gend()
-
 	// Temporary solution:
 	iconBuf := bytes.NewBuffer(s.iconSrc)
-	return processIcon(iconBuf, canvas.Writer)
+	return processIcon(iconBuf, canvas.Writer, iconIds[s.charmPath])
 }
 
 // usage creates any necessary tags for actually using the service in the SVG.

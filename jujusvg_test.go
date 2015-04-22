@@ -97,18 +97,15 @@ func (s *newSuite) TestNewFromBundle(c *gc.C) {
 <circle cx="10" cy="10" r="10" style="stroke:#38B44A;fill:none;stroke-width:2px"/>
 <circle cx="10" cy="10" r="5" style="fill:#38B44A"/>
 </g>
-<g id="icon-1" >
-<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="icon-1">
 &#x9;&#x9;&#x9;&#x9;&#x9;<svg:image width="96" height="96" xlink:href="http://0.1.2.3/~juju-jitsu/precise/charmworld-58.svg"></svg:image>
-&#x9;&#x9;&#x9;&#x9;</svg:svg></g>
-<g id="icon-2" >
-<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+&#x9;&#x9;&#x9;&#x9;</svg:svg>
+<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="icon-2">
 &#x9;&#x9;&#x9;&#x9;&#x9;<svg:image width="96" height="96" xlink:href="http://0.1.2.3/~charming-devs/precise/elasticsearch-2.svg"></svg:image>
-&#x9;&#x9;&#x9;&#x9;</svg:svg></g>
-<g id="icon-3" >
-<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+&#x9;&#x9;&#x9;&#x9;</svg:svg>
+<svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="icon-3">
 &#x9;&#x9;&#x9;&#x9;&#x9;<svg:image width="96" height="96" xlink:href="http://0.1.2.3/precise/mongodb-21.svg"></svg:image>
-&#x9;&#x9;&#x9;&#x9;</svg:svg></g>
+&#x9;&#x9;&#x9;&#x9;</svg:svg>
 </defs>
 <g id="relations">
 <line x1="417" y1="189" x2="189" y2="351" stroke="#38B44A" stroke-width="2px" stroke-dasharray="129.85, 20" />
@@ -226,12 +223,9 @@ func (s *newSuite) TestDefaultHTTPFetcher(c *gc.C) {
 <circle cx="10" cy="10" r="10" style="stroke:#38B44A;fill:none;stroke-width:2px"/>
 <circle cx="10" cy="10" r="5" style="fill:#38B44A"/>
 </g>
-<g id="icon-1" >
-<svg:svg xmlns:svg="http://www.w3.org/2000/svg"></svg:svg></g>
-<g id="icon-2" >
-<svg:svg xmlns:svg="http://www.w3.org/2000/svg"></svg:svg></g>
-<g id="icon-3" >
-<svg:svg xmlns:svg="http://www.w3.org/2000/svg"></svg:svg></g>
+<svg:svg xmlns:svg="http://www.w3.org/2000/svg" id="icon-1"></svg:svg>
+<svg:svg xmlns:svg="http://www.w3.org/2000/svg" id="icon-2"></svg:svg>
+<svg:svg xmlns:svg="http://www.w3.org/2000/svg" id="icon-3"></svg:svg>
 </defs>
 <g id="relations">
 <line x1="417" y1="189" x2="189" y2="351" stroke="#38B44A" stroke-width="2px" stroke-dasharray="129.85, 20" />

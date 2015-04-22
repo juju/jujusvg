@@ -53,9 +53,7 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 				},
 				iconSrc: []byte("<svg>bar</svg>"),
 			},
-			expected: `<g id="icon-1" >
-<svg:svg xmlns:svg="http://www.w3.org/2000/svg">bar</svg:svg></g>
-<use x="0" y="0" xlink:href="#serviceBlock" id="bar" />
+			expected: `<svg:svg xmlns:svg="http://www.w3.org/2000/svg" id="icon-1">bar</svg:svg><use x="0" y="0" xlink:href="#serviceBlock" id="bar" />
 <use x="46" y="46" xlink:href="#icon-1" width="96" height="96" />
 <g style="font-size:18px;fill:#505050;text-anchor:middle">
 <text x="94" y="31" >bar</text>
@@ -207,11 +205,9 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 <circle cx="10" cy="10" r="10" style="stroke:#38B44A;fill:none;stroke-width:2px"/>
 <circle cx="10" cy="10" r="5" style="fill:#38B44A"/>
 </g>
-<g id="icon-1" >
-<svg xmlns="http://www.w3.org/2000/svg" class="blah">
+<svg xmlns="http://www.w3.org/2000/svg" class="blah" id="icon-1">
 <circle cx="20" cy="20" r="20" style="fill:#000"></circle>
 </svg>
-</g>
 </defs>
 <g id="relations">
 <line x1="94" y1="189" x2="100" y2="194" stroke="#38B44A" stroke-width="2px" stroke-dasharray="-6.09, 20" />

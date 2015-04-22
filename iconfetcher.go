@@ -71,6 +71,10 @@ type HTTPFetcher struct {
 	// makes this method nominally synchronous.
 	Concurrency int
 
+	// If provided, use this as the icon URL if a charm does not have an icon
+	// provided by the IconURL method.
+	DefaultIconURL string
+
 	// IconURL returns the URL from which to fetch the given entity's icon SVG.
 	IconURL func(*charm.Reference) string
 
@@ -129,7 +133,14 @@ func (h *HTTPFetcher) fetchIcon(url string, client *http.Client) ([]byte, error)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, errgo.Newf("cannot retrieve icon from %s: %s", url, resp.Status)
+		if resp.StatusCode == http.StatusNotFound && h.DefaultIconURL != "" {
+			resp, err = client.Get(h.DefaultIconURL)
+			if err != nil {
+				return nil, errgo.Notef(err, "HTTP error fetching %s: %v", h.DefaultIconURL, err)
+			}
+		} else {
+			return nil, errgo.Newf("cannot retrieve icon from %s: %s", url, resp.Status)
+		}
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
