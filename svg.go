@@ -2,6 +2,7 @@ package jujusvg
 
 import (
 	"io"
+	"strings"
 
 	"github.com/juju/xml"
 	"gopkg.in/errgo.v1"
@@ -13,7 +14,7 @@ const svgNamespace = "http://www.w3.org/2000/svg"
 // the <svg></svg> tags, which would be invalid in this context (such as
 // <?xml...?> decls, directives, etc), writing out to a writer.  In
 // addition, loosely check that the icon is a valid SVG file.
-func processIcon(r io.Reader, w io.Writer) error {
+func processIcon(r io.Reader, w io.Writer, id string) error {
 	dec := xml.NewDecoder(r)
 	dec.DefaultSpace = svgNamespace
 
@@ -34,8 +35,21 @@ func processIcon(r io.Reader, w io.Writer) error {
 		if ok && tag.Name.Space == svgNamespace && tag.Name.Local == "svg" {
 			svgStartFound = true
 			depth++
-			if err := enc.EncodeToken(tok); err != nil {
-				return errgo.Notef(err, "cannot encode token %#v", tok)
+			st := tok.(xml.StartElement)
+			for i := range st.Attr {
+				if strings.ToLower(st.Attr[i].Name.Local) == "id" {
+					st.Attr = append(st.Attr[:i], st.Attr[i+1:]...)
+					break
+				}
+			}
+			st.Attr = append(st.Attr, xml.Attr{
+				Name: xml.Name{
+					Local: "id",
+				},
+				Value: id,
+			})
+			if err := enc.EncodeToken(st); err != nil {
+				return errgo.Notef(err, "cannot encode token %#v", st)
 			}
 		}
 	}
