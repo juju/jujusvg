@@ -17,8 +17,8 @@ help:
 # and will only work - when this tree is found on the GOPATH.
 ifeq ($(CURDIR),$(PROJECT_DIR))
 
-deps: $(GOPATH)/bin/godeps
-	go get -v $(PROJECT)/...
+deps:
+	go get -v -t $(PROJECT)/...
 
 build:
 	go build $(PROJECT)/...

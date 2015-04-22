@@ -48,12 +48,24 @@ Design-related assets
 
 Some assets are specified based on assets provided by the design team. These
 assets are specified in the defs section of the generated SVG, and can thus
-be found in the Canvas.definition() method. Should these assets be updated,
-the SVGo code will need to be updated to reflect these changes. Unfortunately,
-this can only be done by hand, so care must be made to match the SVGs provided
-by design exactly.  These original SVG assets live in the `assets` directory.
+be found in the Canvas.definition() method.  These assets are, except where
+indicated, embedded in a go file assigned to an exported variable, so that they
+may be used like so:
+
+```go
+import (
+	"io"
+
+	"github.com/juju/jujusvg/assets"
+)
+
+// ...
+
+io.WriteString(canvas.Writer, assets.AssetToWrite)
+```
 
 Current assets in use:
 
 * The service block
-* The relation health indicator
+* ~~The relation health indicator~~ *this is defined by hand, but a similar path
+  may be taken in the future if the asset should change*
