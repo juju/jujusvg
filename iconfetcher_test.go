@@ -89,46 +89,6 @@ func (s *IconFetcherSuite) TestHTTPFetchIcons(c *gc.C) {
 	c.Assert(fetchCount, gc.Equals, 6)
 }
 
-func (s *IconFetcherSuite) TestHTTPDefaultIconUrl(c *gc.C) {
-	alreadyFetched := false
-	callCount := 0
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		callCount++
-		if !alreadyFetched {
-			http.Error(w, "bad-wolf", http.StatusNotFound)
-			alreadyFetched = true
-			return
-		}
-		fmt.Fprint(w, "<svg>default</svg>\n")
-	}))
-	defer ts.Close()
-
-	tsIconURL := func(ref *charm.Reference) string {
-		return ts.URL + "/" + ref.Path() + ".svg"
-	}
-
-	b, err := charm.ReadBundleData(strings.NewReader(bundle))
-	c.Assert(err, gc.IsNil)
-	err = b.Verify(nil)
-	c.Assert(err, gc.IsNil)
-	fetcher := HTTPFetcher{
-		Concurrency:    1,
-		IconURL:        tsIconURL,
-		DefaultIconURL: fmt.Sprintf("%s/default.svg", ts.URL),
-	}
-	iconMap, err := fetcher.FetchIcons(b)
-	c.Assert(err, gc.IsNil)
-	c.Assert(iconMap, gc.DeepEquals, map[string][]byte{
-		"~charming-devs/precise/elasticsearch-2": []byte("<svg>default</svg>\n"),
-		"~juju-jitsu/precise/charmworld-58":      []byte("<svg>default</svg>\n"),
-		"precise/mongodb-21":                     []byte("<svg>default</svg>\n"),
-	})
-	// We should have already fetched and received our 404.
-	c.Assert(alreadyFetched, gc.Equals, true)
-	// Call count should be 4, representing the first 404, then the fallbacks.
-	c.Assert(callCount, gc.Equals, 4)
-}
-
 func (s *IconFetcherSuite) TestHTTPBadIconURL(c *gc.C) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "bad-wolf", http.StatusForbidden)
