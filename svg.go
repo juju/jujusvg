@@ -82,7 +82,7 @@ func processIcon(r io.Reader, w io.Writer, id string) error {
 	return nil
 }
 
-// setAttr returns the given attributes with the given attribute name set to
+// setXMLAttr returns the given attributes with the given attribute name set to
 // val, adding an attribute if necessary.
 func setXMLAttr(attrs []xml.Attr, name xml.Name, val string) []xml.Attr {
 	found := false
