@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/juju/xml"
+
 	gc "gopkg.in/check.v1"
 )
 
@@ -137,4 +139,32 @@ func (s *SVGSuite) TestProcessIcon(c *gc.C) {
 			assertXMLEqual(c, out.Bytes(), []byte(test.expected))
 		}
 	}
+}
+
+func (s *SVGSuite) TestSetXMLAttr(c *gc.C) {
+	expected := []xml.Attr{
+		{
+			Name: xml.Name{
+				Local: "id",
+			},
+			Value: "foo",
+		},
+	}
+
+	result := setXMLAttr([]xml.Attr{}, xml.Name{
+		Local: "id",
+	}, "foo")
+	c.Assert(result, gc.DeepEquals, expected)
+
+	result = setXMLAttr([]xml.Attr{
+		{
+			Name: xml.Name{
+				Local: "id",
+			},
+			Value: "bar",
+		},
+	}, xml.Name{
+		Local: "id",
+	}, "foo")
+	c.Assert(result, gc.DeepEquals, expected)
 }
