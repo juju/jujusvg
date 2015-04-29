@@ -85,19 +85,14 @@ func processIcon(r io.Reader, w io.Writer, id string) error {
 // setXMLAttr returns the given attributes with the given attribute name set to
 // val, adding an attribute if necessary.
 func setXMLAttr(attrs []xml.Attr, name xml.Name, val string) []xml.Attr {
-	found := false
 	for i := range attrs {
 		if attrs[i].Name == name {
 			attrs[i].Value = val
-			found = true
-			break
+			return attrs
 		}
 	}
-	if !found {
-		attrs = append(attrs, xml.Attr{
-			Name:  name,
-			Value: val,
-		})
-	}
-	return attrs
+	return append(attrs, xml.Attr{
+		Name:  name,
+		Value: val,
+	})
 }
