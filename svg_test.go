@@ -142,6 +142,7 @@ func (s *SVGSuite) TestProcessIcon(c *gc.C) {
 }
 
 func (s *SVGSuite) TestSetXMLAttr(c *gc.C) {
+	// Attribute is added.
 	expected := []xml.Attr{
 		{
 			Name: xml.Name{
@@ -156,10 +157,57 @@ func (s *SVGSuite) TestSetXMLAttr(c *gc.C) {
 	}, "foo")
 	c.Assert(result, gc.DeepEquals, expected)
 
+	// Attribute is changed.
 	result = setXMLAttr([]xml.Attr{
 		{
 			Name: xml.Name{
 				Local: "id",
+			},
+			Value: "bar",
+		},
+	}, xml.Name{
+		Local: "id",
+	}, "foo")
+	c.Assert(result, gc.DeepEquals, expected)
+
+	// Attribute is changed, existing attributes unchanged.
+	expected = []xml.Attr{
+		{
+			Name: xml.Name{
+				Local: "class",
+			},
+			Value: "bar",
+		},
+		{
+			Name: xml.Name{
+				Local: "id",
+			},
+			Value: "foo",
+		},
+	}
+	result = setXMLAttr([]xml.Attr{
+		{
+			Name: xml.Name{
+				Local: "class",
+			},
+			Value: "bar",
+		},
+		{
+			Name: xml.Name{
+				Local: "id",
+			},
+			Value: "bar",
+		},
+	}, xml.Name{
+		Local: "id",
+	}, "foo")
+	c.Assert(result, gc.DeepEquals, expected)
+
+	// Attribute is added, existing attributes unchanged.
+	result = setXMLAttr([]xml.Attr{
+		{
+			Name: xml.Name{
+				Local: "class",
 			},
 			Value: "bar",
 		},
