@@ -89,7 +89,7 @@ func (s *IconFetcherSuite) TestHTTPFetchIcons(c *gc.C) {
 	c.Assert(fetchCount, gc.Equals, 6)
 }
 
-func (s *IconFetcherSuite) TestHttpBadIconURL(c *gc.C) {
+func (s *IconFetcherSuite) TestHTTPBadIconURL(c *gc.C) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "bad-wolf", http.StatusForbidden)
 		return

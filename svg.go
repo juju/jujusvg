@@ -12,8 +12,11 @@ const svgNamespace = "http://www.w3.org/2000/svg"
 // Process an icon SVG file from a reader, removing anything surrounding
 // the <svg></svg> tags, which would be invalid in this context (such as
 // <?xml...?> decls, directives, etc), writing out to a writer.  In
-// addition, loosely check that the icon is a valid SVG file.
-func processIcon(r io.Reader, w io.Writer) error {
+// addition, loosely check that the icon is a valid SVG file.  The id
+// argument provides a unique identifier for the icon SVG so that it can
+// be referenced within the bundle diagram.  If an id attribute on the SVG
+// tag already exists, it will be replaced with this argument.
+func processIcon(r io.Reader, w io.Writer, id string) error {
 	dec := xml.NewDecoder(r)
 	dec.DefaultSpace = svgNamespace
 
@@ -34,8 +37,11 @@ func processIcon(r io.Reader, w io.Writer) error {
 		if ok && tag.Name.Space == svgNamespace && tag.Name.Local == "svg" {
 			svgStartFound = true
 			depth++
-			if err := enc.EncodeToken(tok); err != nil {
-				return errgo.Notef(err, "cannot encode token %#v", tok)
+			tag.Attr = setXMLAttr(tag.Attr, xml.Name{
+				Local: "id",
+			}, id)
+			if err := enc.EncodeToken(tag); err != nil {
+				return errgo.Notef(err, "cannot encode token %#v", tag)
 			}
 		}
 	}
@@ -74,4 +80,19 @@ func processIcon(r io.Reader, w io.Writer) error {
 	}
 
 	return nil
+}
+
+// setXMLAttr returns the given attributes with the given attribute name set to
+// val, adding an attribute if necessary.
+func setXMLAttr(attrs []xml.Attr, name xml.Name, val string) []xml.Attr {
+	for i := range attrs {
+		if attrs[i].Name == name {
+			attrs[i].Value = val
+			return attrs
+		}
+	}
+	return append(attrs, xml.Attr{
+		Name:  name,
+		Value: val,
+	})
 }

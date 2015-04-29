@@ -2,6 +2,9 @@ package jujusvg
 
 import (
 	"bytes"
+	"fmt"
+
+	"github.com/juju/xml"
 
 	gc "gopkg.in/check.v1"
 )
@@ -25,7 +28,7 @@ func (s *SVGSuite) TestProcessIcon(c *gc.C) {
 				</svg>
 				`,
 			expected: `
-				<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+				<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" id="test-0">
 					<g id="foo"></g>
 				</svg>`,
 		},
@@ -40,7 +43,7 @@ func (s *SVGSuite) TestProcessIcon(c *gc.C) {
 				</svg>
 				`,
 			expected: `
-				<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+				<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" id="test-1">
 					<svg>
 						<g id="foo"></g>
 					</svg>
@@ -56,7 +59,7 @@ func (s *SVGSuite) TestProcessIcon(c *gc.C) {
 				</svg>
 				`,
 			expected: `
-				<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+				<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" id="test-2">
 					<g id="foo"></g>
 				</svg>`,
 		},
@@ -69,7 +72,7 @@ func (s *SVGSuite) TestProcessIcon(c *gc.C) {
 				</svg>
 				`,
 			expected: `
-				<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+				<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" id="test-3">
 					<g id="foo"></g>
 				</svg>`,
 		},
@@ -82,7 +85,7 @@ func (s *SVGSuite) TestProcessIcon(c *gc.C) {
 				<?procinst foo="bar"?>
 				`,
 			expected: `
-				<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+				<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" id="test-4">
 					<g id="foo"></g>
 				</svg>`,
 		},
@@ -95,7 +98,7 @@ func (s *SVGSuite) TestProcessIcon(c *gc.C) {
 				<!DOCTYPE svg>
 				`,
 			expected: `
-				<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+				<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" id="test-5">
 					<g id="foo"></g>
 				</svg>`,
 		},
@@ -109,7 +112,7 @@ func (s *SVGSuite) TestProcessIcon(c *gc.C) {
 				</svg>
 				`,
 			expected: `
-				<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+				<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" id="test-6">
 					<!DOCTYPE svg>
 					<?proc foo="bar"?>
 					<g id="foo"></g>
@@ -125,10 +128,10 @@ func (s *SVGSuite) TestProcessIcon(c *gc.C) {
 			err: "icon does not appear to be a valid SVG",
 		},
 	}
-	for _, test := range tests {
+	for i, test := range tests {
 		in := bytes.NewBuffer([]byte(test.icon))
 		out := bytes.Buffer{}
-		err := processIcon(in, &out)
+		err := processIcon(in, &out, fmt.Sprintf("test-%d", i))
 		if test.err != "" {
 			c.Assert(err, gc.ErrorMatches, test.err)
 		} else {
@@ -136,4 +139,80 @@ func (s *SVGSuite) TestProcessIcon(c *gc.C) {
 			assertXMLEqual(c, out.Bytes(), []byte(test.expected))
 		}
 	}
+}
+
+func (s *SVGSuite) TestSetXMLAttr(c *gc.C) {
+	// Attribute is added.
+	expected := []xml.Attr{
+		{
+			Name: xml.Name{
+				Local: "id",
+			},
+			Value: "foo",
+		},
+	}
+
+	result := setXMLAttr([]xml.Attr{}, xml.Name{
+		Local: "id",
+	}, "foo")
+	c.Assert(result, gc.DeepEquals, expected)
+
+	// Attribute is changed.
+	result = setXMLAttr([]xml.Attr{
+		{
+			Name: xml.Name{
+				Local: "id",
+			},
+			Value: "bar",
+		},
+	}, xml.Name{
+		Local: "id",
+	}, "foo")
+	c.Assert(result, gc.DeepEquals, expected)
+
+	// Attribute is changed, existing attributes unchanged.
+	expected = []xml.Attr{
+		{
+			Name: xml.Name{
+				Local: "class",
+			},
+			Value: "bar",
+		},
+		{
+			Name: xml.Name{
+				Local: "id",
+			},
+			Value: "foo",
+		},
+	}
+	result = setXMLAttr([]xml.Attr{
+		{
+			Name: xml.Name{
+				Local: "class",
+			},
+			Value: "bar",
+		},
+		{
+			Name: xml.Name{
+				Local: "id",
+			},
+			Value: "bar",
+		},
+	}, xml.Name{
+		Local: "id",
+	}, "foo")
+	c.Assert(result, gc.DeepEquals, expected)
+
+	// Attribute is added, existing attributes unchanged.
+	result = setXMLAttr([]xml.Attr{
+		{
+			Name: xml.Name{
+				Local: "class",
+			},
+			Value: "bar",
+		},
+	}, xml.Name{
+		Local: "id",
+	}, "foo")
+	c.Assert(result, gc.DeepEquals, expected)
 }

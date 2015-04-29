@@ -18,7 +18,7 @@ import (
 // iconURL takes a reference to a charm and returns the URL for that charm's icon.
 // In this case, we're using the api.jujucharms.com API to provide the icon's URL.
 func iconURL(ref *charm.Reference) string {
-	return "https://api.jujucharms.com/v4/" + ref.Path() + "/archive/icon.svg"
+	return "https://api.jujucharms.com/charmstore/v4/" + ref.Path() + "/icon.svg"
 }
 
 func main() {
@@ -39,10 +39,13 @@ func main() {
 		log.Fatalf("Error parsing bundle: %s\n", err)
 	}
 
+	fetcher := &jujusvg.HTTPFetcher{
+		IconURL: iconURL,
+	}
 	// Next, build a canvas of the bundle.  This is a simplified version of a charm.Bundle
 	// that contains just the position information and charm icon URLs necessary to build
 	// the SVG representation of the bundle
-	canvas, err := jujusvg.NewFromBundle(bundle, iconURL, nil)
+	canvas, err := jujusvg.NewFromBundle(bundle, iconURL, fetcher)
 	if err != nil {
 		log.Fatalf("Error generating canvas: %s\n", err)
 	}
