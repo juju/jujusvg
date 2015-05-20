@@ -9,6 +9,8 @@ import (
 	"github.com/ajstarks/svgo"
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
+
+	"gopkg.in/juju/jujusvg.v1/assets"
 )
 
 type CanvasSuite struct{}
@@ -18,25 +20,75 @@ var _ = gc.Suite(&CanvasSuite{})
 func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 	// Ensure that the Service's definition and usage methods output the
 	// proper SVG elements.
-	var buf bytes.Buffer
-	svg := svg.New(&buf)
-	service := service{
-		name: "foo",
-		point: image.Point{
-			X: 0,
-			Y: 0,
-		},
-		iconUrl: "foo",
-	}
-	service.definition(svg)
-	service.usage(svg)
-	c.Assert(buf.String(), gc.Equals,
-		`<use x="0" y="0" xlink:href="#serviceBlock" id="foo" />
+	var tests = []struct {
+		about    string
+		service  service
+		expected string
+	}{
+		{
+			about: "Service without iconSrc, no def created",
+			service: service{
+				name: "foo",
+				point: image.Point{
+					X: 0,
+					Y: 0,
+				},
+				iconUrl: "foo",
+			},
+			expected: `<use x="0" y="0" xlink:href="#serviceBlock" id="foo" />
 <image x="46" y="46" width="96" height="96" xlink:href="foo" />
 <g style="font-size:18px;fill:#505050;text-anchor:middle">
 <text x="94" y="31" >foo</text>
 </g>
-`)
+`,
+		},
+		{
+			about: "Service with iconSrc",
+			service: service{
+				name:      "bar",
+				charmPath: "bar",
+				point: image.Point{
+					X: 0,
+					Y: 0,
+				},
+				iconSrc: []byte("<svg>bar</svg>"),
+			},
+			expected: `<svg:svg xmlns:svg="http://www.w3.org/2000/svg" id="icon-1">bar</svg:svg><use x="0" y="0" xlink:href="#serviceBlock" id="bar" />
+<use x="46" y="46" xlink:href="#icon-1" width="96" height="96" />
+<g style="font-size:18px;fill:#505050;text-anchor:middle">
+<text x="94" y="31" >bar</text>
+</g>
+`,
+		},
+		{
+			about: "Service with already def'd icon",
+			service: service{
+				name:      "baz",
+				charmPath: "bar",
+				point: image.Point{
+					X: 0,
+					Y: 0,
+				},
+				iconSrc: []byte("<svg>bar</svg>"),
+			},
+			expected: `<use x="0" y="0" xlink:href="#serviceBlock" id="baz" />
+<use x="46" y="46" xlink:href="#icon-1" width="96" height="96" />
+<g style="font-size:18px;fill:#505050;text-anchor:middle">
+<text x="94" y="31" >baz</text>
+</g>
+`,
+		},
+	}
+	// Maintain our list of rendered icons outside the loop.
+	iconsRendered := make(map[string]bool)
+	iconIds := make(map[string]string)
+	for _, test := range tests {
+		var buf bytes.Buffer
+		svg := svg.New(&buf)
+		test.service.definition(svg, iconsRendered, iconIds)
+		test.service.usage(svg, iconIds)
+		c.Assert(buf.String(), gc.Equals, test.expected)
+	}
 }
 
 func (s *CanvasSuite) TestRelationRender(c *gc.C) {
@@ -113,11 +165,16 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 	var buf bytes.Buffer
 	canvas := Canvas{}
 	serviceA := &service{
-		name: "service-a",
+		name:      "service-a",
+		charmPath: "trusty/svc-a",
 		point: image.Point{
 			X: 0,
 			Y: 0,
 		},
+		iconSrc: []byte(`
+			<svg xmlns="http://www.w3.org/2000/svg" class="blah">
+				<circle cx="20" cy="20" r="20" style="fill:#000" />
+			</svg>`),
 	}
 	serviceB := &service{
 		name: "service-b",
@@ -142,38 +199,15 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
      xmlns="http://www.w3.org/2000/svg" 
      xmlns:xlink="http://www.w3.org/1999/xlink">
 <defs>
-<g id="serviceBlock" transform="translate(115.183,4.8),scale(0.8)" >
-<g transform="translate(-399.571,-251.207)">
-<path d="M410.565,479.165h-73.988c-38.324,0-57.56,0-68.272-10.713c-10.712-10.713-10.712-29.949-10.712-68.273
-v-73.986c-0.001-38.324-0.001-57.561,10.711-68.273c10.713-10.713,29.949-10.713,68.274-10.713h73.988
-c38.324,0,57.561,0,68.272,10.713c10.713,10.712,10.713,29.949,10.713,68.273v73.986c0,38.324,0,57.561-10.713,68.273
-C468.126,479.165,448.889,479.165,410.565,479.165z M336.577,257.207c-34.445,0-53.419,0-61.203,7.784
-s-7.783,26.757-7.782,61.202v73.986c0,34.444,0,53.419,7.784,61.202c7.784,7.784,26.757,7.784,61.201,7.784h73.988
-c34.444,0,53.418,0,61.202-7.784c7.783-7.783,7.783-26.758,7.783-61.202v-73.986c0-34.444,0-53.418-7.783-61.202
-c-7.784-7.784-26.758-7.784-61.202-7.784H336.577z" fill="#BBBBBB" />
-<path d="M410.565,479.165h-73.988c-38.324,0-57.56,0-68.272-10.713c-10.712-10.713-10.712-29.949-10.712-68.273
-v-73.986c0-38.324,0-57.561,10.712-68.273c10.713-10.713,29.949-10.713,68.272-10.713h73.988c38.324,0,57.561,0,68.272,10.713
-c10.713,10.712,10.713,29.949,10.713,68.273v73.986c0,38.324,0,57.561-10.713,68.273
-C468.126,479.165,448.889,479.165,410.565,479.165z M336.577,257.207c-34.444,0-53.417,0-61.201,7.784
-s-7.784,26.758-7.784,61.202v73.986c0,34.444,0,53.419,7.784,61.202c7.784,7.784,26.757,7.784,61.201,7.784h73.988
-c34.444,0,53.418,0,61.201-7.784c7.784-7.783,7.784-26.758,7.784-61.202v-73.986c0-34.444,0-53.418-7.784-61.202
-c-7.783-7.784-26.757-7.784-61.201-7.784H336.577z" fill="#BBBBBB" />
-</g>
-<path d="M-42,219.958h32c2.209,0,4,1.791,4,4v2c0,2.209-1.791,4-4,4h-32
-c-2.209,0-4-1.791-4-4v-2C-46,221.749-44.209,219.958-42,219.958z" fill-rule="evenodd" clip-rule="evenodd" fill="#BBBBBB" />
-<path d="M-42-6h32c2.209,0,4,1.791,4,4v2c0,2.209-1.791,4-4,4h-32
-c-2.209,0-4-1.791-4-4v-2C-46-4.209-44.209-6-42-6z" fill-rule="evenodd" clip-rule="evenodd" fill="#BBBBBB" />
-<path d="M81.979,127.979v-32c0-2.209,1.791-4,4-4h2c2.209,0,4,1.791,4,4
-v32c0,2.209-1.791,4-4,4h-2C83.771,131.979,81.979,130.188,81.979,127.979z" fill-rule="evenodd" clip-rule="evenodd" fill="#BBBBBB" />
-<path d="M-143.979,127.979v-32c0-2.209,1.791-4,4-4h2c2.209,0,4,1.791,4,4
-v32c0,2.209-1.791,4-4,4h-2C-142.188,131.979-143.979,130.188-143.979,127.979z" fill-rule="evenodd" clip-rule="evenodd" fill="#BBBBBB" />
-<path d="M10.994-1h-73.988c-73.987,0-73.987,0-73.985,73.986v73.986c0,73.986,0,73.986,73.985,73.986h73.988
-c73.985,0,73.985,0,73.985-73.986V72.986C84.979-1,84.979-1,10.994-1z" fill="#FFFFFF" />
+<g id="serviceBlock" transform="scale(0.8)" >`+assets.ServiceModule+`
 </g>
 <g id="healthCircle">
 <circle cx="10" cy="10" r="10" style="stroke:#38B44A;fill:none;stroke-width:2px"/>
 <circle cx="10" cy="10" r="5" style="fill:#38B44A"/>
 </g>
+<svg xmlns="http://www.w3.org/2000/svg" class="blah" id="icon-1">
+<circle cx="20" cy="20" r="20" style="fill:#000"></circle>
+</svg>
 </defs>
 <g id="relations">
 <line x1="94" y1="189" x2="100" y2="194" stroke="#38B44A" stroke-width="2px" stroke-dasharray="-6.09, 20" />
@@ -181,7 +215,7 @@ c73.985,0,73.985,0,73.985-73.986V72.986C84.979-1,84.979-1,10.994-1z" fill="#FFFF
 </g>
 <g id="services">
 <use x="0" y="0" xlink:href="#serviceBlock" id="service-a" />
-<image x="46" y="46" width="96" height="96" xlink:href="" />
+<use x="46" y="46" xlink:href="#icon-1" width="96" height="96" />
 <g style="font-size:18px;fill:#505050;text-anchor:middle">
 <text x="94" y="31" >service-a</text>
 </g>

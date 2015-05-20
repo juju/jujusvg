@@ -1,4 +1,4 @@
-package jujusvg
+package jujusvg // import "gopkg.in/juju/jujusvg.v1"
 
 import (
 	"image"
@@ -7,14 +7,29 @@ import (
 	"strings"
 
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v5"
+	"gopkg.in/juju/charm.v6-unstable"
 )
 
 // NewFromBundle returns a new Canvas that can be used
 // to generate a graphical representation of the given bundle
 // data. The iconURL function is used to generate a URL
 // that refers to an SVG for the supplied charm URL.
-func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string) (*Canvas, error) {
+// If fetcher is non-nil, it will be used to fetch icon
+// contents for any icons embedded within the charm,
+// allowing the generated bundle to be self-contained. If fetcher
+// is nil, a default fetcher which refers to icons by their
+// URLs as svg <image> tags will be used.
+func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string, fetcher IconFetcher) (*Canvas, error) {
+	if fetcher == nil {
+		fetcher = &LinkFetcher{
+			IconURL: iconURL,
+		}
+	}
+	iconMap, err := fetcher.FetchIcons(b)
+	if err != nil {
+		return nil, err
+	}
+
 	var canvas Canvas
 
 	// Verify the bundle to make sure that all the invariants
@@ -42,10 +57,13 @@ func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string) (
 			// cannot actually happen, as we've verified it.
 			return nil, errgo.Notef(err, "cannot parse charm %q", serviceData.Charm)
 		}
+		icon := iconMap[charmId.Path()]
 		svc := &service{
-			name:    name,
-			point:   image.Point{int(x), int(y)},
-			iconUrl: iconURL(charmId),
+			name:      name,
+			charmPath: charmId.Path(),
+			point:     image.Point{int(x), int(y)},
+			iconUrl:   iconURL(charmId),
+			iconSrc:   icon,
 		}
 		services[name] = svc
 		canvas.addService(svc)

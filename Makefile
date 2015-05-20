@@ -2,7 +2,7 @@ ifndef GOPATH
 	$(warning You need to set up a GOPATH.)
 endif
 
-PROJECT := github.com/juju/jujusvg
+PROJECT := gopkg.in/juju/jujusvg.v1
 PROJECT_DIR := $(shell go list -e -f '{{.Dir}}' $(PROJECT))
 
 help:
@@ -17,8 +17,8 @@ help:
 # and will only work - when this tree is found on the GOPATH.
 ifeq ($(CURDIR),$(PROJECT_DIR))
 
-deps: $(GOPATH)/bin/godeps
-	go get -v $(PROJECT)/...
+deps:
+	go get -v -t $(PROJECT)/...
 
 build:
 	go build $(PROJECT)/...
