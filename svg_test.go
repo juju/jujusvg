@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/juju/xml"
-
 	gc "gopkg.in/check.v1"
 )
 

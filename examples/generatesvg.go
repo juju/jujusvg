@@ -9,10 +9,10 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/juju/charm.v5"
+	"gopkg.in/juju/charm.v6-unstable"
 
 	// Import the jujusvg library and the juju charm library
-	"github.com/juju/jujusvg"
+	"gopkg.in/juju/jujusvg.v1"
 )
 
 // iconURL takes a reference to a charm and returns the URL for that charm's icon.

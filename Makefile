@@ -2,7 +2,7 @@ ifndef GOPATH
 	$(warning You need to set up a GOPATH.)
 endif
 
-PROJECT := github.com/juju/jujusvg
+PROJECT := gopkg.in/juju/jujusvg.v1
 PROJECT_DIR := $(shell go list -e -f '{{.Dir}}' $(PROJECT))
 
 help:

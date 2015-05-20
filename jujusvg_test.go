@@ -9,9 +9,9 @@ import (
 	"testing"
 
 	gc "gopkg.in/check.v1"
+	"gopkg.in/juju/charm.v6-unstable"
 
 	"gopkg.in/juju/jujusvg.v1/assets"
-	"gopkg.in/juju/charm.v6-unstable"
 )
 
 func Test(t *testing.T) { gc.TestingT(t) }

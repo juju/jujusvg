@@ -1,4 +1,4 @@
-package jujusvg
+package jujusvg // import "gopkg.in/juju/jujusvg.v1"
 
 import (
 	"image"
@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v5"
+	"gopkg.in/juju/charm.v6-unstable"
 )
 
 // NewFromBundle returns a new Canvas that can be used

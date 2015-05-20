@@ -9,7 +9,7 @@ Installation
 To start using jujusvg, first ensure you have a valid Go environment, then run
 the following:
 
-    go get github.com/juju/jujusvg
+    go get gopkg.in/juju/jujusvg.v1
 
 Dependencies
 ------------
@@ -56,7 +56,7 @@ may be used like so:
 import (
 	"io"
 
-	"github.com/juju/jujusvg/assets"
+	"gopkg.in/juju/jujusvg.v1/assets"
 )
 
 // ...
