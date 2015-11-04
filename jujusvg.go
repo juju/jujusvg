@@ -2,6 +2,7 @@ package jujusvg // import "gopkg.in/juju/jujusvg.v1"
 
 import (
 	"image"
+	"math"
 	"sort"
 	"strconv"
 	"strings"
@@ -45,28 +46,52 @@ func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string, f
 	}
 	sort.Strings(serviceNames)
 	services := make(map[string]*service)
+	servicesNeedingPlacement := make(map[string]bool)
 	for _, name := range serviceNames {
+		needsPlacement := false
 		serviceData := b.Services[name]
 		x, xerr := strconv.ParseFloat(serviceData.Annotations["gui-x"], 64)
 		y, yerr := strconv.ParseFloat(serviceData.Annotations["gui-y"], 64)
 		if xerr != nil || yerr != nil {
-			return nil, errgo.Newf("service %q does not have a valid position", name)
+			if serviceData.Annotations["gui-x"] == "" && serviceData.Annotations["gui-y"] == "" {
+				needsPlacement = true
+				x = 0
+				y = 0
+			} else {
+				return nil, errgo.Newf("service %q does not have a valid position", name)
+			}
 		}
-		charmId, err := charm.ParseReference(serviceData.Charm)
+		charmID, err := charm.ParseReference(serviceData.Charm)
 		if err != nil {
 			// cannot actually happen, as we've verified it.
 			return nil, errgo.Notef(err, "cannot parse charm %q", serviceData.Charm)
 		}
-		icon := iconMap[charmId.Path()]
+		icon := iconMap[charmID.Path()]
 		svc := &service{
 			name:      name,
-			charmPath: charmId.Path(),
+			charmPath: charmID.Path(),
 			point:     image.Point{int(x), int(y)},
-			iconUrl:   iconURL(charmId),
+			iconUrl:   iconURL(charmID),
 			iconSrc:   icon,
 		}
 		services[name] = svc
-		canvas.addService(svc)
+		if needsPlacement {
+			servicesNeedingPlacement[name] = true
+		}
+	}
+	padding := image.Point{int(math.Floor(serviceBlockSize * 1.5)), int(math.Floor(serviceBlockSize * 0.5))}
+	for name := range servicesNeedingPlacement {
+		vertices := []image.Point{}
+		for n, svc := range services {
+			if !servicesNeedingPlacement[n] {
+				vertices = append(vertices, svc.point)
+			}
+		}
+		services[name].point = getPointOutside(vertices, padding)
+		servicesNeedingPlacement[name] = false
+	}
+	for _, name := range serviceNames {
+		canvas.addService(services[name])
 	}
 	for _, relation := range b.Relations {
 		canvas.addRelation(&serviceRelation{
