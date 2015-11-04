@@ -48,13 +48,12 @@ func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string, f
 	services := make(map[string]*service)
 	servicesNeedingPlacement := make(map[string]bool)
 	for _, name := range serviceNames {
-		needsPlacement := false
 		serviceData := b.Services[name]
 		x, xerr := strconv.ParseFloat(serviceData.Annotations["gui-x"], 64)
 		y, yerr := strconv.ParseFloat(serviceData.Annotations["gui-y"], 64)
 		if xerr != nil || yerr != nil {
 			if serviceData.Annotations["gui-x"] == "" && serviceData.Annotations["gui-y"] == "" {
-				needsPlacement = true
+				servicesNeedingPlacement[name] = true
 				x = 0
 				y = 0
 			} else {
@@ -75,9 +74,6 @@ func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string, f
 			iconSrc:   icon,
 		}
 		services[name] = svc
-		if needsPlacement {
-			servicesNeedingPlacement[name] = true
-		}
 	}
 	padding := image.Point{int(math.Floor(serviceBlockSize * 1.5)), int(math.Floor(serviceBlockSize * 0.5))}
 	for name := range servicesNeedingPlacement {
