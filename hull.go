@@ -6,7 +6,9 @@ import (
 	"sort"
 )
 
-// getPointOutside returns a point that is outside the hull of existing placed vertices so that an object can be placed on the canvas without overlapping others.
+// getPointOutside returns a point that is outside the hull of existing placed
+// vertices so that an object can be placed on the canvas without overlapping
+// others.
 func getPointOutside(vertices []image.Point, padding image.Point) image.Point {
 	// Shortcut some easy solutions.
 	switch len(vertices) {
@@ -41,7 +43,8 @@ func getPointOutside(vertices []image.Point, padding image.Point) image.Point {
 	}
 }
 
-// vertexSet implements sort.Interface for image.Point, sorting first by X, then by Y
+// vertexSet implements sort.Interface for image.Point, sorting first by X, then
+// by Y
 type vertexSet []image.Point
 
 func (vs vertexSet) Len() int      { return len(vs) }
@@ -53,7 +56,8 @@ func (vs vertexSet) Less(i, j int) bool {
 	return vs[i].X < vs[j].X
 }
 
-// convexHull takes a list of vertices and returns the set of vertices which make up the convex hull encapsulating all vertices on a plane.
+// convexHull takes a list of vertices and returns the set of vertices which
+// make up the convex hull encapsulating all vertices on a plane.
 func convexHull(vertices []image.Point) []image.Point {
 	// Simple cases can be shortcutted.
 	if len(vertices) == 0 {
@@ -85,16 +89,17 @@ func convexHull(vertices []image.Point) []image.Point {
 }
 
 // cross finds the 2D cross-product of OA and OB vectors.
-// Returns a positive value if OAB makes a counter-clockwise turn, a negative value if OAB makes a clockwise turn, and zero if the points are collinear.
+// Returns a positive value if OAB makes a counter-clockwise turn, a negative
+// value if OAB makes a clockwise turn, and zero if the points are collinear.
 func cross(o, a, b image.Point) int {
 	return (a.X-o.X)*(b.Y-o.Y) - (a.Y-o.Y)*(b.X-o.X)
 }
 
 // reverse reverses a slice of Points for use in finding the upper hull.
 func reverse(vertices []image.Point) []image.Point {
-	for i := len(vertices)/2 - 1; i >= 0; i-- {
-		opposite := len(vertices) - 1 - i
-		vertices[i], vertices[opposite] = vertices[opposite], vertices[i]
+	for i := 0; i < len(vertices)/2; i++ {
+		opp := len(vertices) - (i + 1)
+		vertices[i], vertices[opp] = vertices[opp], vertices[i]
 	}
 	return vertices
 }
