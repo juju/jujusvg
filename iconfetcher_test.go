@@ -29,7 +29,7 @@ func (s *IconFetcherSuite) TestLinkFetchIcons(c *gc.C) {
 				<image width="96" height="96" xlink:href="/precise/mongodb-21.svg" />
 			</svg>`),
 	}
-	iconURL := func(ref *charm.Reference) string {
+	iconURL := func(ref *charm.URL) string {
 		return "/" + ref.Path() + ".svg"
 	}
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
@@ -54,7 +54,7 @@ func (s *IconFetcherSuite) TestHTTPFetchIcons(c *gc.C) {
 	}))
 	defer ts.Close()
 
-	tsIconURL := func(ref *charm.Reference) string {
+	tsIconURL := func(ref *charm.URL) string {
 		return ts.URL + "/" + ref.Path() + ".svg"
 	}
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
@@ -96,7 +96,7 @@ func (s *IconFetcherSuite) TestHTTPBadIconURL(c *gc.C) {
 	}))
 	defer ts.Close()
 
-	tsIconURL := func(ref *charm.Reference) string {
+	tsIconURL := func(ref *charm.URL) string {
 		return ts.URL + "/" + ref.Path() + ".svg"
 	}
 

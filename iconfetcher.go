@@ -24,7 +24,7 @@ type IconFetcher interface {
 // as remote resources using SVG <image> tags.
 type LinkFetcher struct {
 	// IconURL returns the URL of the entity for embedding
-	IconURL func(*charm.Reference) string
+	IconURL func(*charm.URL) string
 }
 
 // FetchIcons generates the svg image tags given an appropriate URL, generating
@@ -36,7 +36,7 @@ func (l *LinkFetcher) FetchIcons(b *charm.BundleData) (map[string][]byte, error)
 	// Build the map of icons.
 	icons := make(map[string][]byte)
 	for _, serviceData := range b.Services {
-		charmId, err := charm.ParseReference(serviceData.Charm)
+		charmId, err := charm.ParseURL(serviceData.Charm)
 		if err != nil {
 			return nil, errgo.Notef(err, "cannot parse charm %q", serviceData.Charm)
 		}
@@ -72,7 +72,7 @@ type HTTPFetcher struct {
 	Concurrency int
 
 	// IconURL returns the URL from which to fetch the given entity's icon SVG.
-	IconURL func(*charm.Reference) string
+	IconURL func(*charm.URL) string
 
 	// Client specifies what HTTP client to use; if it is not provided,
 	// http.DefaultClient will be used.
@@ -95,7 +95,7 @@ func (h *HTTPFetcher) FetchIcons(b *charm.BundleData) (map[string][]byte, error)
 	alreadyFetched := make(map[string]bool)
 	run := parallel.NewRun(concurrency)
 	for _, serviceData := range b.Services {
-		charmId, err := charm.ParseReference(serviceData.Charm)
+		charmId, err := charm.ParseURL(serviceData.Charm)
 		if err != nil {
 			return nil, errgo.Notef(err, "cannot parse charm %q", serviceData.Charm)
 		}

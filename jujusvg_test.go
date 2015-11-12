@@ -55,7 +55,7 @@ relations:
 series: precise
 `
 
-func iconURL(ref *charm.Reference) string {
+func iconURL(ref *charm.URL) string {
 	return "http://0.1.2.3/" + ref.Path() + ".svg"
 }
 
@@ -295,7 +295,7 @@ func (s *newSuite) TestDefaultHTTPFetcher(c *gc.C) {
 	}))
 	defer ts.Close()
 
-	tsIconUrl := func(ref *charm.Reference) string {
+	tsIconUrl := func(ref *charm.URL) string {
 		return ts.URL + "/" + ref.Path() + ".svg"
 	}
 

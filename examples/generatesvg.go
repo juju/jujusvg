@@ -17,7 +17,7 @@ import (
 
 // iconURL takes a reference to a charm and returns the URL for that charm's icon.
 // In this case, we're using the api.jujucharms.com API to provide the icon's URL.
-func iconURL(ref *charm.Reference) string {
+func iconURL(ref *charm.URL) string {
 	return "https://api.jujucharms.com/charmstore/v4/" + ref.Path() + "/icon.svg"
 }
 
