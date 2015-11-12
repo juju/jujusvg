@@ -20,7 +20,7 @@ import (
 // allowing the generated bundle to be self-contained. If fetcher
 // is nil, a default fetcher which refers to icons by their
 // URLs as svg <image> tags will be used.
-func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string, fetcher IconFetcher) (*Canvas, error) {
+func NewFromBundle(b *charm.BundleData, iconURL func(*charm.URL) string, fetcher IconFetcher) (*Canvas, error) {
 	if fetcher == nil {
 		fetcher = &LinkFetcher{
 			IconURL: iconURL,
@@ -60,7 +60,7 @@ func NewFromBundle(b *charm.BundleData, iconURL func(*charm.Reference) string, f
 				return nil, errgo.Newf("service %q does not have a valid position", name)
 			}
 		}
-		charmID, err := charm.ParseReference(serviceData.Charm)
+		charmID, err := charm.ParseURL(serviceData.Charm)
 		if err != nil {
 			// cannot actually happen, as we've verified it.
 			return nil, errgo.Notef(err, "cannot parse charm %q", serviceData.Charm)
