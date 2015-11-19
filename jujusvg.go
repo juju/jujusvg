@@ -35,7 +35,7 @@ func NewFromBundle(b *charm.BundleData, iconURL func(*charm.URL) string, fetcher
 
 	// Verify the bundle to make sure that all the invariants
 	// that we depend on below actually hold true.
-	if err := b.Verify(nil); err != nil {
+	if err := b.Verify(nil, nil); err != nil {
 		return nil, errgo.Notef(err, "cannot verify bundle")
 	}
 	// Go through all services in alphabetical order so that

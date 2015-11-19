@@ -34,7 +34,7 @@ func (s *IconFetcherSuite) TestLinkFetchIcons(c *gc.C) {
 	}
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, gc.IsNil)
-	err = b.Verify(nil)
+	err = b.Verify(nil, nil)
 	c.Assert(err, gc.IsNil)
 	fetcher := LinkFetcher{
 		IconURL: iconURL,
@@ -59,7 +59,7 @@ func (s *IconFetcherSuite) TestHTTPFetchIcons(c *gc.C) {
 	}
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, gc.IsNil)
-	err = b.Verify(nil)
+	err = b.Verify(nil, nil)
 	c.Assert(err, gc.IsNil)
 	// Only one copy of precise/mongodb-21
 	b.Services["duplicateService"] = &charm.ServiceSpec{
@@ -102,7 +102,7 @@ func (s *IconFetcherSuite) TestHTTPBadIconURL(c *gc.C) {
 
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, gc.IsNil)
-	err = b.Verify(nil)
+	err = b.Verify(nil, nil)
 	c.Assert(err, gc.IsNil)
 	fetcher := HTTPFetcher{
 		Concurrency: 1,
