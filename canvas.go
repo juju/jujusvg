@@ -14,9 +14,9 @@ import (
 
 const (
 	iconSize           = 96
-	serviceBlockSize   = 189
-	healthCircleRadius = 10
-	relationLineWidth  = 2
+	serviceBlockSize   = 180
+	healthCircleRadius = 8
+	relationLineWidth  = 1
 	maxInt             = int(^uint(0) >> 1)
 	minInt             = -(maxInt - 1)
 	maxHeight          = 450
@@ -70,35 +70,41 @@ func (s *service) definition(canvas *svg.SVG, iconsRendered map[string]bool, ico
 
 // usage creates any necessary tags for actually using the service in the SVG.
 func (s *service) usage(canvas *svg.SVG, iconIds map[string]string) {
+	canvas.Group(fmt.Sprintf(`transform="translate(%d,%d)"`, s.point.X, s.point.Y))
+	defer canvas.Gend()
+	canvas.Circle(
+		serviceBlockSize/2,
+		serviceBlockSize/2,
+		serviceBlockSize/2,
+		`class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1"`)
+	canvas.Circle(
+		serviceBlockSize/2-iconSize/2+5,
+		serviceBlockSize/2-iconSize/2+7,
+		serviceBlockSize/4,
+		`id="service-icon-mask-`+s.name+`" fill="none"`)
+	canvas.ClipPath(`id="clip-` + s.name + `"`)
 	canvas.Use(
-		s.point.X,
-		s.point.Y,
-		"#serviceBlock",
-		fmt.Sprintf(`id=%q`, s.name))
+		0,
+		0,
+		`#service-icon-mask-`+s.name)
+	canvas.ClipEnd()
 	if len(s.iconSrc) > 0 {
 		canvas.Use(
-			s.point.X+serviceBlockSize/2-iconSize/2,
-			s.point.Y+serviceBlockSize/2-iconSize/2,
+			serviceBlockSize/2-iconSize/2,
+			serviceBlockSize/2-iconSize/2,
 			"#"+iconIds[s.charmPath],
-			fmt.Sprintf(`width="%d" height="%d"`, iconSize, iconSize),
+			fmt.Sprintf(`width="%d" height="%d" clip-path="url(#clip-%s)"`, iconSize, iconSize, s.name),
 		)
 	} else {
 		canvas.Image(
-			s.point.X+serviceBlockSize/2-iconSize/2,
-			s.point.Y+serviceBlockSize/2-iconSize/2,
+			serviceBlockSize/2-iconSize/2,
+			serviceBlockSize/2-iconSize/2,
 			iconSize,
 			iconSize,
 			s.iconUrl,
+			`clip-path="url(#clip-`+s.name+`)"`,
 		)
 	}
-	canvas.Textlines(
-		s.point.X+serviceBlockSize/2,
-		s.point.Y+serviceBlockSize/6,
-		[]string{s.name},
-		serviceBlockSize/10,
-		0,
-		"#505050",
-		"middle")
 }
 
 // definition creates any necessary defs that can be used later in the SVG.
@@ -107,7 +113,10 @@ func (r *serviceRelation) definition(canvas *svg.SVG) {
 
 // usage creates any necessary tags for actually using the relation in the SVG.
 func (r *serviceRelation) usage(canvas *svg.SVG) {
-	l := r.shortestRelation()
+	l := line{
+		p0: r.serviceA.point.Add(point(serviceBlockSize/2, serviceBlockSize/2)),
+		p1: r.serviceB.point.Add(point(serviceBlockSize/2, serviceBlockSize/2)),
+	}
 	canvas.Line(
 		l.p0.X,
 		l.p0.Y,
@@ -119,39 +128,18 @@ func (r *serviceRelation) usage(canvas *svg.SVG) {
 	)
 	mid := l.p0.Add(l.p1).Div(2).Sub(point(healthCircleRadius, healthCircleRadius))
 	canvas.Use(mid.X, mid.Y, "#healthCircle")
-}
 
-// shortestRelation finds the shortest line between two services, assuming
-// that each service can be connected on one of four cardinal points only.
-func (r *serviceRelation) shortestRelation() line {
-	aConnectors, bConnectors := r.serviceA.cardinalPoints(), r.serviceB.cardinalPoints()
-	shortestDistance := float64(maxInt)
-	shortestPair := line{
-		p0: r.serviceA.point,
-		p1: r.serviceB.point,
-	}
-	for _, pointA := range aConnectors {
-		for _, pointB := range bConnectors {
-			ab := line{p0: pointA, p1: pointB}
-			distance := ab.length()
-			if distance < shortestDistance {
-				shortestDistance = distance
-				shortestPair = ab
-			}
-		}
-	}
-	return shortestPair
-}
-
-// cardinalPoints generates the points for each of the four cardinal points
-// of each service.
-func (s *service) cardinalPoints() []image.Point {
-	return []image.Point{
-		point(s.point.X+serviceBlockSize/2, s.point.Y),
-		point(s.point.X, s.point.Y+serviceBlockSize/2),
-		point(s.point.X+serviceBlockSize/2, s.point.Y+serviceBlockSize),
-		point(s.point.X+serviceBlockSize, s.point.Y+serviceBlockSize/2),
-	}
+	deg := math.Atan2(float64(l.p0.Y-l.p1.Y), float64(l.p0.X-l.p1.X))
+	canvas.Circle(
+		int(float64(l.p0.X)-math.Cos(deg)*(serviceBlockSize/2)),
+		int(float64(l.p0.Y)-math.Sin(deg)*(serviceBlockSize/2)),
+		4,
+		fmt.Sprintf(`fill=%q`, relationColor))
+	canvas.Circle(
+		int(float64(l.p1.X)+math.Cos(deg)*(serviceBlockSize/2)),
+		int(float64(l.p1.Y)+math.Sin(deg)*(serviceBlockSize/2)),
+		4,
+		fmt.Sprintf(`fill=%q`, relationColor))
 }
 
 // strokeDashArray generates the stroke-dasharray attribute content so that
@@ -201,34 +189,18 @@ func (c *Canvas) layout() (int, int) {
 	for _, service := range c.services {
 		service.point = service.point.Sub(point(minWidth, minHeight))
 	}
-	return abs(maxWidth-minWidth) + serviceBlockSize,
-		abs(maxHeight-minHeight) + serviceBlockSize
+	return abs(maxWidth-minWidth) + serviceBlockSize + 1,
+		abs(maxHeight-minHeight) + serviceBlockSize + 1
 }
 
 func (c *Canvas) definition(canvas *svg.SVG) {
 	canvas.Def()
 	defer canvas.DefEnd()
 
-	// Service block.
-	canvas.Group(`id="serviceBlock"`,
-		`transform="scale(0.8)"`)
-	io.WriteString(canvas.Writer, assets.ServiceModule)
-	canvas.Gend() // Gid
-
 	// Relation health circle.
-	canvas.Gid("healthCircle")
-	canvas.Circle(
-		healthCircleRadius,
-		healthCircleRadius,
-		healthCircleRadius,
-		fmt.Sprintf("stroke:%s;fill:none;stroke-width:%dpx", relationColor, relationLineWidth),
-	)
-	canvas.Circle(
-		healthCircleRadius,
-		healthCircleRadius,
-		healthCircleRadius/2,
-		fmt.Sprintf("fill:%s", relationColor),
-	)
+	canvas.Group(`id="healthCircle"`,
+		`transform="scale(1.1)"`)
+	io.WriteString(canvas.Writer, assets.RelationIconHealthy)
 	canvas.Gend()
 
 	// Service and relation specific defs.
