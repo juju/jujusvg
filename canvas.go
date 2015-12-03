@@ -78,8 +78,8 @@ func (s *service) usage(canvas *svg.SVG, iconIds map[string]string) {
 		serviceBlockSize/2,
 		`class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1"`)
 	canvas.Circle(
-		serviceBlockSize/2-iconSize/2+5,
-		serviceBlockSize/2-iconSize/2+7,
+		serviceBlockSize/2-iconSize/2+5, // for these two, add an offset to help
+		serviceBlockSize/2-iconSize/2+7, // hide the embossed border.
 		serviceBlockSize/4,
 		`id="service-icon-mask-`+s.name+`" fill="none"`)
 	canvas.ClipPath(`id="clip-` + s.name + `"`)
