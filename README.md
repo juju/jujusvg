@@ -66,6 +66,5 @@ io.WriteString(canvas.Writer, assets.AssetToWrite)
 
 Current assets in use:
 
-* The service block
-* ~~The relation health indicator~~ *this is defined by hand, but a similar path
-  may be taken in the future if the asset should change*
+* ~~The service block~~ *the service block has been deprecated and is now handled with SVGo*
+* The relation health indicator
