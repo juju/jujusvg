@@ -121,10 +121,10 @@ func (s *CanvasSuite) TestRelationRender(c *gc.C) {
 	relation.definition(svg)
 	relation.usage(svg)
 	c.Assert(buf.String(), gc.Equals,
-		`<line x1="90" y1="90" x2="190" y2="190" stroke="#38B44A" stroke-width="1px" stroke-dasharray="62.71, 16" />
+		`<line x1="90" y1="90" x2="190" y2="190" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="62.71, 16" />
 <use x="132" y="132" xlink:href="#healthCircle" />
-<circle cx="153" cy="153" r="4" fill="#38B44A" />
-<circle cx="126" cy="126" r="4" fill="#38B44A" />
+<circle cx="153" cy="153" r="4" fill="#a7a7a7" />
+<circle cx="126" cy="126" r="4" fill="#a7a7a7" />
 `)
 }
 
@@ -215,10 +215,10 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 &#x9;&#x9;&#x9;&#x9;<circle cx="20" cy="20" r="20" style="fill:#000"></circle>
 &#x9;&#x9;&#x9;</svg></defs>
 <g id="relations">
-<line x1="90" y1="90" x2="190" y2="190" stroke="#38B44A" stroke-width="1px" stroke-dasharray="62.71, 16" />
+<line x1="90" y1="90" x2="190" y2="190" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="62.71, 16" />
 <use x="132" y="132" xlink:href="#healthCircle" />
-<circle cx="153" cy="153" r="4" fill="#38B44A" />
-<circle cx="126" cy="126" r="4" fill="#38B44A" />
+<circle cx="153" cy="153" r="4" fill="#a7a7a7" />
+<circle cx="126" cy="126" r="4" fill="#a7a7a7" />
 </g>
 <g id="services">
 <g transform="translate(0,0)" >

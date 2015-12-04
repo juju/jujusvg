@@ -23,7 +23,7 @@ const (
 	maxWidth           = 1000
 
 	fontColor     = "#505050"
-	relationColor = "#A7A7A7"
+	relationColor = "#a7a7a7"
 )
 
 // Canvas holds the parsed form of a bundle or environment.

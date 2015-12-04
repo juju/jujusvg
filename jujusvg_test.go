@@ -101,14 +101,14 @@ func (s *newSuite) TestNewFromBundle(c *gc.C) {
 &#x9;&#x9;&#x9;&#x9;&#x9;<svg:image width="96" height="96" xlink:href="http://0.1.2.3/precise/mongodb-21.svg"></svg:image>
 &#x9;&#x9;&#x9;&#x9;</svg:svg></defs>
 <g id="relations">
-<line x1="413" y1="90" x2="90" y2="347" stroke="#38B44A" stroke-width="1px" stroke-dasharray="198.38, 16" />
+<line x1="413" y1="90" x2="90" y2="347" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="198.38, 16" />
 <use x="243" y="210" xlink:href="#healthCircle" />
-<circle cx="342" cy="146" r="4" fill="#38B44A" />
-<circle cx="160" cy="290" r="4" fill="#38B44A" />
-<line x1="413" y1="90" x2="540" y2="366" stroke="#38B44A" stroke-width="1px" stroke-dasharray="143.91, 16" />
+<circle cx="342" cy="146" r="4" fill="#a7a7a7" />
+<circle cx="160" cy="290" r="4" fill="#a7a7a7" />
+<line x1="413" y1="90" x2="540" y2="366" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="143.91, 16" />
 <use x="468" y="220" xlink:href="#healthCircle" />
-<circle cx="450" cy="171" r="4" fill="#38B44A" />
-<circle cx="502" cy="284" r="4" fill="#38B44A" />
+<circle cx="450" cy="171" r="4" fill="#a7a7a7" />
+<circle cx="502" cy="284" r="4" fill="#a7a7a7" />
 </g>
 <g id="services">
 <g transform="translate(323,0)" >
@@ -169,14 +169,14 @@ func (s *newSuite) TestNewFromBundleWithUnplacedService(c *gc.C) {
 &#x9;&#x9;&#x9;&#x9;&#x9;<svg:image width="96" height="96" xlink:href="http://0.1.2.3/precise/mongodb-21.svg"></svg:image>
 &#x9;&#x9;&#x9;&#x9;</svg:svg></defs>
 <g id="relations">
-<line x1="810" y1="199" x2="90" y2="90" stroke="#38B44A" stroke-width="1px" stroke-dasharray="356.10, 16" />
+<line x1="810" y1="199" x2="90" y2="90" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="356.10, 16" />
 <use x="442" y="136" xlink:href="#healthCircle" />
-<circle cx="721" cy="185" r="4" fill="#38B44A" />
-<circle cx="178" cy="103" r="4" fill="#38B44A" />
-<line x1="810" y1="199" x2="540" y2="109" stroke="#38B44A" stroke-width="1px" stroke-dasharray="134.30, 16" />
+<circle cx="721" cy="185" r="4" fill="#a7a7a7" />
+<circle cx="178" cy="103" r="4" fill="#a7a7a7" />
+<line x1="810" y1="199" x2="540" y2="109" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="134.30, 16" />
 <use x="667" y="146" xlink:href="#healthCircle" />
-<circle cx="724" cy="170" r="4" fill="#38B44A" />
-<circle cx="625" cy="137" r="4" fill="#38B44A" />
+<circle cx="724" cy="170" r="4" fill="#a7a7a7" />
+<circle cx="625" cy="137" r="4" fill="#a7a7a7" />
 </g>
 <g id="services">
 <g transform="translate(720,109)" >
@@ -229,14 +229,14 @@ func (s *newSuite) TestWithFetcher(c *gc.C) {
 </g>
 </defs>
 <g id="relations">
-<line x1="413" y1="90" x2="90" y2="347" stroke="#38B44A" stroke-width="1px" stroke-dasharray="198.38, 16" />
+<line x1="413" y1="90" x2="90" y2="347" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="198.38, 16" />
 <use x="243" y="210" xlink:href="#healthCircle" />
-<circle cx="342" cy="146" r="4" fill="#38B44A" />
-<circle cx="160" cy="290" r="4" fill="#38B44A" />
-<line x1="413" y1="90" x2="540" y2="366" stroke="#38B44A" stroke-width="1px" stroke-dasharray="143.91, 16" />
+<circle cx="342" cy="146" r="4" fill="#a7a7a7" />
+<circle cx="160" cy="290" r="4" fill="#a7a7a7" />
+<line x1="413" y1="90" x2="540" y2="366" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="143.91, 16" />
 <use x="468" y="220" xlink:href="#healthCircle" />
-<circle cx="450" cy="171" r="4" fill="#38B44A" />
-<circle cx="502" cy="284" r="4" fill="#38B44A" />
+<circle cx="450" cy="171" r="4" fill="#a7a7a7" />
+<circle cx="502" cy="284" r="4" fill="#a7a7a7" />
 </g>
 <g id="services">
 <g transform="translate(323,0)" >
@@ -298,14 +298,14 @@ func (s *newSuite) TestDefaultHTTPFetcher(c *gc.C) {
 </g>
 <svg:svg xmlns:svg="http://www.w3.org/2000/svg" id="icon-1"></svg:svg><svg:svg xmlns:svg="http://www.w3.org/2000/svg" id="icon-2"></svg:svg><svg:svg xmlns:svg="http://www.w3.org/2000/svg" id="icon-3"></svg:svg></defs>
 <g id="relations">
-<line x1="413" y1="90" x2="90" y2="347" stroke="#38B44A" stroke-width="1px" stroke-dasharray="198.38, 16" />
+<line x1="413" y1="90" x2="90" y2="347" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="198.38, 16" />
 <use x="243" y="210" xlink:href="#healthCircle" />
-<circle cx="342" cy="146" r="4" fill="#38B44A" />
-<circle cx="160" cy="290" r="4" fill="#38B44A" />
-<line x1="413" y1="90" x2="540" y2="366" stroke="#38B44A" stroke-width="1px" stroke-dasharray="143.91, 16" />
+<circle cx="342" cy="146" r="4" fill="#a7a7a7" />
+<circle cx="160" cy="290" r="4" fill="#a7a7a7" />
+<line x1="413" y1="90" x2="540" y2="366" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="143.91, 16" />
 <use x="468" y="220" xlink:href="#healthCircle" />
-<circle cx="450" cy="171" r="4" fill="#38B44A" />
-<circle cx="502" cy="284" r="4" fill="#38B44A" />
+<circle cx="450" cy="171" r="4" fill="#a7a7a7" />
+<circle cx="502" cy="284" r="4" fill="#a7a7a7" />
 </g>
 <g id="services">
 <g transform="translate(323,0)" >
