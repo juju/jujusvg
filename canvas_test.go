@@ -60,7 +60,7 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 <circle cx="47" cy="49" r="45" id="service-icon-mask-bar" fill="none" />
 <clipPath id="clip-bar" ><use x="0" y="0" xlink:href="#service-icon-mask-bar" />
 </clipPath>
-<use x="42" y="42" xlink:href="#icon-1" width="96" height="96" clip-path="url(#clip-bar)" />
+<use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-bar)" />
 </g>
 `,
 		},
@@ -80,7 +80,7 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 <circle cx="47" cy="49" r="45" id="service-icon-mask-baz" fill="none" />
 <clipPath id="clip-baz" ><use x="0" y="0" xlink:href="#service-icon-mask-baz" />
 </clipPath>
-<use x="42" y="42" xlink:href="#icon-1" width="96" height="96" clip-path="url(#clip-baz)" />
+<use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-baz)" />
 </g>
 `,
 		},
@@ -226,7 +226,7 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 <circle cx="47" cy="49" r="45" id="service-icon-mask-service-a" fill="none" />
 <clipPath id="clip-service-a" ><use x="0" y="0" xlink:href="#service-icon-mask-service-a" />
 </clipPath>
-<use x="42" y="42" xlink:href="#icon-1" width="96" height="96" clip-path="url(#clip-service-a)" />
+<use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-service-a)" />
 </g>
 <g transform="translate(100,100)" >
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />

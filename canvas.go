@@ -90,10 +90,10 @@ func (s *service) usage(canvas *svg.SVG, iconIds map[string]string) {
 	canvas.ClipEnd()
 	if len(s.iconSrc) > 0 {
 		canvas.Use(
-			serviceBlockSize/2-iconSize/2,
-			serviceBlockSize/2-iconSize/2,
+			0,
+			0,
 			"#"+iconIds[s.charmPath],
-			fmt.Sprintf(`width="%d" height="%d" clip-path="url(#clip-%s)"`, iconSize, iconSize, s.name),
+			fmt.Sprintf(`transform="translate(%d,%d)" width="%d" height="%d" clip-path="url(#clip-%s)"`, serviceBlockSize/2-iconSize/2, serviceBlockSize/2-iconSize/2, iconSize, iconSize, s.name),
 		)
 	} else {
 		canvas.Image(
