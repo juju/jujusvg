@@ -79,23 +79,12 @@ func (s *service) usage(canvas *svg.SVG, iconIds map[string]string) {
 		serviceBlockSize/2,
 		serviceBlockSize/2,
 		`class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1"`)
-	canvas.Circle(
-		serviceBlockSize/2-iconSize/2+5, // for these two, add an offset to help
-		serviceBlockSize/2-iconSize/2+7, // hide the embossed border.
-		serviceBlockSize/4,
-		`id="service-icon-mask-`+s.name+`" fill="none"`)
-	canvas.ClipPath(`id="clip-` + s.name + `"`)
-	canvas.Use(
-		0,
-		0,
-		`#service-icon-mask-`+s.name)
-	canvas.ClipEnd()
 	if len(s.iconSrc) > 0 {
 		canvas.Use(
 			0,
 			0,
 			"#"+iconIds[s.charmPath],
-			fmt.Sprintf(`transform="translate(%d,%d)" width="%d" height="%d" clip-path="url(#clip-%s)"`, serviceBlockSize/2-iconSize/2, serviceBlockSize/2-iconSize/2, iconSize, iconSize, s.name),
+			fmt.Sprintf(`transform="translate(%d,%d)" width="%d" height="%d" clip-path="url(#clip-mask)"`, serviceBlockSize/2-iconSize/2, serviceBlockSize/2-iconSize/2, iconSize, iconSize),
 		)
 	} else {
 		canvas.Image(
@@ -104,7 +93,7 @@ func (s *service) usage(canvas *svg.SVG, iconIds map[string]string) {
 			iconSize,
 			iconSize,
 			s.iconUrl,
-			`clip-path="url(#clip-`+s.name+`)"`,
+			`clip-path="url(#clip-mask)"`,
 		)
 	}
 	name := s.name
@@ -248,6 +237,20 @@ func (c *Canvas) servicesGroup(canvas *svg.SVG) {
 	}
 }
 
+func (c *Canvas) iconClipPath(canvas *svg.SVG) {
+	canvas.Circle(
+		serviceBlockSize/2-iconSize/2+5, // for these two, add an offset to help
+		serviceBlockSize/2-iconSize/2+7, // hide the embossed border.
+		serviceBlockSize/4,
+		`id="service-icon-mask" fill="none"`)
+	canvas.ClipPath(`id="clip-mask"`)
+	canvas.Use(
+		0,
+		0,
+		`#service-icon-mask`)
+	canvas.ClipEnd()
+}
+
 // Marshal renders the SVG to the given io.Writer.
 func (c *Canvas) Marshal(w io.Writer) {
 	// Initialize maps for service icons, which are used both in definition
@@ -271,6 +274,7 @@ func (c *Canvas) Marshal(w io.Writer) {
 	)
 	defer canvas.End()
 	c.definition(canvas)
+	c.iconClipPath(canvas)
 	c.relationsGroup(canvas)
 	c.servicesGroup(canvas)
 }

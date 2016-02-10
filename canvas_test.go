@@ -38,10 +38,7 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 			expected: `<g transform="translate(0,0)" >
 <title>foo</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
-<circle cx="47" cy="49" r="45" id="service-icon-mask-foo" fill="none" />
-<clipPath id="clip-foo" ><use x="0" y="0" xlink:href="#service-icon-mask-foo" />
-</clipPath>
-<image x="42" y="42" width="96" height="96" xlink:href="foo" clip-path="url(#clip-foo)" />
+<image x="42" y="42" width="96" height="96" xlink:href="foo" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >foo</text>
 </g>
@@ -61,10 +58,7 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 			expected: `<svg:svg xmlns:svg="http://www.w3.org/2000/svg" id="icon-1">bar</svg:svg><g transform="translate(0,0)" >
 <title>bar</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
-<circle cx="47" cy="49" r="45" id="service-icon-mask-bar" fill="none" />
-<clipPath id="clip-bar" ><use x="0" y="0" xlink:href="#service-icon-mask-bar" />
-</clipPath>
-<use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-bar)" />
+<use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >bar</text>
 </g>
@@ -84,10 +78,7 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 			expected: `<g transform="translate(0,0)" >
 <title>baz</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
-<circle cx="47" cy="49" r="45" id="service-icon-mask-baz" fill="none" />
-<clipPath id="clip-baz" ><use x="0" y="0" xlink:href="#service-icon-mask-baz" />
-</clipPath>
-<use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-baz)" />
+<use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >baz</text>
 </g>
@@ -233,8 +224,11 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 <svg xmlns="http://www.w3.org/2000/svg" class="blah" id="icon-1">
 &#x9;&#x9;&#x9;&#x9;<circle cx="20" cy="20" r="20" style="fill:#000"></circle>
 &#x9;&#x9;&#x9;</svg></defs>
+<circle cx="47" cy="49" r="45" id="service-icon-mask" fill="none" />
+<clipPath id="clip-mask" ><use x="0" y="0" xlink:href="#service-icon-mask" />
+</clipPath>
 <g id="relations">
-<g>
+<g >
 <title>relation</title>
 <line x1="90" y1="90" x2="190" y2="190" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="62.71, 16" />
 <use x="132" y="132" xlink:href="#healthCircle" />
@@ -246,20 +240,14 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 <g transform="translate(0,0)" >
 <title>service-a</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
-<circle cx="47" cy="49" r="45" id="service-icon-mask-service-a" fill="none" />
-<clipPath id="clip-service-a" ><use x="0" y="0" xlink:href="#service-icon-mask-service-a" />
-</clipPath>
-<use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-service-a)" />
+<use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >service-a</text>
 </g>
 <g transform="translate(100,100)" >
 <title>service-b</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
-<circle cx="47" cy="49" r="45" id="service-icon-mask-service-b" fill="none" />
-<clipPath id="clip-service-b" ><use x="0" y="0" xlink:href="#service-icon-mask-service-b" />
-</clipPath>
-<image x="42" y="42" width="96" height="96" xlink:href="" clip-path="url(#clip-service-b)" />
+<image x="42" y="42" width="96" height="96" xlink:href="" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >service-b</text>
 </g>
