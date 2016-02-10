@@ -101,17 +101,24 @@ func (s *newSuite) TestNewFromBundle(c *gc.C) {
 &#x9;&#x9;&#x9;&#x9;&#x9;<svg:image width="96" height="96" xlink:href="http://0.1.2.3/precise/mongodb-21.svg"></svg:image>
 &#x9;&#x9;&#x9;&#x9;</svg:svg></defs>
 <g id="relations">
+<g>
+<title>charmworld:essearch elasticsearch:essearch</title>
 <line x1="413" y1="90" x2="90" y2="347" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="198.38, 16" />
 <use x="243" y="210" xlink:href="#healthCircle" />
 <circle cx="342" cy="146" r="4" fill="#a7a7a7" />
 <circle cx="160" cy="290" r="4" fill="#a7a7a7" />
+</g>
+<g>
+<title>charmworld:database mongodb:database</title>
 <line x1="413" y1="90" x2="540" y2="366" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="143.91, 16" />
 <use x="468" y="220" xlink:href="#healthCircle" />
 <circle cx="450" cy="171" r="4" fill="#a7a7a7" />
 <circle cx="502" cy="284" r="4" fill="#a7a7a7" />
 </g>
+</g>
 <g id="services">
 <g transform="translate(323,0)" >
+<title>charmworld</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <circle cx="47" cy="49" r="45" id="service-icon-mask-charmworld" fill="none" />
 <clipPath id="clip-charmworld" ><use x="0" y="0" xlink:href="#service-icon-mask-charmworld" />
@@ -119,6 +126,7 @@ func (s *newSuite) TestNewFromBundle(c *gc.C) {
 <use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-charmworld)" />
 </g>
 <g transform="translate(0,257)" >
+<title>elasticsearch</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <circle cx="47" cy="49" r="45" id="service-icon-mask-elasticsearch" fill="none" />
 <clipPath id="clip-elasticsearch" ><use x="0" y="0" xlink:href="#service-icon-mask-elasticsearch" />
@@ -126,6 +134,7 @@ func (s *newSuite) TestNewFromBundle(c *gc.C) {
 <use x="0" y="0" xlink:href="#icon-2" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-elasticsearch)" />
 </g>
 <g transform="translate(450,276)" >
+<title>mongodb</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <circle cx="47" cy="49" r="45" id="service-icon-mask-mongodb" fill="none" />
 <clipPath id="clip-mongodb" ><use x="0" y="0" xlink:href="#service-icon-mask-mongodb" />
@@ -169,17 +178,24 @@ func (s *newSuite) TestNewFromBundleWithUnplacedService(c *gc.C) {
 &#x9;&#x9;&#x9;&#x9;&#x9;<svg:image width="96" height="96" xlink:href="http://0.1.2.3/precise/mongodb-21.svg"></svg:image>
 &#x9;&#x9;&#x9;&#x9;</svg:svg></defs>
 <g id="relations">
+<g>
+<title>charmworld:essearch elasticsearch:essearch</title>
 <line x1="810" y1="199" x2="90" y2="90" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="356.10, 16" />
 <use x="442" y="136" xlink:href="#healthCircle" />
 <circle cx="721" cy="185" r="4" fill="#a7a7a7" />
 <circle cx="178" cy="103" r="4" fill="#a7a7a7" />
+</g>
+<g>
+<title>charmworld:database mongodb:database</title>
 <line x1="810" y1="199" x2="540" y2="109" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="134.30, 16" />
 <use x="667" y="146" xlink:href="#healthCircle" />
 <circle cx="724" cy="170" r="4" fill="#a7a7a7" />
 <circle cx="625" cy="137" r="4" fill="#a7a7a7" />
 </g>
+</g>
 <g id="services">
 <g transform="translate(720,109)" >
+<title>charmworld</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <circle cx="47" cy="49" r="45" id="service-icon-mask-charmworld" fill="none" />
 <clipPath id="clip-charmworld" ><use x="0" y="0" xlink:href="#service-icon-mask-charmworld" />
@@ -187,6 +203,7 @@ func (s *newSuite) TestNewFromBundleWithUnplacedService(c *gc.C) {
 <use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-charmworld)" />
 </g>
 <g transform="translate(0,0)" >
+<title>elasticsearch</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <circle cx="47" cy="49" r="45" id="service-icon-mask-elasticsearch" fill="none" />
 <clipPath id="clip-elasticsearch" ><use x="0" y="0" xlink:href="#service-icon-mask-elasticsearch" />
@@ -194,6 +211,7 @@ func (s *newSuite) TestNewFromBundleWithUnplacedService(c *gc.C) {
 <use x="0" y="0" xlink:href="#icon-2" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-elasticsearch)" />
 </g>
 <g transform="translate(450,19)" >
+<title>mongodb</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <circle cx="47" cy="49" r="45" id="service-icon-mask-mongodb" fill="none" />
 <clipPath id="clip-mongodb" ><use x="0" y="0" xlink:href="#service-icon-mask-mongodb" />
@@ -229,17 +247,24 @@ func (s *newSuite) TestWithFetcher(c *gc.C) {
 </g>
 </defs>
 <g id="relations">
+<g>
+<title>charmworld:essearch elasticsearch:essearch</title>
 <line x1="413" y1="90" x2="90" y2="347" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="198.38, 16" />
 <use x="243" y="210" xlink:href="#healthCircle" />
 <circle cx="342" cy="146" r="4" fill="#a7a7a7" />
 <circle cx="160" cy="290" r="4" fill="#a7a7a7" />
+</g>
+<g>
+<title>charmworld:database mongodb:database</title>
 <line x1="413" y1="90" x2="540" y2="366" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="143.91, 16" />
 <use x="468" y="220" xlink:href="#healthCircle" />
 <circle cx="450" cy="171" r="4" fill="#a7a7a7" />
 <circle cx="502" cy="284" r="4" fill="#a7a7a7" />
 </g>
+</g>
 <g id="services">
 <g transform="translate(323,0)" >
+<title>charmworld</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <circle cx="47" cy="49" r="45" id="service-icon-mask-charmworld" fill="none" />
 <clipPath id="clip-charmworld" ><use x="0" y="0" xlink:href="#service-icon-mask-charmworld" />
@@ -247,6 +272,7 @@ func (s *newSuite) TestWithFetcher(c *gc.C) {
 <image x="42" y="42" width="96" height="96" xlink:href="http://0.1.2.3/~juju-jitsu/precise/charmworld-58.svg" clip-path="url(#clip-charmworld)" />
 </g>
 <g transform="translate(0,257)" >
+<title>elasticsearch</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <circle cx="47" cy="49" r="45" id="service-icon-mask-elasticsearch" fill="none" />
 <clipPath id="clip-elasticsearch" ><use x="0" y="0" xlink:href="#service-icon-mask-elasticsearch" />
@@ -254,6 +280,7 @@ func (s *newSuite) TestWithFetcher(c *gc.C) {
 <image x="42" y="42" width="96" height="96" xlink:href="http://0.1.2.3/~charming-devs/precise/elasticsearch-2.svg" clip-path="url(#clip-elasticsearch)" />
 </g>
 <g transform="translate(450,276)" >
+<title>mongodb</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <circle cx="47" cy="49" r="45" id="service-icon-mask-mongodb" fill="none" />
 <clipPath id="clip-mongodb" ><use x="0" y="0" xlink:href="#service-icon-mask-mongodb" />
@@ -298,17 +325,24 @@ func (s *newSuite) TestDefaultHTTPFetcher(c *gc.C) {
 </g>
 <svg:svg xmlns:svg="http://www.w3.org/2000/svg" id="icon-1"></svg:svg><svg:svg xmlns:svg="http://www.w3.org/2000/svg" id="icon-2"></svg:svg><svg:svg xmlns:svg="http://www.w3.org/2000/svg" id="icon-3"></svg:svg></defs>
 <g id="relations">
+<g>
+<title>charmworld:essearch elasticsearch:essearch</title>
 <line x1="413" y1="90" x2="90" y2="347" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="198.38, 16" />
 <use x="243" y="210" xlink:href="#healthCircle" />
 <circle cx="342" cy="146" r="4" fill="#a7a7a7" />
 <circle cx="160" cy="290" r="4" fill="#a7a7a7" />
+</g>
+<g>
+<title>charmworld:database mongodb:database</title>
 <line x1="413" y1="90" x2="540" y2="366" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="143.91, 16" />
 <use x="468" y="220" xlink:href="#healthCircle" />
 <circle cx="450" cy="171" r="4" fill="#a7a7a7" />
 <circle cx="502" cy="284" r="4" fill="#a7a7a7" />
 </g>
+</g>
 <g id="services">
 <g transform="translate(323,0)" >
+<title>charmworld</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <circle cx="47" cy="49" r="45" id="service-icon-mask-charmworld" fill="none" />
 <clipPath id="clip-charmworld" ><use x="0" y="0" xlink:href="#service-icon-mask-charmworld" />
@@ -316,6 +350,7 @@ func (s *newSuite) TestDefaultHTTPFetcher(c *gc.C) {
 <use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-charmworld)" />
 </g>
 <g transform="translate(0,257)" >
+<title>elasticsearch</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <circle cx="47" cy="49" r="45" id="service-icon-mask-elasticsearch" fill="none" />
 <clipPath id="clip-elasticsearch" ><use x="0" y="0" xlink:href="#service-icon-mask-elasticsearch" />
@@ -323,6 +358,7 @@ func (s *newSuite) TestDefaultHTTPFetcher(c *gc.C) {
 <use x="0" y="0" xlink:href="#icon-2" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-elasticsearch)" />
 </g>
 <g transform="translate(450,276)" >
+<title>mongodb</title>
 <circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <circle cx="47" cy="49" r="45" id="service-icon-mask-mongodb" fill="none" />
 <clipPath id="clip-mongodb" ><use x="0" y="0" xlink:href="#service-icon-mask-mongodb" />

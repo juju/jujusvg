@@ -1,6 +1,7 @@
 package jujusvg // import "gopkg.in/juju/jujusvg.v1"
 
 import (
+	"fmt"
 	"image"
 	"math"
 	"sort"
@@ -91,6 +92,7 @@ func NewFromBundle(b *charm.BundleData, iconURL func(*charm.URL) string, fetcher
 	}
 	for _, relation := range b.Relations {
 		canvas.addRelation(&serviceRelation{
+			name:     fmt.Sprintf("%s %s", relation[0], relation[1]),
 			serviceA: services[strings.Split(relation[0], ":")[0]],
 			serviceB: services[strings.Split(relation[1], ":")[0]],
 		})

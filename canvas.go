@@ -46,6 +46,7 @@ type service struct {
 
 // serviceRelation represents a relation created between two services.
 type serviceRelation struct {
+	name     string
 	serviceA *service
 	serviceB *service
 }
@@ -72,6 +73,7 @@ func (s *service) definition(canvas *svg.SVG, iconsRendered map[string]bool, ico
 func (s *service) usage(canvas *svg.SVG, iconIds map[string]string) {
 	canvas.Group(fmt.Sprintf(`transform="translate(%d,%d)"`, s.point.X, s.point.Y))
 	defer canvas.Gend()
+	canvas.Title(s.name)
 	canvas.Circle(
 		serviceBlockSize/2,
 		serviceBlockSize/2,
@@ -113,6 +115,9 @@ func (r *serviceRelation) definition(canvas *svg.SVG) {
 
 // usage creates any necessary tags for actually using the relation in the SVG.
 func (r *serviceRelation) usage(canvas *svg.SVG) {
+	canvas.Group()
+	defer canvas.Gend()
+	canvas.Title(r.name)
 	l := line{
 		p0: r.serviceA.point.Add(point(serviceBlockSize/2, serviceBlockSize/2)),
 		p1: r.serviceB.point.Add(point(serviceBlockSize/2, serviceBlockSize/2)),
