@@ -107,17 +107,20 @@ func (s *service) usage(canvas *svg.SVG, iconIds map[string]string) {
 			`clip-path="url(#clip-`+s.name+`)"`,
 		)
 	}
-	blockWidth := int(math.Min(float64(len(s.name)*12), float64(serviceBlockSize)))
+	name := s.name
+	if len(name) > 20 {
+		name = fmt.Sprintf("%s...", name[:17])
+	}
 	canvas.Rect(
-		(serviceBlockSize-blockWidth)/2,
-		serviceBlockSize-32,
-		blockWidth,
+		0,
+		serviceBlockSize-45,
+		serviceBlockSize,
 		32,
 		`rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)"`)
 	canvas.Text(
 		serviceBlockSize/2,
-		serviceBlockSize-10,
-		s.name,
+		serviceBlockSize-23,
+		name,
 		`text-anchor="middle" style="font-weight:200"`)
 }
 
