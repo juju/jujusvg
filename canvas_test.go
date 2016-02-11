@@ -42,6 +42,8 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 <clipPath id="clip-foo" ><use x="0" y="0" xlink:href="#service-icon-mask-foo" />
 </clipPath>
 <image x="42" y="42" width="96" height="96" xlink:href="foo" clip-path="url(#clip-foo)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >foo</text>
 </g>
 `,
 		},
@@ -63,6 +65,8 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 <clipPath id="clip-bar" ><use x="0" y="0" xlink:href="#service-icon-mask-bar" />
 </clipPath>
 <use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-bar)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >bar</text>
 </g>
 `,
 		},
@@ -84,6 +88,8 @@ func (s *CanvasSuite) TestServiceRender(c *gc.C) {
 <clipPath id="clip-baz" ><use x="0" y="0" xlink:href="#service-icon-mask-baz" />
 </clipPath>
 <use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-baz)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >baz</text>
 </g>
 `,
 		},
@@ -244,6 +250,8 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 <clipPath id="clip-service-a" ><use x="0" y="0" xlink:href="#service-icon-mask-service-a" />
 </clipPath>
 <use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-service-a)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >service-a</text>
 </g>
 <g transform="translate(100,100)" >
 <title>service-b</title>
@@ -252,6 +260,8 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 <clipPath id="clip-service-b" ><use x="0" y="0" xlink:href="#service-icon-mask-service-b" />
 </clipPath>
 <image x="42" y="42" width="96" height="96" xlink:href="" clip-path="url(#clip-service-b)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >service-b</text>
 </g>
 </g>
 </svg>

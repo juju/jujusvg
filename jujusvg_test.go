@@ -124,6 +124,8 @@ func (s *newSuite) TestNewFromBundle(c *gc.C) {
 <clipPath id="clip-charmworld" ><use x="0" y="0" xlink:href="#service-icon-mask-charmworld" />
 </clipPath>
 <use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-charmworld)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >charmworld</text>
 </g>
 <g transform="translate(0,257)" >
 <title>elasticsearch</title>
@@ -132,6 +134,8 @@ func (s *newSuite) TestNewFromBundle(c *gc.C) {
 <clipPath id="clip-elasticsearch" ><use x="0" y="0" xlink:href="#service-icon-mask-elasticsearch" />
 </clipPath>
 <use x="0" y="0" xlink:href="#icon-2" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-elasticsearch)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >elasticsearch</text>
 </g>
 <g transform="translate(450,276)" >
 <title>mongodb</title>
@@ -140,6 +144,8 @@ func (s *newSuite) TestNewFromBundle(c *gc.C) {
 <clipPath id="clip-mongodb" ><use x="0" y="0" xlink:href="#service-icon-mask-mongodb" />
 </clipPath>
 <use x="0" y="0" xlink:href="#icon-3" transform="translate(42,42)"  width="96" height="96" clip-path="url(#clip-mongodb)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >mongodb</text>
 </g>
 </g>
 </svg>
@@ -201,6 +207,8 @@ func (s *newSuite) TestNewFromBundleWithUnplacedService(c *gc.C) {
 <clipPath id="clip-charmworld" ><use x="0" y="0" xlink:href="#service-icon-mask-charmworld" />
 </clipPath>
 <use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-charmworld)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >charmworld</text>
 </g>
 <g transform="translate(0,0)" >
 <title>elasticsearch</title>
@@ -209,6 +217,8 @@ func (s *newSuite) TestNewFromBundleWithUnplacedService(c *gc.C) {
 <clipPath id="clip-elasticsearch" ><use x="0" y="0" xlink:href="#service-icon-mask-elasticsearch" />
 </clipPath>
 <use x="0" y="0" xlink:href="#icon-2" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-elasticsearch)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >elasticsearch</text>
 </g>
 <g transform="translate(450,19)" >
 <title>mongodb</title>
@@ -217,6 +227,8 @@ func (s *newSuite) TestNewFromBundleWithUnplacedService(c *gc.C) {
 <clipPath id="clip-mongodb" ><use x="0" y="0" xlink:href="#service-icon-mask-mongodb" />
 </clipPath>
 <use x="0" y="0" xlink:href="#icon-3" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-mongodb)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >mongodb</text>
 </g>
 </g>
 </svg>
@@ -270,6 +282,8 @@ func (s *newSuite) TestWithFetcher(c *gc.C) {
 <clipPath id="clip-charmworld" ><use x="0" y="0" xlink:href="#service-icon-mask-charmworld" />
 </clipPath>
 <image x="42" y="42" width="96" height="96" xlink:href="http://0.1.2.3/~juju-jitsu/precise/charmworld-58.svg" clip-path="url(#clip-charmworld)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >charmworld</text>
 </g>
 <g transform="translate(0,257)" >
 <title>elasticsearch</title>
@@ -278,6 +292,8 @@ func (s *newSuite) TestWithFetcher(c *gc.C) {
 <clipPath id="clip-elasticsearch" ><use x="0" y="0" xlink:href="#service-icon-mask-elasticsearch" />
 </clipPath>
 <image x="42" y="42" width="96" height="96" xlink:href="http://0.1.2.3/~charming-devs/precise/elasticsearch-2.svg" clip-path="url(#clip-elasticsearch)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >elasticsearch</text>
 </g>
 <g transform="translate(450,276)" >
 <title>mongodb</title>
@@ -286,6 +302,8 @@ func (s *newSuite) TestWithFetcher(c *gc.C) {
 <clipPath id="clip-mongodb" ><use x="0" y="0" xlink:href="#service-icon-mask-mongodb" />
 </clipPath>
 <image x="42" y="42" width="96" height="96" xlink:href="http://0.1.2.3/precise/mongodb-21.svg" clip-path="url(#clip-mongodb)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >mongodb</text>
 </g>
 </g>
 </svg>
@@ -348,6 +366,8 @@ func (s *newSuite) TestDefaultHTTPFetcher(c *gc.C) {
 <clipPath id="clip-charmworld" ><use x="0" y="0" xlink:href="#service-icon-mask-charmworld" />
 </clipPath>
 <use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-charmworld)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >charmworld</text>
 </g>
 <g transform="translate(0,257)" >
 <title>elasticsearch</title>
@@ -356,6 +376,8 @@ func (s *newSuite) TestDefaultHTTPFetcher(c *gc.C) {
 <clipPath id="clip-elasticsearch" ><use x="0" y="0" xlink:href="#service-icon-mask-elasticsearch" />
 </clipPath>
 <use x="0" y="0" xlink:href="#icon-2" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-elasticsearch)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >elasticsearch</text>
 </g>
 <g transform="translate(450,276)" >
 <title>mongodb</title>
@@ -364,6 +386,8 @@ func (s *newSuite) TestDefaultHTTPFetcher(c *gc.C) {
 <clipPath id="clip-mongodb" ><use x="0" y="0" xlink:href="#service-icon-mask-mongodb" />
 </clipPath>
 <use x="0" y="0" xlink:href="#icon-3" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-mongodb)" />
+<rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
+<text x="90" y="157" text-anchor="middle" style="font-weight:200" >mongodb</text>
 </g>
 </g>
 </svg>

@@ -107,6 +107,21 @@ func (s *service) usage(canvas *svg.SVG, iconIds map[string]string) {
 			`clip-path="url(#clip-`+s.name+`)"`,
 		)
 	}
+	name := s.name
+	if len(name) > 20 {
+		name = fmt.Sprintf("%s...", name[:17])
+	}
+	canvas.Rect(
+		0,
+		serviceBlockSize-45,
+		serviceBlockSize,
+		32,
+		`rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)"`)
+	canvas.Text(
+		serviceBlockSize/2,
+		serviceBlockSize-23,
+		name,
+		`text-anchor="middle" style="font-weight:200"`)
 }
 
 // definition creates any necessary defs that can be used later in the SVG.
