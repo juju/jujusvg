@@ -132,6 +132,19 @@ func (s *CanvasSuite) TestRelationRender(c *gc.C) {
 `)
 }
 
+func (s *CanvasSuite) TestIconClipPath(c *gc.C) {
+	// Ensure that the icon ClipPath returns the correctly sizes clipping Circle
+	var buf bytes.Buffer
+	svg := svg.New(&buf)
+	canvas := Canvas{}
+	canvas.iconClipPath(svg)
+	c.Assert(buf.String(), gc.Equals,
+		`<circle cx="47" cy="49" r="45" id="service-icon-mask" fill="none" />
+<clipPath id="clip-mask" ><use x="0" y="0" xlink:href="#service-icon-mask" />
+</clipPath>
+`)
+}
+
 func (s *CanvasSuite) TestLayout(c *gc.C) {
 	// Ensure that the SVG is sized exactly around the positioned services.
 	canvas := Canvas{}

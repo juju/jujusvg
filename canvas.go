@@ -244,11 +244,11 @@ func (c *Canvas) iconClipPath(canvas *svg.SVG) {
 		serviceBlockSize/4,
 		`id="service-icon-mask" fill="none"`)
 	canvas.ClipPath(`id="clip-mask"`)
+	defer canvas.ClipEnd()
 	canvas.Use(
 		0,
 		0,
 		`#service-icon-mask`)
-	canvas.ClipEnd()
 }
 
 // Marshal renders the SVG to the given io.Writer.
