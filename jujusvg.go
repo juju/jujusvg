@@ -39,62 +39,62 @@ func NewFromBundle(b *charm.BundleData, iconURL func(*charm.URL) string, fetcher
 	if err := b.Verify(nil, nil); err != nil {
 		return nil, errgo.Notef(err, "cannot verify bundle")
 	}
-	// Go through all services in alphabetical order so that
+	// Go through all applications in alphabetical order so that
 	// we get consistent results.
-	serviceNames := make([]string, 0, len(b.Services))
-	for name := range b.Services {
-		serviceNames = append(serviceNames, name)
+	applicationNames := make([]string, 0, len(b.Applications))
+	for name := range b.Applications {
+		applicationNames = append(applicationNames, name)
 	}
-	sort.Strings(serviceNames)
-	services := make(map[string]*service)
-	servicesNeedingPlacement := make(map[string]bool)
-	for _, name := range serviceNames {
-		serviceData := b.Services[name]
-		x, xerr := strconv.ParseFloat(serviceData.Annotations["gui-x"], 64)
-		y, yerr := strconv.ParseFloat(serviceData.Annotations["gui-y"], 64)
+	sort.Strings(applicationNames)
+	applications := make(map[string]*application)
+	applicationsNeedingPlacement := make(map[string]bool)
+	for _, name := range applicationNames {
+		applicationData := b.Applications[name]
+		x, xerr := strconv.ParseFloat(applicationData.Annotations["gui-x"], 64)
+		y, yerr := strconv.ParseFloat(applicationData.Annotations["gui-y"], 64)
 		if xerr != nil || yerr != nil {
-			if serviceData.Annotations["gui-x"] == "" && serviceData.Annotations["gui-y"] == "" {
-				servicesNeedingPlacement[name] = true
+			if applicationData.Annotations["gui-x"] == "" && applicationData.Annotations["gui-y"] == "" {
+				applicationsNeedingPlacement[name] = true
 				x = 0
 				y = 0
 			} else {
-				return nil, errgo.Newf("service %q does not have a valid position", name)
+				return nil, errgo.Newf("application %q does not have a valid position", name)
 			}
 		}
-		charmID, err := charm.ParseURL(serviceData.Charm)
+		charmID, err := charm.ParseURL(applicationData.Charm)
 		if err != nil {
 			// cannot actually happen, as we've verified it.
-			return nil, errgo.Notef(err, "cannot parse charm %q", serviceData.Charm)
+			return nil, errgo.Notef(err, "cannot parse charm %q", applicationData.Charm)
 		}
 		icon := iconMap[charmID.Path()]
-		svc := &service{
+		svc := &application{
 			name:      name,
 			charmPath: charmID.Path(),
 			point:     image.Point{int(x), int(y)},
 			iconUrl:   iconURL(charmID),
 			iconSrc:   icon,
 		}
-		services[name] = svc
+		applications[name] = svc
 	}
-	padding := image.Point{int(math.Floor(serviceBlockSize * 1.5)), int(math.Floor(serviceBlockSize * 0.5))}
-	for name := range servicesNeedingPlacement {
+	padding := image.Point{int(math.Floor(applicationBlockSize * 1.5)), int(math.Floor(applicationBlockSize * 0.5))}
+	for name := range applicationsNeedingPlacement {
 		vertices := []image.Point{}
-		for n, svc := range services {
-			if !servicesNeedingPlacement[n] {
+		for n, svc := range applications {
+			if !applicationsNeedingPlacement[n] {
 				vertices = append(vertices, svc.point)
 			}
 		}
-		services[name].point = getPointOutside(vertices, padding)
-		servicesNeedingPlacement[name] = false
+		applications[name].point = getPointOutside(vertices, padding)
+		applicationsNeedingPlacement[name] = false
 	}
-	for _, name := range serviceNames {
-		canvas.addService(services[name])
+	for _, name := range applicationNames {
+		canvas.addApplication(applications[name])
 	}
 	for _, relation := range b.Relations {
-		canvas.addRelation(&serviceRelation{
-			name:     fmt.Sprintf("%s %s", relation[0], relation[1]),
-			serviceA: services[strings.Split(relation[0], ":")[0]],
-			serviceB: services[strings.Split(relation[1], ":")[0]],
+		canvas.addRelation(&applicationRelation{
+			name:         fmt.Sprintf("%s %s", relation[0], relation[1]),
+			applicationA: applications[strings.Split(relation[0], ":")[0]],
+			applicationB: applications[strings.Split(relation[1], ":")[0]],
 		})
 	}
 	return &canvas, nil

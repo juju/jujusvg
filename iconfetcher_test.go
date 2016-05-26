@@ -62,7 +62,7 @@ func (s *IconFetcherSuite) TestHTTPFetchIcons(c *gc.C) {
 	err = b.Verify(nil, nil)
 	c.Assert(err, gc.IsNil)
 	// Only one copy of precise/mongodb-21
-	b.Services["duplicateService"] = &charm.ServiceSpec{
+	b.Applications["duplicateApplication"] = &charm.ApplicationSpec{
 		Charm:    "cs:precise/mongodb-21",
 		NumUnits: 1,
 	}

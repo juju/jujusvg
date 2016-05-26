@@ -97,7 +97,7 @@ relations:
 - - ceilometer:shared-db
   - mongodb:database
 series: trusty
-services:
+applications:
   ceilometer:
     annotations:
       gui-x: '1288.8744298356794'
