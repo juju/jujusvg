@@ -26,7 +26,7 @@ const (
 	relationColor = "#a7a7a7"
 )
 
-// Canvas holds the parsed form of a bundle or environment.
+// Canvas holds the parsed form of a bundle or model.
 type Canvas struct {
 	applications  []*application
 	relations     []*applicationRelation
@@ -34,7 +34,7 @@ type Canvas struct {
 	iconIds       map[string]string
 }
 
-// application represents a application deployed to an environment and contains the
+// application represents a application deployed to a model and contains the
 // point of the top-left corner of the icon, icon URL, and additional metadata.
 type application struct {
 	name      string
