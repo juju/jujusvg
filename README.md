@@ -9,7 +9,7 @@ Installation
 To start using jujusvg, first ensure you have a valid Go environment, then run
 the following:
 
-    go get gopkg.in/juju/jujusvg.v1
+    go get gopkg.in/juju/jujusvg.v2
 
 Dependencies
 ------------
@@ -18,7 +18,7 @@ The project uses godeps (https://launchpad.net/godeps) to manage Go
 dependencies. To install this, run:
 
 
-    go get launchpad.net/godeps
+    go get github.com/rogpeppe/godeps
 
 After installing it, you can update the dependencies to the revision specified
 in the `dependencies.tsv` file with the following:
@@ -56,7 +56,7 @@ may be used like so:
 import (
 	"io"
 
-	"gopkg.in/juju/jujusvg.v1/assets"
+	"gopkg.in/juju/jujusvg.v2/assets"
 )
 
 // ...

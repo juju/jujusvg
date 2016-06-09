@@ -1,4 +1,4 @@
-package jujusvg // import "gopkg.in/juju/jujusvg.v1"
+package jujusvg // import "gopkg.in/juju/jujusvg.v2"
 
 import (
 	"fmt"
