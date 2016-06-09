@@ -10,7 +10,7 @@ import (
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
 
-	"gopkg.in/juju/jujusvg.v1/assets"
+	"gopkg.in/juju/jujusvg.v2/assets"
 )
 
 type CanvasSuite struct{}
