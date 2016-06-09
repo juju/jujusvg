@@ -19,7 +19,7 @@ type newSuite struct{}
 var _ = gc.Suite(&newSuite{})
 
 var bundle = `
-services:
+applications:
   mongodb:
     charm: "cs:precise/mongodb-21"
     num_units: 1
@@ -100,8 +100,8 @@ func (s *newSuite) TestNewFromBundle(c *gc.C) {
 &#x9;&#x9;&#x9;&#x9;</svg:svg><svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="icon-3">
 &#x9;&#x9;&#x9;&#x9;&#x9;<svg:image width="96" height="96" xlink:href="http://0.1.2.3/precise/mongodb-21.svg"></svg:image>
 &#x9;&#x9;&#x9;&#x9;</svg:svg></defs>
-<circle cx="47" cy="49" r="45" id="service-icon-mask" fill="none" />
-<clipPath id="clip-mask" ><use x="0" y="0" xlink:href="#service-icon-mask" />
+<circle cx="47" cy="49" r="45" id="application-icon-mask" fill="none" />
+<clipPath id="clip-mask" ><use x="0" y="0" xlink:href="#application-icon-mask" />
 </clipPath>
 <g id="relations">
 <g >
@@ -119,24 +119,24 @@ func (s *newSuite) TestNewFromBundle(c *gc.C) {
 <circle cx="502" cy="284" r="4" fill="#a7a7a7" />
 </g>
 </g>
-<g id="services">
+<g id="applications">
 <g transform="translate(323,0)" >
 <title>charmworld</title>
-<circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
+<circle cx="90" cy="90" r="90" class="application-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >charmworld</text>
 </g>
 <g transform="translate(0,257)" >
 <title>elasticsearch</title>
-<circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
+<circle cx="90" cy="90" r="90" class="application-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <use x="0" y="0" xlink:href="#icon-2" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >elasticsearch</text>
 </g>
 <g transform="translate(450,276)" >
 <title>mongodb</title>
-<circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
+<circle cx="90" cy="90" r="90" class="application-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <use x="0" y="0" xlink:href="#icon-3" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >mongodb</text>
@@ -146,13 +146,13 @@ func (s *newSuite) TestNewFromBundle(c *gc.C) {
 `))
 }
 
-func (s *newSuite) TestNewFromBundleWithUnplacedService(c *gc.C) {
+func (s *newSuite) TestNewFromBundleWithUnplacedApplication(c *gc.C) {
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, gc.IsNil)
 	err = b.Verify(nil, nil)
 	c.Assert(err, gc.IsNil)
-	b.Services["charmworld"].Annotations["gui-x"] = ""
-	b.Services["charmworld"].Annotations["gui-y"] = ""
+	b.Applications["charmworld"].Annotations["gui-x"] = ""
+	b.Applications["charmworld"].Annotations["gui-y"] = ""
 
 	cvs, err := NewFromBundle(b, iconURL, nil)
 	c.Assert(err, gc.IsNil)
@@ -179,8 +179,8 @@ func (s *newSuite) TestNewFromBundleWithUnplacedService(c *gc.C) {
 &#x9;&#x9;&#x9;&#x9;</svg:svg><svg:svg xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="icon-3">
 &#x9;&#x9;&#x9;&#x9;&#x9;<svg:image width="96" height="96" xlink:href="http://0.1.2.3/precise/mongodb-21.svg"></svg:image>
 &#x9;&#x9;&#x9;&#x9;</svg:svg></defs>
-<circle cx="47" cy="49" r="45" id="service-icon-mask" fill="none" />
-<clipPath id="clip-mask" ><use x="0" y="0" xlink:href="#service-icon-mask" />
+<circle cx="47" cy="49" r="45" id="application-icon-mask" fill="none" />
+<clipPath id="clip-mask" ><use x="0" y="0" xlink:href="#application-icon-mask" />
 </clipPath>
 <g id="relations">
 <g >
@@ -198,24 +198,24 @@ func (s *newSuite) TestNewFromBundleWithUnplacedService(c *gc.C) {
 <circle cx="625" cy="137" r="4" fill="#a7a7a7" />
 </g>
 </g>
-<g id="services">
+<g id="applications">
 <g transform="translate(720,109)" >
 <title>charmworld</title>
-<circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
+<circle cx="90" cy="90" r="90" class="application-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >charmworld</text>
 </g>
 <g transform="translate(0,0)" >
 <title>elasticsearch</title>
-<circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
+<circle cx="90" cy="90" r="90" class="application-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <use x="0" y="0" xlink:href="#icon-2" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >elasticsearch</text>
 </g>
 <g transform="translate(450,19)" >
 <title>mongodb</title>
-<circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
+<circle cx="90" cy="90" r="90" class="application-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <use x="0" y="0" xlink:href="#icon-3" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >mongodb</text>
@@ -250,8 +250,8 @@ func (s *newSuite) TestWithFetcher(c *gc.C) {
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16.000017 16.000017"><g transform="translate(-952 -156.362)"><path color="#000" overflow="visible" fill="none" d="M952 156.362h16v16h-16z"/><circle r="7.25" cy="164.362" cx="960" color="#000" overflow="visible" fill="#a7a7a7" stroke="#a7a7a7" stroke-width="1.5" stroke-dashoffset=".8"/><path style="line-height:125%;-inkscape-font-specification:Ubuntu;text-align:center" d="M963.8 161.286l-.066.057L959 165.49l-2.776-2.38-.84.948 3.616 3.804 5.5-5.787-.7-.79z" font-size="15" font-family="Ubuntu" letter-spacing="0" word-spacing="0" text-anchor="middle" fill="#fff"/></g></svg>
 </g>
 </defs>
-<circle cx="47" cy="49" r="45" id="service-icon-mask" fill="none" />
-<clipPath id="clip-mask" ><use x="0" y="0" xlink:href="#service-icon-mask" />
+<circle cx="47" cy="49" r="45" id="application-icon-mask" fill="none" />
+<clipPath id="clip-mask" ><use x="0" y="0" xlink:href="#application-icon-mask" />
 </clipPath>
 <g id="relations">
 <g >
@@ -269,24 +269,24 @@ func (s *newSuite) TestWithFetcher(c *gc.C) {
 <circle cx="502" cy="284" r="4" fill="#a7a7a7" />
 </g>
 </g>
-<g id="services">
+<g id="applications">
 <g transform="translate(323,0)" >
 <title>charmworld</title>
-<circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
+<circle cx="90" cy="90" r="90" class="application-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <image x="42" y="42" width="96" height="96" xlink:href="http://0.1.2.3/~juju-jitsu/precise/charmworld-58.svg" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >charmworld</text>
 </g>
 <g transform="translate(0,257)" >
 <title>elasticsearch</title>
-<circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
+<circle cx="90" cy="90" r="90" class="application-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <image x="42" y="42" width="96" height="96" xlink:href="http://0.1.2.3/~charming-devs/precise/elasticsearch-2.svg" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >elasticsearch</text>
 </g>
 <g transform="translate(450,276)" >
 <title>mongodb</title>
-<circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
+<circle cx="90" cy="90" r="90" class="application-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <image x="42" y="42" width="96" height="96" xlink:href="http://0.1.2.3/precise/mongodb-21.svg" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >mongodb</text>
@@ -330,8 +330,8 @@ func (s *newSuite) TestDefaultHTTPFetcher(c *gc.C) {
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16.000017 16.000017"><g transform="translate(-952 -156.362)"><path color="#000" overflow="visible" fill="none" d="M952 156.362h16v16h-16z"/><circle r="7.25" cy="164.362" cx="960" color="#000" overflow="visible" fill="#a7a7a7" stroke="#a7a7a7" stroke-width="1.5" stroke-dashoffset=".8"/><path style="line-height:125%;-inkscape-font-specification:Ubuntu;text-align:center" d="M963.8 161.286l-.066.057L959 165.49l-2.776-2.38-.84.948 3.616 3.804 5.5-5.787-.7-.79z" font-size="15" font-family="Ubuntu" letter-spacing="0" word-spacing="0" text-anchor="middle" fill="#fff"/></g></svg>
 </g>
 <svg:svg xmlns:svg="http://www.w3.org/2000/svg" id="icon-1"></svg:svg><svg:svg xmlns:svg="http://www.w3.org/2000/svg" id="icon-2"></svg:svg><svg:svg xmlns:svg="http://www.w3.org/2000/svg" id="icon-3"></svg:svg></defs>
-<circle cx="47" cy="49" r="45" id="service-icon-mask" fill="none" />
-<clipPath id="clip-mask" ><use x="0" y="0" xlink:href="#service-icon-mask" />
+<circle cx="47" cy="49" r="45" id="application-icon-mask" fill="none" />
+<clipPath id="clip-mask" ><use x="0" y="0" xlink:href="#application-icon-mask" />
 </clipPath>
 <g id="relations">
 <g >
@@ -349,24 +349,24 @@ func (s *newSuite) TestDefaultHTTPFetcher(c *gc.C) {
 <circle cx="502" cy="284" r="4" fill="#a7a7a7" />
 </g>
 </g>
-<g id="services">
+<g id="applications">
 <g transform="translate(323,0)" >
 <title>charmworld</title>
-<circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
+<circle cx="90" cy="90" r="90" class="application-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <use x="0" y="0" xlink:href="#icon-1" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >charmworld</text>
 </g>
 <g transform="translate(0,257)" >
 <title>elasticsearch</title>
-<circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
+<circle cx="90" cy="90" r="90" class="application-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <use x="0" y="0" xlink:href="#icon-2" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >elasticsearch</text>
 </g>
 <g transform="translate(450,276)" >
 <title>mongodb</title>
-<circle cx="90" cy="90" r="90" class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
+<circle cx="90" cy="90" r="90" class="application-block" fill="#f5f5f5" stroke="#888" stroke-width="1" />
 <use x="0" y="0" xlink:href="#icon-3" transform="translate(42,42)" width="96" height="96" clip-path="url(#clip-mask)" />
 <rect x="0" y="135" width="180" height="32" rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)" />
 <text x="90" y="157" text-anchor="middle" style="font-weight:200" >mongodb</text>
@@ -391,7 +391,7 @@ func (s *newSuite) TestFetcherError(c *gc.C) {
 func (s *newSuite) TestWithBadBundle(c *gc.C) {
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, gc.IsNil)
-	b.Relations[0][0] = "evil-unknown-service"
+	b.Relations[0][0] = "evil-unknown-application"
 	cvs, err := NewFromBundle(b, iconURL, nil)
 	c.Assert(err, gc.ErrorMatches, "cannot verify bundle: .*")
 	c.Assert(cvs, gc.IsNil)
@@ -401,16 +401,16 @@ func (s *newSuite) TestWithBadPosition(c *gc.C) {
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, gc.IsNil)
 
-	b.Services["charmworld"].Annotations["gui-x"] = "bad"
+	b.Applications["charmworld"].Annotations["gui-x"] = "bad"
 	cvs, err := NewFromBundle(b, iconURL, nil)
-	c.Assert(err, gc.ErrorMatches, `service "charmworld" does not have a valid position`)
+	c.Assert(err, gc.ErrorMatches, `application "charmworld" does not have a valid position`)
 	c.Assert(cvs, gc.IsNil)
 
 	b, err = charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, gc.IsNil)
 
-	b.Services["charmworld"].Annotations["gui-y"] = "bad"
+	b.Applications["charmworld"].Annotations["gui-y"] = "bad"
 	cvs, err = NewFromBundle(b, iconURL, nil)
-	c.Assert(err, gc.ErrorMatches, `service "charmworld" does not have a valid position`)
+	c.Assert(err, gc.ErrorMatches, `application "charmworld" does not have a valid position`)
 	c.Assert(cvs, gc.IsNil)
 }

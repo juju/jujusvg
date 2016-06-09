@@ -13,30 +13,30 @@ import (
 )
 
 const (
-	iconSize           = 96
-	serviceBlockSize   = 180
-	healthCircleRadius = 8
-	relationLineWidth  = 1
-	maxInt             = int(^uint(0) >> 1)
-	minInt             = -(maxInt - 1)
-	maxHeight          = 450
-	maxWidth           = 1000
+	iconSize             = 96
+	applicationBlockSize = 180
+	healthCircleRadius   = 8
+	relationLineWidth    = 1
+	maxInt               = int(^uint(0) >> 1)
+	minInt               = -(maxInt - 1)
+	maxHeight            = 450
+	maxWidth             = 1000
 
 	fontColor     = "#505050"
 	relationColor = "#a7a7a7"
 )
 
-// Canvas holds the parsed form of a bundle or environment.
+// Canvas holds the parsed form of a bundle or model.
 type Canvas struct {
-	services      []*service
-	relations     []*serviceRelation
+	applications  []*application
+	relations     []*applicationRelation
 	iconsRendered map[string]bool
 	iconIds       map[string]string
 }
 
-// service represents a service deployed to an environment and contains the
+// application represents a application deployed to a model and contains the
 // point of the top-left corner of the icon, icon URL, and additional metadata.
-type service struct {
+type application struct {
 	name      string
 	charmPath string
 	iconUrl   string
@@ -44,11 +44,11 @@ type service struct {
 	point     image.Point
 }
 
-// serviceRelation represents a relation created between two services.
-type serviceRelation struct {
-	name     string
-	serviceA *service
-	serviceB *service
+// applicationRelation represents a relation created between two applications.
+type applicationRelation struct {
+	name         string
+	applicationA *application
+	applicationB *application
 }
 
 // line represents a line segment with two endpoints.
@@ -57,7 +57,7 @@ type line struct {
 }
 
 // definition creates any necessary defs that can be used later in the SVG.
-func (s *service) definition(canvas *svg.SVG, iconsRendered map[string]bool, iconIds map[string]string) error {
+func (s *application) definition(canvas *svg.SVG, iconsRendered map[string]bool, iconIds map[string]string) error {
 	if len(s.iconSrc) == 0 || iconsRendered[s.charmPath] {
 		return nil
 	}
@@ -69,27 +69,27 @@ func (s *service) definition(canvas *svg.SVG, iconsRendered map[string]bool, ico
 	return processIcon(iconBuf, canvas.Writer, iconIds[s.charmPath])
 }
 
-// usage creates any necessary tags for actually using the service in the SVG.
-func (s *service) usage(canvas *svg.SVG, iconIds map[string]string) {
+// usage creates any necessary tags for actually using the application in the SVG.
+func (s *application) usage(canvas *svg.SVG, iconIds map[string]string) {
 	canvas.Group(fmt.Sprintf(`transform="translate(%d,%d)"`, s.point.X, s.point.Y))
 	defer canvas.Gend()
 	canvas.Title(s.name)
 	canvas.Circle(
-		serviceBlockSize/2,
-		serviceBlockSize/2,
-		serviceBlockSize/2,
-		`class="service-block" fill="#f5f5f5" stroke="#888" stroke-width="1"`)
+		applicationBlockSize/2,
+		applicationBlockSize/2,
+		applicationBlockSize/2,
+		`class="application-block" fill="#f5f5f5" stroke="#888" stroke-width="1"`)
 	if len(s.iconSrc) > 0 {
 		canvas.Use(
 			0,
 			0,
 			"#"+iconIds[s.charmPath],
-			fmt.Sprintf(`transform="translate(%d,%d)" width="%d" height="%d" clip-path="url(#clip-mask)"`, serviceBlockSize/2-iconSize/2, serviceBlockSize/2-iconSize/2, iconSize, iconSize),
+			fmt.Sprintf(`transform="translate(%d,%d)" width="%d" height="%d" clip-path="url(#clip-mask)"`, applicationBlockSize/2-iconSize/2, applicationBlockSize/2-iconSize/2, iconSize, iconSize),
 		)
 	} else {
 		canvas.Image(
-			serviceBlockSize/2-iconSize/2,
-			serviceBlockSize/2-iconSize/2,
+			applicationBlockSize/2-iconSize/2,
+			applicationBlockSize/2-iconSize/2,
 			iconSize,
 			iconSize,
 			s.iconUrl,
@@ -102,29 +102,29 @@ func (s *service) usage(canvas *svg.SVG, iconIds map[string]string) {
 	}
 	canvas.Rect(
 		0,
-		serviceBlockSize-45,
-		serviceBlockSize,
+		applicationBlockSize-45,
+		applicationBlockSize,
 		32,
 		`rx="2" ry="2" fill="rgba(220, 220, 220, 0.8)"`)
 	canvas.Text(
-		serviceBlockSize/2,
-		serviceBlockSize-23,
+		applicationBlockSize/2,
+		applicationBlockSize-23,
 		name,
 		`text-anchor="middle" style="font-weight:200"`)
 }
 
 // definition creates any necessary defs that can be used later in the SVG.
-func (r *serviceRelation) definition(canvas *svg.SVG) {
+func (r *applicationRelation) definition(canvas *svg.SVG) {
 }
 
 // usage creates any necessary tags for actually using the relation in the SVG.
-func (r *serviceRelation) usage(canvas *svg.SVG) {
+func (r *applicationRelation) usage(canvas *svg.SVG) {
 	canvas.Group()
 	defer canvas.Gend()
 	canvas.Title(r.name)
 	l := line{
-		p0: r.serviceA.point.Add(point(serviceBlockSize/2, serviceBlockSize/2)),
-		p1: r.serviceB.point.Add(point(serviceBlockSize/2, serviceBlockSize/2)),
+		p0: r.applicationA.point.Add(point(applicationBlockSize/2, applicationBlockSize/2)),
+		p1: r.applicationB.point.Add(point(applicationBlockSize/2, applicationBlockSize/2)),
 	}
 	canvas.Line(
 		l.p0.X,
@@ -140,13 +140,13 @@ func (r *serviceRelation) usage(canvas *svg.SVG) {
 
 	deg := math.Atan2(float64(l.p0.Y-l.p1.Y), float64(l.p0.X-l.p1.X))
 	canvas.Circle(
-		int(float64(l.p0.X)-math.Cos(deg)*(serviceBlockSize/2)),
-		int(float64(l.p0.Y)-math.Sin(deg)*(serviceBlockSize/2)),
+		int(float64(l.p0.X)-math.Cos(deg)*(applicationBlockSize/2)),
+		int(float64(l.p0.Y)-math.Sin(deg)*(applicationBlockSize/2)),
 		4,
 		fmt.Sprintf(`fill=%q`, relationColor))
 	canvas.Circle(
-		int(float64(l.p1.X)+math.Cos(deg)*(serviceBlockSize/2)),
-		int(float64(l.p1.Y)+math.Sin(deg)*(serviceBlockSize/2)),
+		int(float64(l.p1.X)+math.Cos(deg)*(applicationBlockSize/2)),
+		int(float64(l.p1.Y)+math.Sin(deg)*(applicationBlockSize/2)),
 		4,
 		fmt.Sprintf(`fill=%q`, relationColor))
 }
@@ -163,13 +163,13 @@ func (l *line) length() float64 {
 	return math.Sqrt(square(float64(dp.X)) + square(float64(dp.Y)))
 }
 
-// addService adds a new service to the canvas.
-func (c *Canvas) addService(s *service) {
-	c.services = append(c.services, s)
+// addApplication adds a new application to the canvas.
+func (c *Canvas) addApplication(s *application) {
+	c.applications = append(c.applications, s)
 }
 
 // addRelation adds a new relation to the canvas.
-func (c *Canvas) addRelation(r *serviceRelation) {
+func (c *Canvas) addRelation(r *applicationRelation) {
 	c.relations = append(c.relations, r)
 }
 
@@ -181,25 +181,25 @@ func (c *Canvas) layout() (int, int) {
 	maxWidth := minInt
 	maxHeight := minInt
 
-	for _, service := range c.services {
-		if service.point.X < minWidth {
-			minWidth = service.point.X
+	for _, application := range c.applications {
+		if application.point.X < minWidth {
+			minWidth = application.point.X
 		}
-		if service.point.Y < minHeight {
-			minHeight = service.point.Y
+		if application.point.Y < minHeight {
+			minHeight = application.point.Y
 		}
-		if service.point.X > maxWidth {
-			maxWidth = service.point.X
+		if application.point.X > maxWidth {
+			maxWidth = application.point.X
 		}
-		if service.point.Y > maxHeight {
-			maxHeight = service.point.Y
+		if application.point.Y > maxHeight {
+			maxHeight = application.point.Y
 		}
 	}
-	for _, service := range c.services {
-		service.point = service.point.Sub(point(minWidth, minHeight))
+	for _, application := range c.applications {
+		application.point = application.point.Sub(point(minWidth, minHeight))
 	}
-	return abs(maxWidth-minWidth) + serviceBlockSize + 1,
-		abs(maxHeight-minHeight) + serviceBlockSize + 1
+	return abs(maxWidth-minWidth) + applicationBlockSize + 1,
+		abs(maxHeight-minHeight) + applicationBlockSize + 1
 }
 
 func (c *Canvas) definition(canvas *svg.SVG) {
@@ -212,12 +212,12 @@ func (c *Canvas) definition(canvas *svg.SVG) {
 	io.WriteString(canvas.Writer, assets.RelationIconHealthy)
 	canvas.Gend()
 
-	// Service and relation specific defs.
+	// Application and relation specific defs.
 	for _, relation := range c.relations {
 		relation.definition(canvas)
 	}
-	for _, service := range c.services {
-		service.definition(canvas, c.iconsRendered, c.iconIds)
+	for _, application := range c.applications {
+		application.definition(canvas, c.iconsRendered, c.iconIds)
 	}
 }
 
@@ -229,32 +229,32 @@ func (c *Canvas) relationsGroup(canvas *svg.SVG) {
 	}
 }
 
-func (c *Canvas) servicesGroup(canvas *svg.SVG) {
-	canvas.Gid("services")
+func (c *Canvas) applicationsGroup(canvas *svg.SVG) {
+	canvas.Gid("applications")
 	defer canvas.Gend()
-	for _, service := range c.services {
-		service.usage(canvas, c.iconIds)
+	for _, application := range c.applications {
+		application.usage(canvas, c.iconIds)
 	}
 }
 
 func (c *Canvas) iconClipPath(canvas *svg.SVG) {
 	canvas.Circle(
-		serviceBlockSize/2-iconSize/2+5, // for these two, add an offset to help
-		serviceBlockSize/2-iconSize/2+7, // hide the embossed border.
-		serviceBlockSize/4,
-		`id="service-icon-mask" fill="none"`)
+		applicationBlockSize/2-iconSize/2+5, // for these two, add an offset to help
+		applicationBlockSize/2-iconSize/2+7, // hide the embossed border.
+		applicationBlockSize/4,
+		`id="application-icon-mask" fill="none"`)
 	canvas.ClipPath(`id="clip-mask"`)
 	defer canvas.ClipEnd()
 	canvas.Use(
 		0,
 		0,
-		`#service-icon-mask`)
+		`#application-icon-mask`)
 }
 
 // Marshal renders the SVG to the given io.Writer.
 func (c *Canvas) Marshal(w io.Writer) {
-	// Initialize maps for service icons, which are used both in definition
-	// and use methods for services.
+	// Initialize maps for application icons, which are used both in definition
+	// and use methods for applications.
 	c.iconsRendered = make(map[string]bool)
 	c.iconIds = make(map[string]string)
 
@@ -276,7 +276,7 @@ func (c *Canvas) Marshal(w io.Writer) {
 	c.definition(canvas)
 	c.iconClipPath(canvas)
 	c.relationsGroup(canvas)
-	c.servicesGroup(canvas)
+	c.applicationsGroup(canvas)
 }
 
 // abs returns the absolute value of a number.

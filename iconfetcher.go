@@ -35,10 +35,10 @@ func (l *LinkFetcher) FetchIcons(b *charm.BundleData) (map[string][]byte, error)
 
 	// Build the map of icons.
 	icons := make(map[string][]byte)
-	for _, serviceData := range b.Services {
-		charmId, err := charm.ParseURL(serviceData.Charm)
+	for _, applicationData := range b.Applications {
+		charmId, err := charm.ParseURL(applicationData.Charm)
 		if err != nil {
-			return nil, errgo.Notef(err, "cannot parse charm %q", serviceData.Charm)
+			return nil, errgo.Notef(err, "cannot parse charm %q", applicationData.Charm)
 		}
 		path := charmId.Path()
 
@@ -94,10 +94,10 @@ func (h *HTTPFetcher) FetchIcons(b *charm.BundleData) (map[string][]byte, error)
 	icons := make(map[string][]byte)
 	alreadyFetched := make(map[string]bool)
 	run := parallel.NewRun(concurrency)
-	for _, serviceData := range b.Services {
-		charmId, err := charm.ParseURL(serviceData.Charm)
+	for _, applicationData := range b.Applications {
+		charmId, err := charm.ParseURL(applicationData.Charm)
 		if err != nil {
-			return nil, errgo.Notef(err, "cannot parse charm %q", serviceData.Charm)
+			return nil, errgo.Notef(err, "cannot parse charm %q", applicationData.Charm)
 		}
 		path := charmId.Path()
 		if alreadyFetched[path] {

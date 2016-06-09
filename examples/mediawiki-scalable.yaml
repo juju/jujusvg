@@ -1,4 +1,4 @@
-services:
+applications:
   haproxy:
     charm: cs:precise/haproxy-35
     num_units: 1
@@ -23,7 +23,7 @@ services:
       monitoring_username: haproxy
       nagios_context: juju
       package_status: install
-      services: "- service_name: haproxy_service\n  service_host: \"0.0.0.0\"\n  service_port:
+      applications: "- service_name: haproxy_service\n  service_host: \"0.0.0.0\"\n  service_port:
         80\n  service_options: [balance leastconn]\n  server_options: maxconn 100\n"
       sysctl: ""
     annotations:

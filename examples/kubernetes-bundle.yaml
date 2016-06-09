@@ -1,4 +1,4 @@
-services:
+applications:
   "kubernetes-master":
     charm: cs:~kubernetes/trusty/kubernetes-master-5
     annotations:
