@@ -72,7 +72,7 @@ func (f *errFetcher) FetchIcons(*charm.BundleData) (map[string][]byte, error) {
 func (s *newSuite) TestNewFromBundle(c *gc.C) {
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, gc.IsNil)
-	err = b.Verify(nil, nil)
+	err = b.Verify(nil, nil, nil)
 	c.Assert(err, gc.IsNil)
 
 	cvs, err := NewFromBundle(b, iconURL, nil)
@@ -149,7 +149,7 @@ func (s *newSuite) TestNewFromBundle(c *gc.C) {
 func (s *newSuite) TestNewFromBundleWithUnplacedApplication(c *gc.C) {
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, gc.IsNil)
-	err = b.Verify(nil, nil)
+	err = b.Verify(nil, nil, nil)
 	c.Assert(err, gc.IsNil)
 	b.Applications["charmworld"].Annotations["gui-x"] = ""
 	b.Applications["charmworld"].Annotations["gui-y"] = ""
@@ -228,7 +228,7 @@ func (s *newSuite) TestNewFromBundleWithUnplacedApplication(c *gc.C) {
 func (s *newSuite) TestWithFetcher(c *gc.C) {
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, gc.IsNil)
-	err = b.Verify(nil, nil)
+	err = b.Verify(nil, nil, nil)
 	c.Assert(err, gc.IsNil)
 
 	cvs, err := NewFromBundle(b, iconURL, new(emptyFetcher))
@@ -308,7 +308,7 @@ func (s *newSuite) TestDefaultHTTPFetcher(c *gc.C) {
 
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, gc.IsNil)
-	err = b.Verify(nil, nil)
+	err = b.Verify(nil, nil, nil)
 	c.Assert(err, gc.IsNil)
 
 	cvs, err := NewFromBundle(b, tsIconUrl, &HTTPFetcher{IconURL: tsIconUrl})
@@ -380,7 +380,7 @@ func (s *newSuite) TestDefaultHTTPFetcher(c *gc.C) {
 func (s *newSuite) TestFetcherError(c *gc.C) {
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, gc.IsNil)
-	err = b.Verify(nil, nil)
+	err = b.Verify(nil, nil, nil)
 	c.Assert(err, gc.IsNil)
 
 	ef := errFetcher("bad-wolf")
