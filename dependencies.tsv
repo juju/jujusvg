@@ -13,7 +13,7 @@ github.com/juju/xml	git	eb759a627588d35166bc505fceb51b88500e291e	2015-04-13T13:1
 golang.org/x/crypto	git	aedad9a179ec1ea11b7064c57cbc6dc30d7724ec	2015-08-30T18:06:42Z
 gopkg.in/check.v1	git	4f90aeace3a26ad7021961c297b22c42160c7b25	2016-01-05T16:49:36Z
 gopkg.in/errgo.v1	git	66cb46252b94c1f3d65646f54ee8043ab38d766c	2015-10-07T15:31:57Z
-gopkg.in/juju/charm.v6	git	e03b52c17fcc23dd3154fdda6cbd357c6ded1f01	2017-11-14T08:45:40Z
+gopkg.in/juju/charm.v6	git	4c7183c1a6386a8865fa6c7ddbd3de70d05f1f82	2018-06-28T05:32:07Z
 gopkg.in/juju/names.v2	git	e38bc90539f22af61a9c656d35068bd5f0a5b30a	2016-05-25T23:07:23Z
 gopkg.in/mgo.v2	git	4d04138ffef2791c479c0c8bbffc30b34081b8d9	2015-10-26T16:34:53Z
 gopkg.in/yaml.v2	git	a83829b6f1293c91addabc89d0571c246397bbf4	2016-03-01T20:40:22Z
