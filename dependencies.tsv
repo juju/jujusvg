@@ -15,7 +15,7 @@ golang.org/x/net	git	d25186b37f34ebdbbea8f488ef055638dfab272d	2018-03-06T06:01:5
 golang.org/x/sys	git	37707fdb30a5b38865cfb95e5aab41707daec7fd	2018-02-02T13:58:01Z
 gopkg.in/check.v1	git	4f90aeace3a26ad7021961c297b22c42160c7b25	2016-01-05T16:49:36Z
 gopkg.in/errgo.v1	git	66cb46252b94c1f3d65646f54ee8043ab38d766c	2015-10-07T15:31:57Z
-gopkg.in/juju/charm.v6	git	6e010c5e06d7a9385229eb22fa92ce836e0f45e5	2018-06-28T06:52:20Z
+gopkg.in/juju/charm.v6	git	5fbb467f7f759a4a2890fc5da0abe4b9b1df20fa	2018-06-29T06:08:46Z
 gopkg.in/juju/names.v2	git	e38bc90539f22af61a9c656d35068bd5f0a5b30a	2016-05-25T23:07:23Z
 gopkg.in/mgo.v2	git	4d04138ffef2791c479c0c8bbffc30b34081b8d9	2015-10-26T16:34:53Z
 gopkg.in/tomb.v1	git	dd632973f1e7218eb1089048e0798ec9ae7dceb8	2014-10-24T13:56:13Z
