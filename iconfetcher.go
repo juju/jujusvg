@@ -10,7 +10,7 @@ import (
 	"github.com/juju/utils/parallel"
 	"github.com/juju/xml"
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v7-unstable"
+	"gopkg.in/juju/charm.v6"
 )
 
 // An IconFetcher provides functionality for retrieving icons for the charms
