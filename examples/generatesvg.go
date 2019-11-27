@@ -9,7 +9,7 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/juju/charm.v7-unstable"
+	"gopkg.in/juju/charm.v6"
 
 	// Import the jujusvg library and the juju charm library
 	"gopkg.in/juju/jujusvg.v3"
