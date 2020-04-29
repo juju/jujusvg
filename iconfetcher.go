@@ -2,6 +2,7 @@ package jujusvg
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -17,19 +18,19 @@ import (
 // within a given bundle.  The FetchIcons function accepts a bundle, and
 // returns a map from charm paths to icon data.
 type IconFetcher interface {
-	FetchIcons(*charm.BundleData) (map[string][]byte, error)
+	FetchIcons(context.Context, *charm.BundleData) (map[string][]byte, error)
 }
 
 // LinkFetcher fetches icons as links so that they are included within the SVG
 // as remote resources using SVG <image> tags.
 type LinkFetcher struct {
 	// IconURL returns the URL of the entity for embedding
-	IconURL func(*charm.URL) string
+	IconURL func(context.Context, *charm.URL) (string, error)
 }
 
 // FetchIcons generates the svg image tags given an appropriate URL, generating
 // tags only for unique icons.
-func (l *LinkFetcher) FetchIcons(b *charm.BundleData) (map[string][]byte, error) {
+func (l *LinkFetcher) FetchIcons(ctx context.Context, b *charm.BundleData) (map[string][]byte, error) {
 	// Maintain a list of icons that have already been fetched.
 	alreadyFetched := make(map[string]bool)
 
@@ -45,10 +46,14 @@ func (l *LinkFetcher) FetchIcons(b *charm.BundleData) (map[string][]byte, error)
 		// Don't duplicate icons in the map.
 		if !alreadyFetched[path] {
 			alreadyFetched[path] = true
+			url, err := l.IconURL(ctx, charmId)
+			if err != nil {
+				return nil, errgo.Mask(err, errgo.Any)
+			}
 			icons[path] = []byte(fmt.Sprintf(`
 				<svg xmlns:xlink="http://www.w3.org/1999/xlink">
 					<image width="96" height="96" xlink:href="%s" />
-				</svg>`, escapeString(l.IconURL(charmId))))
+				</svg>`, escapeString(url)))
 		}
 	}
 	return icons, nil
@@ -72,7 +77,7 @@ type HTTPFetcher struct {
 	Concurrency int
 
 	// IconURL returns the URL from which to fetch the given entity's icon SVG.
-	IconURL func(*charm.URL) string
+	IconURL func(context.Context, *charm.URL) (string, error)
 
 	// Client specifies what HTTP client to use; if it is not provided,
 	// http.DefaultClient will be used.
@@ -81,7 +86,7 @@ type HTTPFetcher struct {
 
 // FetchIcons retrieves icon SVGs over HTTP.  If specified in the struct, icons
 // will be fetched concurrently.
-func (h *HTTPFetcher) FetchIcons(b *charm.BundleData) (map[string][]byte, error) {
+func (h *HTTPFetcher) FetchIcons(ctx context.Context, b *charm.BundleData) (map[string][]byte, error) {
 	client := http.DefaultClient
 	if h.Client != nil {
 		client = h.Client
@@ -105,9 +110,13 @@ func (h *HTTPFetcher) FetchIcons(b *charm.BundleData) (map[string][]byte, error)
 		}
 		alreadyFetched[path] = true
 		run.Do(func() error {
-			icon, err := h.fetchIcon(h.IconURL(charmId), client)
+			url, err := h.IconURL(ctx, charmId)
 			if err != nil {
-				return err
+				return errgo.Mask(err, errgo.Any)
+			}
+			icon, err := h.fetchIcon(url, client)
+			if err != nil {
+				return errgo.Mask(err, errgo.Any)
 			}
 			iconsMu.Lock()
 			defer iconsMu.Unlock()
@@ -116,7 +125,7 @@ func (h *HTTPFetcher) FetchIcons(b *charm.BundleData) (map[string][]byte, error)
 		})
 	}
 	if err := run.Wait(); err != nil {
-		return nil, err
+		return nil, errgo.Mask(err, errgo.Any)
 	}
 	return icons, nil
 }

@@ -4,6 +4,7 @@ package main
 // from a given bundle.yaml file.
 
 import (
+	"context"
 	"io/ioutil"
 	"log"
 	"os"
@@ -17,14 +18,16 @@ import (
 
 // iconURL takes a reference to a charm and returns the URL for that charm's icon.
 // In this case, we're using the api.jujucharms.com API to provide the icon's URL.
-func iconURL(ref *charm.URL) string {
-	return "https://api.jujucharms.com/charmstore/v4/" + ref.Path() + "/icon.svg"
+func iconURL(ctx context.Context, ref *charm.URL) (string, error) {
+	return "https://api.jujucharms.com/charmstore/v4/" + ref.Path() + "/icon.svg", nil
 }
 
 func main() {
 	if len(os.Args) != 2 {
 		log.Fatalf("Please provide the name of a bundle file as the first argument")
 	}
+
+	ctx := context.Background()
 
 	// First, we need to read our bundle data into a []byte
 	bundle_data, err := ioutil.ReadFile(os.Args[1])
@@ -45,7 +48,7 @@ func main() {
 	// Next, build a canvas of the bundle.  This is a simplified version of a charm.Bundle
 	// that contains just the position information and charm icon URLs necessary to build
 	// the SVG representation of the bundle
-	canvas, err := jujusvg.NewFromBundle(bundle, iconURL, fetcher)
+	canvas, err := jujusvg.NewFromBundle(ctx, bundle, iconURL, fetcher)
 	if err != nil {
 		log.Fatalf("Error generating canvas: %s\n", err)
 	}
