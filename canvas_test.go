@@ -6,11 +6,11 @@ import (
 	"image"
 	"io"
 
-	"github.com/ajstarks/svgo"
+	svg "github.com/ajstarks/svgo"
 	jc "github.com/juju/testing/checkers"
 	gc "gopkg.in/check.v1"
 
-	"gopkg.in/juju/jujusvg.v3/assets"
+	"github.com/juju/jujusvg/v4/assets"
 )
 
 type CanvasSuite struct{}

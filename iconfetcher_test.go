@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"strings"
 
+	"github.com/juju/charm/v7"
 	gc "gopkg.in/check.v1"
-	"gopkg.in/juju/charm.v6"
 )
 
 type IconFetcherSuite struct{}

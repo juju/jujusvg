@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/juju/charm/v7"
 	"github.com/juju/utils/parallel"
 	"github.com/juju/xml"
 	"gopkg.in/errgo.v1"
-	"gopkg.in/juju/charm.v7-unstable"
 )
 
 // An IconFetcher provides functionality for retrieving icons for the charms
