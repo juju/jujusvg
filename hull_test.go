@@ -2,15 +2,14 @@ package jujusvg
 
 import (
 	"image"
+	"testing"
 
-	gc "gopkg.in/check.v1"
+	qt "github.com/frankban/quicktest"
 )
 
-type HullSuite struct{}
+func TestGetPointOutside(t *testing.T) {
+	c := qt.New(t)
 
-var _ = gc.Suite(&HullSuite{})
-
-func (s *HullSuite) TestGetPointOutside(c *gc.C) {
 	var tests = []struct {
 		about    string
 		vertices []image.Point
@@ -42,33 +41,37 @@ func (s *HullSuite) TestGetPointOutside(c *gc.C) {
 			expected: image.Point{20, 20},
 		},
 	}
-	for _, test := range tests {
-		c.Log(test.about)
-		c.Assert(getPointOutside(test.vertices, image.Point{10, 10}), gc.Equals, test.expected)
+	for i := range tests {
+		test := tests[i]
+		c.Run(test.about, func(c *qt.C) {
+			c.Assert(getPointOutside(test.vertices, image.Point{10, 10}), qt.Equals, test.expected)
+		})
 	}
 }
 
-func (s *HullSuite) TestConvexHull(c *gc.C) {
+func TestConvexHull(t *testing.T) {
+	c := qt.New(t)
+
 	// Zero vertices
 	vertices := []image.Point{}
-	c.Assert(convexHull(vertices), gc.DeepEquals, []image.Point{{0, 0}})
+	c.Assert(convexHull(vertices), qt.DeepEquals, []image.Point{{0, 0}})
 
 	// Identities
 	vertices = []image.Point{{1, 1}}
-	c.Assert(convexHull(vertices), gc.DeepEquals, vertices)
+	c.Assert(convexHull(vertices), qt.DeepEquals, vertices)
 
 	vertices = []image.Point{{1, 1}, {2, 2}}
-	c.Assert(convexHull(vertices), gc.DeepEquals, vertices)
+	c.Assert(convexHull(vertices), qt.DeepEquals, vertices)
 
 	vertices = []image.Point{{1, 1}, {2, 2}, {1, 2}}
-	c.Assert(convexHull(vertices), gc.DeepEquals, vertices)
+	c.Assert(convexHull(vertices), qt.DeepEquals, vertices)
 
 	// > 3 vertices
 	vertices = []image.Point{}
 	for i := 0; i < 100; i++ {
 		vertices = append(vertices, image.Point{i / 10, i % 10})
 	}
-	c.Assert(convexHull(vertices), gc.DeepEquals, []image.Point{
+	c.Assert(convexHull(vertices), qt.DeepEquals, []image.Point{
 		{0, 0},
 		{9, 0},
 		{9, 9},
