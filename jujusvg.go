@@ -1,6 +1,7 @@
 package jujusvg // import "github.com/juju/jujusvg/v4"
 
 import (
+	"context"
 	"fmt"
 	"image"
 	"math"
@@ -21,15 +22,15 @@ import (
 // allowing the generated bundle to be self-contained. If fetcher
 // is nil, a default fetcher which refers to icons by their
 // URLs as svg <image> tags will be used.
-func NewFromBundle(b *charm.BundleData, iconURL func(*charm.URL) string, fetcher IconFetcher) (*Canvas, error) {
+func NewFromBundle(ctx context.Context, b *charm.BundleData, iconURL func(context.Context, *charm.URL) (string, error), fetcher IconFetcher) (*Canvas, error) {
 	if fetcher == nil {
 		fetcher = &LinkFetcher{
 			IconURL: iconURL,
 		}
 	}
-	iconMap, err := fetcher.FetchIcons(b)
+	iconMap, err := fetcher.FetchIcons(ctx, b)
 	if err != nil {
-		return nil, err
+		return nil, errgo.Mask(err, errgo.Any)
 	}
 
 	var canvas Canvas
@@ -67,11 +68,15 @@ func NewFromBundle(b *charm.BundleData, iconURL func(*charm.URL) string, fetcher
 			return nil, errgo.Notef(err, "cannot parse charm %q", applicationData.Charm)
 		}
 		icon := iconMap[charmID.Path()]
+		iconURL, err := iconURL(ctx, charmID)
+		if err != nil {
+			return nil, errgo.Mask(err, errgo.Any)
+		}
 		svc := &application{
 			name:      name,
 			charmPath: charmID.Path(),
 			point:     image.Point{int(x), int(y)},
-			iconUrl:   iconURL(charmID),
+			iconUrl:   iconURL,
 			iconSrc:   icon,
 		}
 		applications[name] = svc

@@ -2,6 +2,7 @@ package jujusvg
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -47,31 +48,32 @@ relations:
 series: precise
 `
 
-func iconURL(ref *charm.URL) string {
-	return "http://0.1.2.3/" + ref.Path() + ".svg"
+func iconURL(_ context.Context, ref *charm.URL) (string, error) {
+	return "http://0.1.2.3/" + ref.Path() + ".svg", nil
 }
 
 type emptyFetcher struct{}
 
-func (f *emptyFetcher) FetchIcons(*charm.BundleData) (map[string][]byte, error) {
+func (f *emptyFetcher) FetchIcons(context.Context, *charm.BundleData) (map[string][]byte, error) {
 	return nil, nil
 }
 
 type errFetcher string
 
-func (f *errFetcher) FetchIcons(*charm.BundleData) (map[string][]byte, error) {
+func (f *errFetcher) FetchIcons(context.Context, *charm.BundleData) (map[string][]byte, error) {
 	return nil, fmt.Errorf("%s", *f)
 }
 
 func TestNewFromBundle(t *testing.T) {
 	c := qt.New(t)
+	ctx := context.Background()
 
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, qt.IsNil)
 	err = b.Verify(nil, nil, nil)
 	c.Assert(err, qt.IsNil)
 
-	cvs, err := NewFromBundle(b, iconURL, nil)
+	cvs, err := NewFromBundle(ctx, b, iconURL, nil)
 	c.Assert(err, qt.IsNil)
 
 	var buf bytes.Buffer
@@ -144,6 +146,7 @@ func TestNewFromBundle(t *testing.T) {
 
 func TestNewFromBundleWithUnplacedApplication(t *testing.T) {
 	c := qt.New(t)
+	ctx := context.Background()
 
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, qt.IsNil)
@@ -152,7 +155,7 @@ func TestNewFromBundleWithUnplacedApplication(t *testing.T) {
 	b.Applications["charmworld"].Annotations["gui-x"] = ""
 	b.Applications["charmworld"].Annotations["gui-y"] = ""
 
-	cvs, err := NewFromBundle(b, iconURL, nil)
+	cvs, err := NewFromBundle(ctx, b, iconURL, nil)
 	c.Assert(err, qt.IsNil)
 
 	var buf bytes.Buffer
@@ -225,13 +228,14 @@ func TestNewFromBundleWithUnplacedApplication(t *testing.T) {
 
 func TestWithFetcher(t *testing.T) {
 	c := qt.New(t)
+	ctx := context.Background()
 
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, qt.IsNil)
 	err = b.Verify(nil, nil, nil)
 	c.Assert(err, qt.IsNil)
 
-	cvs, err := NewFromBundle(b, iconURL, new(emptyFetcher))
+	cvs, err := NewFromBundle(ctx, b, iconURL, new(emptyFetcher))
 	c.Assert(err, qt.IsNil)
 
 	var buf bytes.Buffer
@@ -298,14 +302,15 @@ func TestWithFetcher(t *testing.T) {
 
 func TestDefaultHTTPFetcher(t *testing.T) {
 	c := qt.New(t)
+	ctx := context.Background()
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "<svg></svg>")
 	}))
 	defer ts.Close()
 
-	tsIconUrl := func(ref *charm.URL) string {
-		return ts.URL + "/" + ref.Path() + ".svg"
+	tsIconUrl := func(_ context.Context, ref *charm.URL) (string, error) {
+		return ts.URL + "/" + ref.Path() + ".svg", nil
 	}
 
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
@@ -313,7 +318,7 @@ func TestDefaultHTTPFetcher(t *testing.T) {
 	err = b.Verify(nil, nil, nil)
 	c.Assert(err, qt.IsNil)
 
-	cvs, err := NewFromBundle(b, tsIconUrl, &HTTPFetcher{IconURL: tsIconUrl})
+	cvs, err := NewFromBundle(ctx, b, tsIconUrl, &HTTPFetcher{IconURL: tsIconUrl})
 	c.Assert(err, qt.IsNil)
 
 	var buf bytes.Buffer
@@ -381,6 +386,7 @@ func TestDefaultHTTPFetcher(t *testing.T) {
 
 func TestFetcherError(t *testing.T) {
 	c := qt.New(t)
+	ctx := context.Background()
 
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, qt.IsNil)
@@ -388,29 +394,31 @@ func TestFetcherError(t *testing.T) {
 	c.Assert(err, qt.IsNil)
 
 	ef := errFetcher("bad-wolf")
-	_, err = NewFromBundle(b, iconURL, &ef)
+	_, err = NewFromBundle(ctx, b, iconURL, &ef)
 	c.Assert(err, qt.ErrorMatches, "bad-wolf")
 }
 
 func TestWithBadBundle(t *testing.T) {
 	c := qt.New(t)
+	ctx := context.Background()
 
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, qt.IsNil)
 	b.Relations[0][0] = "evil-unknown-application"
-	cvs, err := NewFromBundle(b, iconURL, nil)
+	cvs, err := NewFromBundle(ctx, b, iconURL, nil)
 	c.Assert(err, qt.ErrorMatches, "cannot verify bundle: .*")
 	c.Assert(cvs, qt.IsNil)
 }
 
 func TestWithBadPosition(t *testing.T) {
 	c := qt.New(t)
+	ctx := context.Background()
 
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, qt.IsNil)
 
 	b.Applications["charmworld"].Annotations["gui-x"] = "bad"
-	cvs, err := NewFromBundle(b, iconURL, nil)
+	cvs, err := NewFromBundle(ctx, b, iconURL, nil)
 	c.Assert(err, qt.ErrorMatches, `application "charmworld" does not have a valid position`)
 	c.Assert(cvs, qt.IsNil)
 
@@ -418,7 +426,7 @@ func TestWithBadPosition(t *testing.T) {
 	c.Assert(err, qt.IsNil)
 
 	b.Applications["charmworld"].Annotations["gui-y"] = "bad"
-	cvs, err = NewFromBundle(b, iconURL, nil)
+	cvs, err = NewFromBundle(ctx, b, iconURL, nil)
 	c.Assert(err, qt.ErrorMatches, `application "charmworld" does not have a valid position`)
 	c.Assert(cvs, qt.IsNil)
 }

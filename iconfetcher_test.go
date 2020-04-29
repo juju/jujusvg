@@ -1,6 +1,7 @@
 package jujusvg
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -13,6 +14,7 @@ import (
 
 func TestLinkFetchIcons(t *testing.T) {
 	c := qt.New(t)
+	ctx := context.Background()
 
 	tests := map[string][]byte{
 		"~charming-devs/precise/elasticsearch-2": []byte(`
@@ -28,8 +30,8 @@ func TestLinkFetchIcons(t *testing.T) {
 				<image width="96" height="96" xlink:href="/precise/mongodb-21.svg" />
 			</svg>`),
 	}
-	iconURL := func(ref *charm.URL) string {
-		return "/" + ref.Path() + ".svg"
+	iconURL := func(_ context.Context, ref *charm.URL) (string, error) {
+		return "/" + ref.Path() + ".svg", nil
 	}
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, qt.IsNil)
@@ -38,7 +40,7 @@ func TestLinkFetchIcons(t *testing.T) {
 	fetcher := LinkFetcher{
 		IconURL: iconURL,
 	}
-	iconMap, err := fetcher.FetchIcons(b)
+	iconMap, err := fetcher.FetchIcons(ctx, b)
 	c.Assert(err, qt.IsNil)
 	for charm, link := range tests {
 		assertXMLEqual(c, []byte(iconMap[charm]), []byte(link))
@@ -47,6 +49,7 @@ func TestLinkFetchIcons(t *testing.T) {
 
 func TestHTTPFetchIcons(t *testing.T) {
 	c := qt.New(t)
+	ctx := context.Background()
 
 	fetchCount := 0
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -55,8 +58,8 @@ func TestHTTPFetchIcons(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	tsIconURL := func(ref *charm.URL) string {
-		return ts.URL + "/" + ref.Path() + ".svg"
+	tsIconURL := func(_ context.Context, ref *charm.URL) (string, error) {
+		return ts.URL + "/" + ref.Path() + ".svg", nil
 	}
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
 	c.Assert(err, qt.IsNil)
@@ -71,7 +74,7 @@ func TestHTTPFetchIcons(t *testing.T) {
 		Concurrency: 1,
 		IconURL:     tsIconURL,
 	}
-	iconMap, err := fetcher.FetchIcons(b)
+	iconMap, err := fetcher.FetchIcons(ctx, b)
 	c.Assert(err, qt.IsNil)
 	c.Assert(iconMap, qt.DeepEquals, map[string][]byte{
 		"~charming-devs/precise/elasticsearch-2": []byte("<svg>/~charming-devs/precise/elasticsearch-2.svg</svg>\n"),
@@ -80,7 +83,7 @@ func TestHTTPFetchIcons(t *testing.T) {
 	})
 
 	fetcher.Concurrency = 10
-	iconMap, err = fetcher.FetchIcons(b)
+	iconMap, err = fetcher.FetchIcons(ctx, b)
 	c.Assert(err, qt.IsNil)
 	c.Assert(iconMap, qt.DeepEquals, map[string][]byte{
 		"~charming-devs/precise/elasticsearch-2": []byte("<svg>/~charming-devs/precise/elasticsearch-2.svg</svg>\n"),
@@ -92,6 +95,7 @@ func TestHTTPFetchIcons(t *testing.T) {
 
 func TestHTTPBadIconURL(t *testing.T) {
 	c := qt.New(t)
+	ctx := context.Background()
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "bad-wolf", http.StatusForbidden)
@@ -99,8 +103,8 @@ func TestHTTPBadIconURL(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	tsIconURL := func(ref *charm.URL) string {
-		return ts.URL + "/" + ref.Path() + ".svg"
+	tsIconURL := func(_ context.Context, ref *charm.URL) (string, error) {
+		return ts.URL + "/" + ref.Path() + ".svg", nil
 	}
 
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
@@ -111,12 +115,12 @@ func TestHTTPBadIconURL(t *testing.T) {
 		Concurrency: 1,
 		IconURL:     tsIconURL,
 	}
-	iconMap, err := fetcher.FetchIcons(b)
+	iconMap, err := fetcher.FetchIcons(ctx, b)
 	c.Assert(err, qt.ErrorMatches, fmt.Sprintf("cannot retrieve icon from %s.+\\.svg: 403 Forbidden.*", ts.URL))
 	c.Assert(iconMap, qt.IsNil)
 
 	fetcher.Concurrency = 10
-	iconMap, err = fetcher.FetchIcons(b)
+	iconMap, err = fetcher.FetchIcons(ctx, b)
 	c.Assert(err, qt.ErrorMatches, fmt.Sprintf("cannot retrieve icon from %s.+\\.svg: 403 Forbidden.*", ts.URL))
 	c.Assert(iconMap, qt.IsNil)
 }
