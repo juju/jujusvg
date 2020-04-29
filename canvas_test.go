@@ -5,19 +5,17 @@ import (
 	"encoding/xml"
 	"image"
 	"io"
+	"testing"
 
 	svg "github.com/ajstarks/svgo"
-	jc "github.com/juju/testing/checkers"
-	gc "gopkg.in/check.v1"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/juju/jujusvg/v4/assets"
 )
 
-type CanvasSuite struct{}
+func TestApplicationRender(t *testing.T) {
+	c := qt.New(t)
 
-var _ = gc.Suite(&CanvasSuite{})
-
-func (s *CanvasSuite) TestApplicationRender(c *gc.C) {
 	// Ensure that the Application's definition and usage methods output the
 	// proper SVG elements.
 	var tests = []struct {
@@ -88,18 +86,23 @@ func (s *CanvasSuite) TestApplicationRender(c *gc.C) {
 	// Maintain our list of rendered icons outside the loop.
 	iconsRendered := make(map[string]bool)
 	iconIds := make(map[string]string)
-	for _, test := range tests {
-		var buf bytes.Buffer
-		svg := svg.New(&buf)
-		test.application.definition(svg, iconsRendered, iconIds)
-		test.application.usage(svg, iconIds)
-		c.Log(test.about)
-		c.Log(buf.String())
-		c.Assert(buf.String(), gc.Equals, test.expected)
+	for i := range tests {
+		test := tests[i]
+		c.Run(test.about, func(c *qt.C) {
+			var buf bytes.Buffer
+			svg := svg.New(&buf)
+			test.application.definition(svg, iconsRendered, iconIds)
+			test.application.usage(svg, iconIds)
+			c.Log(test.about)
+			c.Log(buf.String())
+			c.Assert(buf.String(), qt.Equals, test.expected)
+		})
 	}
 }
 
-func (s *CanvasSuite) TestRelationRender(c *gc.C) {
+func TestRelationRender(t *testing.T) {
+	c := qt.New(t)
+
 	// Ensure that the Relation's definition and usage methods output the
 	// proper SVG elements.
 	var buf bytes.Buffer
@@ -121,7 +124,7 @@ func (s *CanvasSuite) TestRelationRender(c *gc.C) {
 	}
 	relation.definition(svg)
 	relation.usage(svg)
-	c.Assert(buf.String(), gc.Equals,
+	c.Assert(buf.String(), qt.Equals,
 		`<g >
 <title>foo</title>
 <line x1="90" y1="90" x2="190" y2="190" stroke="#a7a7a7" stroke-width="1px" stroke-dasharray="62.71, 16" />
@@ -132,20 +135,24 @@ func (s *CanvasSuite) TestRelationRender(c *gc.C) {
 `)
 }
 
-func (s *CanvasSuite) TestIconClipPath(c *gc.C) {
+func TestIconClipPath(t *testing.T) {
+	c := qt.New(t)
+
 	// Ensure that the icon ClipPath returns the correctly sizes clipping Circle
 	var buf bytes.Buffer
 	svg := svg.New(&buf)
 	canvas := Canvas{}
 	canvas.iconClipPath(svg)
-	c.Assert(buf.String(), gc.Equals,
+	c.Assert(buf.String(), qt.Equals,
 		`<circle cx="47" cy="49" r="45" id="application-icon-mask" fill="none" />
 <clipPath id="clip-mask" ><use x="0" y="0" xlink:href="#application-icon-mask" />
 </clipPath>
 `)
 }
 
-func (s *CanvasSuite) TestLayout(c *gc.C) {
+func TestLayout(t *testing.T) {
+	c := qt.New(t)
+
 	// Ensure that the SVG is sized exactly around the positioned applications.
 	canvas := Canvas{}
 	canvas.addApplication(&application{
@@ -163,8 +170,8 @@ func (s *CanvasSuite) TestLayout(c *gc.C) {
 		},
 	})
 	width, height := canvas.layout()
-	c.Assert(width, gc.Equals, 281)
-	c.Assert(height, gc.Equals, 281)
+	c.Assert(width, qt.Equals, 281)
+	c.Assert(height, qt.Equals, 281)
 	canvas.addApplication(&application{
 		name: "application3",
 		point: image.Point{
@@ -187,11 +194,13 @@ func (s *CanvasSuite) TestLayout(c *gc.C) {
 		},
 	})
 	width, height = canvas.layout()
-	c.Assert(width, gc.Equals, 481)
-	c.Assert(height, gc.Equals, 381)
+	c.Assert(width, qt.Equals, 481)
+	c.Assert(height, qt.Equals, 381)
 }
 
-func (s *CanvasSuite) TestMarshal(c *gc.C) {
+func TestMarshal(t *testing.T) {
+	c := qt.New(t)
+
 	// Ensure that the internal representation of the canvas can be marshalled
 	// to SVG.
 	var buf bytes.Buffer
@@ -269,13 +278,13 @@ func (s *CanvasSuite) TestMarshal(c *gc.C) {
 `))
 }
 
-func assertXMLEqual(c *gc.C, obtained, expected []byte) {
+func assertXMLEqual(c *qt.C, obtained, expected []byte) {
 	toksObtained := xmlTokens(c, obtained)
 	toksExpected := xmlTokens(c, expected)
-	c.Assert(toksObtained, jc.DeepEquals, toksExpected)
+	c.Assert(toksObtained, qt.DeepEquals, toksExpected)
 }
 
-func xmlTokens(c *gc.C, data []byte) []xml.Token {
+func xmlTokens(c *qt.C, data []byte) []xml.Token {
 	dec := xml.NewDecoder(bytes.NewReader(data))
 	var toks []xml.Token
 	for {
@@ -283,7 +292,7 @@ func xmlTokens(c *gc.C, data []byte) []xml.Token {
 		if err == io.EOF {
 			return toks
 		}
-		c.Assert(err, gc.IsNil)
+		c.Assert(err, qt.IsNil)
 
 		if cdata, ok := tok.(xml.CharData); ok {
 			// It's char data - trim all white space and ignore it

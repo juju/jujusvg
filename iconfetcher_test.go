@@ -5,16 +5,15 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"testing"
 
+	qt "github.com/frankban/quicktest"
 	"github.com/juju/charm/v7"
-	gc "gopkg.in/check.v1"
 )
 
-type IconFetcherSuite struct{}
+func TestLinkFetchIcons(t *testing.T) {
+	c := qt.New(t)
 
-var _ = gc.Suite(&IconFetcherSuite{})
-
-func (s *IconFetcherSuite) TestLinkFetchIcons(c *gc.C) {
 	tests := map[string][]byte{
 		"~charming-devs/precise/elasticsearch-2": []byte(`
 			<svg xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -33,20 +32,22 @@ func (s *IconFetcherSuite) TestLinkFetchIcons(c *gc.C) {
 		return "/" + ref.Path() + ".svg"
 	}
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
-	c.Assert(err, gc.IsNil)
+	c.Assert(err, qt.IsNil)
 	err = b.Verify(nil, nil, nil)
-	c.Assert(err, gc.IsNil)
+	c.Assert(err, qt.IsNil)
 	fetcher := LinkFetcher{
 		IconURL: iconURL,
 	}
 	iconMap, err := fetcher.FetchIcons(b)
-	c.Assert(err, gc.IsNil)
+	c.Assert(err, qt.IsNil)
 	for charm, link := range tests {
 		assertXMLEqual(c, []byte(iconMap[charm]), []byte(link))
 	}
 }
 
-func (s *IconFetcherSuite) TestHTTPFetchIcons(c *gc.C) {
+func TestHTTPFetchIcons(t *testing.T) {
+	c := qt.New(t)
+
 	fetchCount := 0
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fetchCount++
@@ -58,9 +59,9 @@ func (s *IconFetcherSuite) TestHTTPFetchIcons(c *gc.C) {
 		return ts.URL + "/" + ref.Path() + ".svg"
 	}
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
-	c.Assert(err, gc.IsNil)
+	c.Assert(err, qt.IsNil)
 	err = b.Verify(nil, nil, nil)
-	c.Assert(err, gc.IsNil)
+	c.Assert(err, qt.IsNil)
 	// Only one copy of precise/mongodb-21
 	b.Applications["duplicateApplication"] = &charm.ApplicationSpec{
 		Charm:    "cs:precise/mongodb-21",
@@ -71,8 +72,8 @@ func (s *IconFetcherSuite) TestHTTPFetchIcons(c *gc.C) {
 		IconURL:     tsIconURL,
 	}
 	iconMap, err := fetcher.FetchIcons(b)
-	c.Assert(err, gc.IsNil)
-	c.Assert(iconMap, gc.DeepEquals, map[string][]byte{
+	c.Assert(err, qt.IsNil)
+	c.Assert(iconMap, qt.DeepEquals, map[string][]byte{
 		"~charming-devs/precise/elasticsearch-2": []byte("<svg>/~charming-devs/precise/elasticsearch-2.svg</svg>\n"),
 		"~juju-jitsu/precise/charmworld-58":      []byte("<svg>/~juju-jitsu/precise/charmworld-58.svg</svg>\n"),
 		"precise/mongodb-21":                     []byte("<svg>/precise/mongodb-21.svg</svg>\n"),
@@ -80,16 +81,18 @@ func (s *IconFetcherSuite) TestHTTPFetchIcons(c *gc.C) {
 
 	fetcher.Concurrency = 10
 	iconMap, err = fetcher.FetchIcons(b)
-	c.Assert(err, gc.IsNil)
-	c.Assert(iconMap, gc.DeepEquals, map[string][]byte{
+	c.Assert(err, qt.IsNil)
+	c.Assert(iconMap, qt.DeepEquals, map[string][]byte{
 		"~charming-devs/precise/elasticsearch-2": []byte("<svg>/~charming-devs/precise/elasticsearch-2.svg</svg>\n"),
 		"~juju-jitsu/precise/charmworld-58":      []byte("<svg>/~juju-jitsu/precise/charmworld-58.svg</svg>\n"),
 		"precise/mongodb-21":                     []byte("<svg>/precise/mongodb-21.svg</svg>\n"),
 	})
-	c.Assert(fetchCount, gc.Equals, 6)
+	c.Assert(fetchCount, qt.Equals, 6)
 }
 
-func (s *IconFetcherSuite) TestHTTPBadIconURL(c *gc.C) {
+func TestHTTPBadIconURL(t *testing.T) {
+	c := qt.New(t)
+
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "bad-wolf", http.StatusForbidden)
 		return
@@ -101,19 +104,19 @@ func (s *IconFetcherSuite) TestHTTPBadIconURL(c *gc.C) {
 	}
 
 	b, err := charm.ReadBundleData(strings.NewReader(bundle))
-	c.Assert(err, gc.IsNil)
+	c.Assert(err, qt.IsNil)
 	err = b.Verify(nil, nil, nil)
-	c.Assert(err, gc.IsNil)
+	c.Assert(err, qt.IsNil)
 	fetcher := HTTPFetcher{
 		Concurrency: 1,
 		IconURL:     tsIconURL,
 	}
 	iconMap, err := fetcher.FetchIcons(b)
-	c.Assert(err, gc.ErrorMatches, fmt.Sprintf("cannot retrieve icon from %s.+\\.svg: 403 Forbidden.*", ts.URL))
-	c.Assert(iconMap, gc.IsNil)
+	c.Assert(err, qt.ErrorMatches, fmt.Sprintf("cannot retrieve icon from %s.+\\.svg: 403 Forbidden.*", ts.URL))
+	c.Assert(iconMap, qt.IsNil)
 
 	fetcher.Concurrency = 10
 	iconMap, err = fetcher.FetchIcons(b)
-	c.Assert(err, gc.ErrorMatches, fmt.Sprintf("cannot retrieve icon from %s.+\\.svg: 403 Forbidden.*", ts.URL))
-	c.Assert(iconMap, gc.IsNil)
+	c.Assert(err, qt.ErrorMatches, fmt.Sprintf("cannot retrieve icon from %s.+\\.svg: 403 Forbidden.*", ts.URL))
+	c.Assert(iconMap, qt.IsNil)
 }

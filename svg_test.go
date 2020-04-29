@@ -3,16 +3,15 @@ package jujusvg
 import (
 	"bytes"
 	"fmt"
+	"testing"
 
+	qt "github.com/frankban/quicktest"
 	"github.com/juju/xml"
-	gc "gopkg.in/check.v1"
 )
 
-type SVGSuite struct{}
+func TestProcessIcon(t *testing.T) {
+	c := qt.New(t)
 
-var _ = gc.Suite(&SVGSuite{})
-
-func (s *SVGSuite) TestProcessIcon(c *gc.C) {
 	tests := []struct {
 		about    string
 		icon     string
@@ -127,20 +126,25 @@ func (s *SVGSuite) TestProcessIcon(c *gc.C) {
 			err: "icon does not appear to be a valid SVG",
 		},
 	}
-	for i, test := range tests {
-		in := bytes.NewBuffer([]byte(test.icon))
-		out := bytes.Buffer{}
-		err := processIcon(in, &out, fmt.Sprintf("test-%d", i))
-		if test.err != "" {
-			c.Assert(err, gc.ErrorMatches, test.err)
-		} else {
-			c.Assert(err, gc.IsNil)
-			assertXMLEqual(c, out.Bytes(), []byte(test.expected))
-		}
+	for i := range tests {
+		test := tests[i]
+		c.Run(test.about, func(c *qt.C) {
+			in := bytes.NewBuffer([]byte(test.icon))
+			out := bytes.Buffer{}
+			err := processIcon(in, &out, fmt.Sprintf("test-%d", i))
+			if test.err != "" {
+				c.Assert(err, qt.ErrorMatches, test.err)
+			} else {
+				c.Assert(err, qt.IsNil)
+				assertXMLEqual(c, out.Bytes(), []byte(test.expected))
+			}
+		})
 	}
 }
 
-func (s *SVGSuite) TestSetXMLAttr(c *gc.C) {
+func TestSetXMLAttr(t *testing.T) {
+	c := qt.New(t)
+
 	// Attribute is added.
 	expected := []xml.Attr{
 		{
@@ -154,7 +158,7 @@ func (s *SVGSuite) TestSetXMLAttr(c *gc.C) {
 	result := setXMLAttr([]xml.Attr{}, xml.Name{
 		Local: "id",
 	}, "foo")
-	c.Assert(result, gc.DeepEquals, expected)
+	c.Assert(result, qt.DeepEquals, expected)
 
 	// Attribute is changed.
 	result = setXMLAttr([]xml.Attr{
@@ -167,7 +171,7 @@ func (s *SVGSuite) TestSetXMLAttr(c *gc.C) {
 	}, xml.Name{
 		Local: "id",
 	}, "foo")
-	c.Assert(result, gc.DeepEquals, expected)
+	c.Assert(result, qt.DeepEquals, expected)
 
 	// Attribute is changed, existing attributes unchanged.
 	expected = []xml.Attr{
@@ -200,7 +204,7 @@ func (s *SVGSuite) TestSetXMLAttr(c *gc.C) {
 	}, xml.Name{
 		Local: "id",
 	}, "foo")
-	c.Assert(result, gc.DeepEquals, expected)
+	c.Assert(result, qt.DeepEquals, expected)
 
 	// Attribute is added, existing attributes unchanged.
 	result = setXMLAttr([]xml.Attr{
@@ -213,5 +217,5 @@ func (s *SVGSuite) TestSetXMLAttr(c *gc.C) {
 	}, xml.Name{
 		Local: "id",
 	}, "foo")
-	c.Assert(result, gc.DeepEquals, expected)
+	c.Assert(result, qt.DeepEquals, expected)
 }
