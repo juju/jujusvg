@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	qt "github.com/frankban/quicktest"
-	"github.com/juju/charm/v7"
+	"github.com/juju/charm/v8"
 )
 
 func TestLinkFetchIcons(t *testing.T) {

@@ -9,7 +9,7 @@ Installation
 To start using jujusvg, first ensure you have a valid Go environment, then run
 the following:
 
-    go get github.com/juju/jujusvg/v4
+    go get github.com/juju/jujusvg/v5
 
 Usage
 -----

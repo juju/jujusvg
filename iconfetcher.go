@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/juju/charm/v7"
-	"github.com/juju/utils/parallel"
+	"github.com/juju/charm/v8"
+	"github.com/juju/utils/v2/parallel"
 	"github.com/juju/xml"
 	"gopkg.in/errgo.v1"
 )

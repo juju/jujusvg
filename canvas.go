@@ -9,7 +9,7 @@ import (
 
 	svg "github.com/ajstarks/svgo"
 
-	"github.com/juju/jujusvg/v4/assets"
+	"github.com/juju/jujusvg/v5/assets"
 )
 
 const (
