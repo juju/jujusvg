@@ -10,7 +10,7 @@ import (
 	svg "github.com/ajstarks/svgo"
 	qt "github.com/frankban/quicktest"
 
-	"github.com/juju/jujusvg/v4/assets"
+	"github.com/juju/jujusvg/v5/assets"
 )
 
 func TestApplicationRender(t *testing.T) {

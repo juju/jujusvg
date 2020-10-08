@@ -10,16 +10,16 @@ import (
 	"os"
 	"strings"
 
-	"github.com/juju/charm/v7"
+	"github.com/juju/charm/v8"
 
 	// Import the jujusvg library and the juju charm library
-	"github.com/juju/jujusvg/v4"
+	"github.com/juju/jujusvg/v5"
 )
 
 // iconURL takes a reference to a charm and returns the URL for that charm's icon.
 // In this case, we're using the api.jujucharms.com API to provide the icon's URL.
 func iconURL(ctx context.Context, ref *charm.URL) (string, error) {
-	return "https://api.jujucharms.com/charmstore/v4/" + ref.Path() + "/icon.svg", nil
+	return "https://api.jujucharms.com/charmstore/v5/" + ref.Path() + "/icon.svg", nil
 }
 
 func main() {
